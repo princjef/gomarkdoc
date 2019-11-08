@@ -1,0 +1,10 @@
+{{- range .Blocks -}}
+	{{- if eq .Kind "paragraph" -}}
+		{{- paragraph .Text -}}
+	{{- else if eq .Kind "code" -}}
+		{{- codeBlock "" .Text -}}
+	{{- else if eq .Kind "header" -}}
+		{{- header .Level .Text -}}
+	{{- end -}}
+{{- end -}}
+

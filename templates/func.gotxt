@@ -1,0 +1,10 @@
+{{- header .Level .Title -}}
+
+{{- codeBlock "go" .Signature -}}
+
+{{- template "doc" .Doc -}}
+
+{{- range .Examples -}}
+	{{- template "example" . -}}
+{{- end -}}
+

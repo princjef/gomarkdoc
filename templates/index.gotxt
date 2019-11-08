@@ -1,0 +1,33 @@
+{{- if len .Consts -}}
+
+	{{- localHref "Constants" | link "Constants" | listEntry 0 -}}
+	
+{{- end -}}
+
+{{- if len .Vars -}}
+
+	{{- localHref "Variables" | link "Variables" | listEntry 0 -}}
+
+{{- end -}}
+
+{{- range .Funcs -}}
+
+	{{- localHref .Title | link .Signature | listEntry 0 -}}
+
+{{- end -}}
+
+{{- range .Types -}}
+
+	{{- localHref .Title | link .Title | listEntry 0 -}}
+
+	{{- range .Funcs -}}
+		{{- localHref .Title | link .Signature | listEntry 1 -}}
+	{{- end -}}
+
+	{{- range .Methods -}}
+		{{- localHref .Title | link .Signature | listEntry 1 -}}
+	{{- end -}}
+
+{{- end -}}
+
+{{- spacer -}}

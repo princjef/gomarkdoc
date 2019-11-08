@@ -1,0 +1,36 @@
+# gomarkdoc
+
+```go
+import "github.com/princjef/gomarkdoc/cmd/gomarkdoc"
+```
+
+## Overview
+
+Package gomarkdoc provides a command line interface for writing golang documentation in markdown format\.
+
+See github\.com/princjef/gomarkdoc for full documentation of this tool\.
+
+## Index
+
+- [type PackageSpec](<#type-packagespec>)
+
+
+## type PackageSpec
+
+PackageSpec defines the data available to the \-\-output option's template\. Information is recomputed for each package generated\.
+
+```go
+type PackageSpec struct {
+    // Dir holds the local path where the package is located. If the package is
+    // a remote package, this will always be ".".
+    Dir string
+
+    // ImportPath holds a representation of the package that should be unique
+    // for most purposes. If a package is on the filesystem, this is equivalent
+    // to the value of Dir. For remote packages, this holds the string used to
+    // import that package in code (e.g. "encoding/json").
+    ImportPath string
+    // contains filtered or unexported fields
+}
+```
+

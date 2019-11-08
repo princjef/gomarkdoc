@@ -1,0 +1,8 @@
+{{- accordionHeader .Title -}}
+
+{{- template "doc" .Doc -}}
+
+{{- codeBlock "go" .Code -}}
+
+{{- accordionTerminator -}}
+

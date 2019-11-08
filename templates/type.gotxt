@@ -1,0 +1,18 @@
+{{- header .Level .Title -}}
+
+{{- template "doc" .Doc -}}
+
+{{- codeBlock "go" .Decl -}}
+
+{{- range .Examples -}}
+	{{- template "example" . -}}
+{{- end -}}
+
+{{- range .Funcs -}}
+	{{- template "func" . -}}
+{{- end -}}
+
+{{- range .Methods -}}
+	{{- template "func" . -}}
+{{- end -}}
+
