@@ -69,8 +69,6 @@ var templates = map[string]string{
 
 {{- codeBlock "go" .Import -}}
 
-{{- header (add .Level 1) "Overview" -}}
-
 {{- template "doc" .Doc -}}
 
 {{- range .Examples -}}
