@@ -34,7 +34,7 @@ func NewDoc(text string, level int) *Doc {
 			// Ignore blank lines
 			rawText = rawText[len(l):]
 		} else if l := headerRegex.Find(rawText); l != nil {
-			headerText := strings.SplitN(string(l), "\n", 1)[0]
+			headerText := strings.TrimSpace(string(l))
 			blocks = append(blocks, NewBlock(HeaderBlock, headerText, level))
 			rawText = rawText[len(l):]
 		} else if l := spaceCodeBlockRegex.Find(rawText); l != nil {

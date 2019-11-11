@@ -102,6 +102,13 @@ func WithFormatter(formatter Formatter) RendererOption {
 	}
 }
 
+// File renders a file containing one or more packages to document to a string.
+// You can change the rendering of the file by overriding the "file" template
+// or one of the templates it references.
+func (out *Renderer) File(file *lang.File) (string, error) {
+	return out.writeTemplate("file", file)
+}
+
 // Package renders a package's documentation to a string. You can change the
 // rendering of the package by overriding the "package" template or one of the
 // templates it references.

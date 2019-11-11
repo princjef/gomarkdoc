@@ -40,10 +40,15 @@ type PackageSpec struct {
 }
 
 type commandOptions struct {
-	includeUnexported bool
-	output            string
-	check             bool
-	templateOverrides map[string]string
+	includeUnexported     bool
+	output                string
+	check                 bool
+	templateOverrides     map[string]string
+	templateFileOverrides map[string]string
+	header                string
+	headerFile            string
+	footer                string
+	footerFile            string
 }
 
 const configFilePrefix = ".gomarkdoc"
@@ -63,6 +68,11 @@ func buildCommand() *cobra.Command {
 			opts.output = viper.GetString("output")
 			opts.check = viper.GetBool("check")
 			opts.templateOverrides = viper.GetStringMapString("template")
+			opts.templateFileOverrides = viper.GetStringMapString("template-file")
+			opts.header = viper.GetString("header")
+			opts.headerFile = viper.GetString("headerFile")
+			opts.footer = viper.GetString("footer")
+			opts.footerFile = viper.GetString("footerFile")
 
 			if opts.check && opts.output == "" {
 				log.Fatal("check mode cannot be run without an output set")
@@ -83,12 +93,22 @@ func buildCommand() *cobra.Command {
 	command.Flags().BoolVarP(&opts.includeUnexported, "include-unexported", "u", false, "Output documentation for unexported symbols, methods and fields in addition to exported ones.")
 	command.Flags().StringVarP(&opts.output, "output", "o", "", "File or pattern specifying where to write documentation output. Defaults to printing to stdout.")
 	command.Flags().BoolVarP(&opts.check, "check", "c", false, "Check the output to see if it matches the generated documentation. --output must be specified to use this option.")
-	command.Flags().StringToStringVarP(&opts.templateOverrides, "template", "t", map[string]string{}, "Custom template file to use for the provided template name instead of the default template.")
+	command.Flags().StringToStringVarP(&opts.templateOverrides, "template", "t", map[string]string{}, "Custom template string to use for the provided template name instead of the default template.")
+	command.Flags().StringToStringVar(&opts.templateFileOverrides, "template-file", map[string]string{}, "Custom template file to use for the provided template name instead of the default template.")
+	command.Flags().StringVar(&opts.header, "header", "", "Additional content to inject at the beginning of each output file.")
+	command.Flags().StringVar(&opts.headerFile, "header-file", "", "File containing additional content to inject at the beginning of each output file.")
+	command.Flags().StringVar(&opts.footer, "footer", "", "Additional content to inject at the end of each output file.")
+	command.Flags().StringVar(&opts.footerFile, "footer-file", "", "File containing additional content to inject at the end of each output file.")
 
 	viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
 	viper.BindPFlag("output", command.Flags().Lookup("output"))
 	viper.BindPFlag("check", command.Flags().Lookup("check"))
 	viper.BindPFlag("template", command.Flags().Lookup("template"))
+	viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
+	viper.BindPFlag("header", command.Flags().Lookup("header"))
+	viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
+	viper.BindPFlag("footer", command.Flags().Lookup("footer"))
+	viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 
 	return command
 }
@@ -150,20 +170,64 @@ func resolveOutput(specs []*PackageSpec, outputTmpl *template.Template) error {
 	return nil
 }
 
-func resolveOverrides(templateOverrides map[string]string) ([]gomarkdoc.RendererOption, error) {
-	var i int
-	overrides := make([]gomarkdoc.RendererOption, len(templateOverrides))
-	for name, f := range templateOverrides {
+func resolveOverrides(opts commandOptions) ([]gomarkdoc.RendererOption, error) {
+	var overrides []gomarkdoc.RendererOption
+
+	// Content overrides take precedence over file overrides
+	for name, s := range opts.templateOverrides {
+		overrides = append(overrides, gomarkdoc.WithTemplateOverride(name, s))
+	}
+
+	for name, f := range opts.templateFileOverrides {
+		// File overrides get applied only if there isn't already a content
+		// override.
+		if _, ok := opts.templateOverrides[name]; ok {
+			continue
+		}
+
 		b, err := ioutil.ReadFile(f)
 		if err != nil {
 			return nil, fmt.Errorf("gomarkdoc: couldn't resolve template for %s: %w", name, err)
 		}
 
-		overrides[i] = gomarkdoc.WithTemplateOverride(name, string(b))
-		i++
+		overrides = append(overrides, gomarkdoc.WithTemplateOverride(name, string(b)))
 	}
 
 	return overrides, nil
+}
+
+func resolveHeader(opts commandOptions) (string, error) {
+	if opts.header != "" {
+		return opts.header, nil
+	}
+
+	if opts.headerFile != "" {
+		b, err := ioutil.ReadFile(opts.headerFile)
+		if err != nil {
+			return "", fmt.Errorf("gomarkdoc: couldn't resolve header file: %w", err)
+		}
+
+		return string(b), nil
+	}
+
+	return "", nil
+}
+
+func resolveFooter(opts commandOptions) (string, error) {
+	if opts.footer != "" {
+		return opts.footer, nil
+	}
+
+	if opts.footerFile != "" {
+		b, err := ioutil.ReadFile(opts.footerFile)
+		if err != nil {
+			return "", fmt.Errorf("gomarkdoc: couldn't resolve footer file: %w", err)
+		}
+
+		return string(b), nil
+	}
+
+	return "", nil
 }
 
 func loadPackages(specs []*PackageSpec, opts commandOptions) error {
@@ -195,7 +259,7 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 }
 
 func writeOutput(specs []*PackageSpec, opts commandOptions) error {
-	overrides, err := resolveOverrides(opts.templateOverrides)
+	overrides, err := resolveOverrides(opts)
 	if err != nil {
 		return err
 	}
@@ -205,67 +269,73 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 		return err
 	}
 
-	files := make(map[string]io.Writer)
+	header, err := resolveHeader(opts)
+	if err != nil {
+		return err
+	}
+
+	footer, err := resolveFooter(opts)
+	if err != nil {
+		return err
+	}
+
+	filePkgs := make(map[string][]*lang.Package)
 
 	for _, spec := range specs {
 		if spec.pkg == nil {
 			continue
 		}
 
-		if _, ok := files[spec.outputFile]; !ok {
-			if spec.outputFile == "" {
-				files[spec.outputFile] = os.Stdout
-			} else {
-				if opts.check {
-					var b bytes.Buffer
-					files[spec.outputFile] = &b
-				} else {
-					f, err := os.Create(spec.outputFile)
-					defer f.Close()
+		filePkgs[spec.outputFile] = append(filePkgs[spec.outputFile], spec.pkg)
+	}
 
-					if err != nil {
-						return fmt.Errorf("Failed to open output file %s for editing: %w", spec.outputFile, err)
-					}
-					files[spec.outputFile] = f
-				}
-			}
-		}
+	for fileName, pkgs := range filePkgs {
+		file := lang.NewFile(header, footer, pkgs)
 
-		text, err := out.Package(spec.pkg)
+		text, err := out.File(file)
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprint(files[spec.outputFile], text)
-	}
-
-	checkErr := errors.New("output does not match current files. Did you forget to run gomarkdoc?")
-
-	if opts.check {
-		for path, w := range files {
-			// All outputs are guaranteed to be buffers in check mode
-			b := w.(*bytes.Buffer)
-
-			f, err := os.Open(path)
-			defer f.Close()
-
-			if err != nil {
-				if err == os.ErrNotExist {
-					return checkErr
-				} else {
-					return fmt.Errorf("Failed to open file %s for checking: %w", path, err)
-				}
+		if fileName == "" {
+			fmt.Fprint(os.Stdout, text)
+		} else if opts.check {
+			var b bytes.Buffer
+			fmt.Fprint(&b, text)
+			if err := checkFile(&b, fileName); err != nil {
+				return err
 			}
-
-			match, err := compare(b, f)
-			if err != nil {
-				return fmt.Errorf("Failure while attempting to check contents of %s: %w", path, err)
-			}
-
-			if !match {
-				return checkErr
+		} else {
+			if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
+				return fmt.Errorf("Failed to write output file %s: %w", fileName, err)
 			}
 		}
+	}
+
+	return nil
+}
+
+func checkFile(b *bytes.Buffer, path string) error {
+	checkErr := errors.New("output does not match current files. Did you forget to run gomarkdoc?")
+
+	f, err := os.Open(path)
+	defer f.Close()
+
+	if err != nil {
+		if err == os.ErrNotExist {
+			return checkErr
+		} else {
+			return fmt.Errorf("Failed to open file %s for checking: %w", path, err)
+		}
+	}
+
+	match, err := compare(b, f)
+	if err != nil {
+		return fmt.Errorf("Failure while attempting to check contents of %s: %w", path, err)
+	}
+
+	if !match {
+		return checkErr
 	}
 
 	return nil

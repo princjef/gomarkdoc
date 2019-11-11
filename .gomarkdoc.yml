@@ -1,0 +1,4 @@
+output: "{{.Dir}}/README.md"
+header: "[![Go Report Card](https://goreportcard.com/badge/github.com/princjef/gomarkdoc)](https://goreportcard.com/report/github.com/princjef/gomarkdoc)\n\n"
+
+

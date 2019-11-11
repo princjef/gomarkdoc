@@ -21,12 +21,17 @@
 //	  gomarkdoc [flags] [package ...]
 //
 //	Flags:
-//	  -c, --check                     Check the output to see if it matches the generated documentation. --output must be specified to use this option.
-//	  --config string             File from which to load configuration (default: .gomarkdoc.yml)
-//	  -h, --help                      help for gomarkdoc
-//	  -u, --include-unexported        Output documentation for unexported symbols, methods and fields in addition to exported ones.
-//	  -o, --output string             File or pattern specifying where to write documentation output. Defaults to printing to stdout.
-//	  -t, --template stringToString   Custom template file to use for the provided template name instead of the default template. (default [])
+//	  -c, --check                          Check the output to see if it matches the generated documentation. --output must be specified to use this option.
+//	      --config string                  File from which to load configuration (default: .gomarkdoc.yml)
+//	      --footer string                  Additional content to inject at the end of each output file.
+//	      --footer-file string             File containing additional content to inject at the end of each output file.
+//	      --header string                  Additional content to inject at the beginning of each output file.
+//	      --header-file string             File containing additional content to inject at the beginning of each output file.
+//	  -h, --help                           help for gomarkdoc
+//	  -u, --include-unexported             Output documentation for unexported symbols, methods and fields in addition to exported ones.
+//	  -o, --output string                  File or pattern specifying where to write documentation output. Defaults to printing to stdout.
+//	  -t, --template stringToString        Custom template string to use for the provided template name instead of the default template. (default [])
+//	      --template-file stringToString   Custom template file to use for the provided template name instead of the default template. (default [])
 //
 // The gomarkdoc command processes each of the provided packages, generating
 // documentation for the package in markdown format and writing it to console.
@@ -67,8 +72,11 @@
 // any template may be replaced with an override template using the
 // --template/-t option. The full list of templates that may be overridden are:
 //
-//	- package: generates documentation for an entire package. This is also the
+//	- file:    generates documentation for a file containing one or more
+//	           packages, depending on how the tool is configured. This is the
 //	           root template for documentation generation.
+//
+//	- package: generates documentation for an entire package.
 //
 //	- type:    generates documentation for a single type declaration, as well
 //	           as any related functions/methods.
