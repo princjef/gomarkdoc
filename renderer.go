@@ -5,16 +5,17 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/princjef/gomarkdoc/format"
 	"github.com/princjef/gomarkdoc/lang"
 )
 
 type (
 	// Renderer provides capabilities for rendering various types of
-	// documentation with the configured formatter and templates.
+	// documentation with the configured format and templates.
 	Renderer struct {
 		templateOverrides map[string]string
 		tmpl              *template.Template
-		formatter         Formatter
+		format            format.Format
 	}
 
 	// RendererOption configures the renderer's behavior.
@@ -25,11 +26,11 @@ type (
 
 // NewRenderer initializes a Renderer configured using the provided options. If
 // nothing special is provided, the created renderer will use the default set of
-// templates and the GitHubMarkdownFormatter.
+// templates and the GitHubFlavoredMarkdown.
 func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 	renderer := &Renderer{
 		templateOverrides: make(map[string]string),
-		formatter:         &GitHubMarkdownFormatter{},
+		format:            &format.GitHubFlavoredMarkdown{},
 	}
 
 	for _, opt := range opts {
@@ -54,16 +55,16 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 					return "\n\n"
 				},
 
-				"bold":                renderer.formatter.Bold,
-				"header":              renderer.formatter.Header,
-				"codeBlock":           renderer.formatter.CodeBlock,
-				"link":                renderer.formatter.Link,
-				"listEntry":           renderer.formatter.ListEntry,
-				"accordion":           renderer.formatter.Accordion,
-				"accordionHeader":     renderer.formatter.AccordionHeader,
-				"accordionTerminator": renderer.formatter.AccordionTerminator,
-				"localHref":           renderer.formatter.LocalHref,
-				"paragraph":           renderer.formatter.Paragraph,
+				"bold":                renderer.format.Bold,
+				"header":              renderer.format.Header,
+				"codeBlock":           renderer.format.CodeBlock,
+				"link":                renderer.format.Link,
+				"listEntry":           renderer.format.ListEntry,
+				"accordion":           renderer.format.Accordion,
+				"accordionHeader":     renderer.format.AccordionHeader,
+				"accordionTerminator": renderer.format.AccordionTerminator,
+				"localHref":           renderer.format.LocalHref,
+				"paragraph":           renderer.format.Paragraph,
 			})
 
 			if _, err := tmpl.Parse(tmplStr); err != nil {
@@ -93,11 +94,11 @@ func WithTemplateOverride(name, tmpl string) RendererOption {
 	}
 }
 
-// WithFormatter changes the renderer to use the formatter provided instead of
-// the default formatter.
-func WithFormatter(formatter Formatter) RendererOption {
+// WithFormat changes the renderer to use the format provided instead of the
+// default format.
+func WithFormat(format format.Format) RendererOption {
 	return func(renderer *Renderer) error {
-		renderer.formatter = formatter
+		renderer.format = format
 		return nil
 	}
 }
