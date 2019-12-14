@@ -386,6 +386,10 @@ func getBuildPackage(path string) (*build.Package, error) {
 func getSpecs(paths ...string) []*PackageSpec {
 	var expanded []*PackageSpec
 	for _, path := range paths {
+		// Ensure that the path we're working with is normalized for the OS
+		// we're using (i.e. "\" for windows, "/" for everything else)
+		path = filepath.FromSlash(path)
+
 		// Not a recursive path
 		if !strings.HasSuffix(path, fmt.Sprintf("%s...", string(os.PathSeparator))) {
 			isLocal := isLocalPath(path)

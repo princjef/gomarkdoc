@@ -294,8 +294,7 @@ func findImportPath(dir string) (string, bool) {
 		return "", false
 	}
 
-	// TODO: make sure this is valid for all OSes
-	relative = strings.ReplaceAll(relative, "\\", "/")
+	relative = filepath.ToSlash(relative)
 
 	return path.Join(string(m[1]), relative), true
 }
