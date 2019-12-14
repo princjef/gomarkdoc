@@ -172,18 +172,6 @@ func main() {
 
 ## Index
 
-- [type Formatter](<#type-formatter>)
-- [type GitHubMarkdownFormatter](<#type-githubmarkdownformatter>)
-  - [func (f *GitHubMarkdownFormatter) Accordion(title, body string) (string, error)](<#func-githubmarkdownformatter-accordion>)
-  - [func (f *GitHubMarkdownFormatter) AccordionHeader(title string) string](<#func-githubmarkdownformatter-accordionheader>)
-  - [func (f *GitHubMarkdownFormatter) AccordionTerminator() string](<#func-githubmarkdownformatter-accordionterminator>)
-  - [func (f *GitHubMarkdownFormatter) Bold(text string) (string, error)](<#func-githubmarkdownformatter-bold>)
-  - [func (f *GitHubMarkdownFormatter) CodeBlock(language, code string) (string, error)](<#func-githubmarkdownformatter-codeblock>)
-  - [func (f *GitHubMarkdownFormatter) Header(level int, text string) (string, error)](<#func-githubmarkdownformatter-header>)
-  - [func (f *GitHubMarkdownFormatter) Link(text, href string) (string, error)](<#func-githubmarkdownformatter-link>)
-  - [func (f *GitHubMarkdownFormatter) ListEntry(depth int, text string) (string, error)](<#func-githubmarkdownformatter-listentry>)
-  - [func (f *GitHubMarkdownFormatter) LocalHref(headerText string) (string, error)](<#func-githubmarkdownformatter-localhref>)
-  - [func (f *GitHubMarkdownFormatter) Paragraph(text string) (string, error)](<#func-githubmarkdownformatter-paragraph>)
 - [type Renderer](<#type-renderer>)
   - [func NewRenderer(opts ...RendererOption) (*Renderer, error)](<#func-newrenderer>)
   - [func (out *Renderer) Example(ex *lang.Example) (string, error)](<#func-renderer-example>)
@@ -192,162 +180,13 @@ func main() {
   - [func (out *Renderer) Package(pkg *lang.Package) (string, error)](<#func-renderer-package>)
   - [func (out *Renderer) Type(typ *lang.Type) (string, error)](<#func-renderer-type>)
 - [type RendererOption](<#type-rendereroption>)
-  - [func WithFormatter(formatter Formatter) RendererOption](<#func-withformatter>)
+  - [func WithFormat(format format.Format) RendererOption](<#func-withformat>)
   - [func WithTemplateOverride(name, tmpl string) RendererOption](<#func-withtemplateoverride>)
 
 
-## type Formatter
-
-Formatter is a generic interface for formatting documentation contents in a particular way\.
-
-```go
-type Formatter interface {
-    // Bold converts the provided text to bold
-    Bold(text string) (string, error)
-
-    // CodeBlock wraps the provided code as a code block and tags it with the
-    // provided language (or no language if the empty string is provided).
-    CodeBlock(language, code string) (string, error)
-
-    // Header converts the provided text into a header of the provided level.
-    // The level is expected to be at least 1.
-    Header(level int, text string) (string, error)
-
-    // LocalHref generates an href for navigating to a header with the given
-    // headerText located within the same document as the href itself.
-    LocalHref(headerText string) (string, error)
-
-    // Link generates a link with the given text and href values.
-    Link(text, href string) (string, error)
-
-    // ListEntry generates an unordered list entry with the provided text at the
-    // provided zero-indexed depth. A depth of 0 is considered the topmost level
-    // of list.
-    ListEntry(depth int, text string) (string, error)
-
-    // Accordion generates a collapsible content. The accordion's visible title
-    // while collapsed is the provided title and the expanded content is the
-    // body.
-    Accordion(title, body string) (string, error)
-
-    // AccordionHeader generates the header visible when an accordion is
-    // collapsed.
-    //
-    // The AccordionHeader is expected to be used in conjunction with
-    // AccordionTerminator() when the demands of the body's rendering requires
-    // it to be generated independently. The result looks conceptually like the
-    // following:
-    //
-    //	accordion := formatter.AccordionHeader("Accordion Title") + "Accordion Body" + formatter.AccordionTerminator()
-    AccordionHeader(title string) string
-
-    // AccordionTerminator generates the code necessary to terminate an
-    // accordion after the body. It is expected to be used in conjunction with
-    // AccordionHeader(). See AccordionHeader for a full description.
-    AccordionTerminator() string
-
-    // Paragraph formats a paragraph with the provided text as the contents.
-    Paragraph(text string) (string, error)
-}
-```
-
-## type GitHubMarkdownFormatter
-
-GithubMarkdownFormatter provides a Formatter which is compatible with GitHub Flavored Markdown's syntax and semantics\. See GitHub's documentation for more details about their markdown format: https://guides\.github\.com/features/mastering\-markdown/
-
-```go
-type GitHubMarkdownFormatter struct{}
-```
-
-### func \(\*GitHubMarkdownFormatter\) Accordion
-
-```go
-func (f *GitHubMarkdownFormatter) Accordion(title, body string) (string, error)
-```
-
-Accordion generates a collapsible content\. The accordion's visible title while collapsed is the provided title and the expanded content is the body\.
-
-### func \(\*GitHubMarkdownFormatter\) AccordionHeader
-
-```go
-func (f *GitHubMarkdownFormatter) AccordionHeader(title string) string
-```
-
-AccordionHeader generates the header visible when an accordion is collapsed\.
-
-The AccordionHeader is expected to be used in conjunction with AccordionTerminator\(\) when the demands of the body's rendering requires it to be generated independently\. The result looks conceptually like the following:
-
-```
-accordion := formatter.AccordionHeader("Accordion Title") + "Accordion Body" + formatter.AccordionTerminator()
-```
-
-### func \(\*GitHubMarkdownFormatter\) AccordionTerminator
-
-```go
-func (f *GitHubMarkdownFormatter) AccordionTerminator() string
-```
-
-AccordionTerminator generates the code necessary to terminate an accordion after the body\. It is expected to be used in conjunction with AccordionHeader\(\)\. See AccordionHeader for a full description\.
-
-### func \(\*GitHubMarkdownFormatter\) Bold
-
-```go
-func (f *GitHubMarkdownFormatter) Bold(text string) (string, error)
-```
-
-Bold converts the provided text to bold
-
-### func \(\*GitHubMarkdownFormatter\) CodeBlock
-
-```go
-func (f *GitHubMarkdownFormatter) CodeBlock(language, code string) (string, error)
-```
-
-CodeBlock wraps the provided code as a code block and tags it with the provided language \(or no language if the empty string is provided\)\.
-
-### func \(\*GitHubMarkdownFormatter\) Header
-
-```go
-func (f *GitHubMarkdownFormatter) Header(level int, text string) (string, error)
-```
-
-Header converts the provided text into a header of the provided level\. The level is expected to be at least 1\.
-
-### func \(\*GitHubMarkdownFormatter\) Link
-
-```go
-func (f *GitHubMarkdownFormatter) Link(text, href string) (string, error)
-```
-
-Link generates a link with the given text and href values\.
-
-### func \(\*GitHubMarkdownFormatter\) ListEntry
-
-```go
-func (f *GitHubMarkdownFormatter) ListEntry(depth int, text string) (string, error)
-```
-
-ListEntry generates an unordered list entry with the provided text at the provided zero\-indexed depth\. A depth of 0 is considered the topmost level of list\.
-
-### func \(\*GitHubMarkdownFormatter\) LocalHref
-
-```go
-func (f *GitHubMarkdownFormatter) LocalHref(headerText string) (string, error)
-```
-
-LocalHref generates an href for navigating to a header with the given headerText located within the same document as the href itself\.
-
-### func \(\*GitHubMarkdownFormatter\) Paragraph
-
-```go
-func (f *GitHubMarkdownFormatter) Paragraph(text string) (string, error)
-```
-
-Paragraph formats a paragraph with the provided text as the contents\.
-
 ## type Renderer
 
-Renderer provides capabilities for rendering various types of documentation with the configured formatter and templates\.
+Renderer provides capabilities for rendering various types of documentation with the configured format and templates\.
 
 ```go
 type Renderer struct {
@@ -361,7 +200,7 @@ type Renderer struct {
 func NewRenderer(opts ...RendererOption) (*Renderer, error)
 ```
 
-NewRenderer initializes a Renderer configured using the provided options\. If nothing special is provided\, the created renderer will use the default set of templates and the GitHubMarkdownFormatter\.
+NewRenderer initializes a Renderer configured using the provided options\. If nothing special is provided\, the created renderer will use the default set of templates and the GitHubFlavoredMarkdown\.
 
 ### func \(\*Renderer\) Example
 
@@ -411,13 +250,13 @@ RendererOption configures the renderer's behavior\.
 type RendererOption func(renderer *Renderer) error
 ```
 
-### func WithFormatter
+### func WithFormat
 
 ```go
-func WithFormatter(formatter Formatter) RendererOption
+func WithFormat(format format.Format) RendererOption
 ```
 
-WithFormatter changes the renderer to use the formatter provided instead of the default formatter\.
+WithFormat changes the renderer to use the format provided instead of the default format\.
 
 ### func WithTemplateOverride
 

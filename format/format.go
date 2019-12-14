@@ -1,8 +1,8 @@
-package gomarkdoc
+package format
 
-// Formatter is a generic interface for formatting documentation contents in a
+// Format is a generic interface for formatting documentation contents in a
 // particular way.
-type Formatter interface {
+type Format interface {
 	// Bold converts the provided text to bold
 	Bold(text string) (string, error)
 
@@ -40,12 +40,12 @@ type Formatter interface {
 	// following:
 	//
 	//	accordion := formatter.AccordionHeader("Accordion Title") + "Accordion Body" + formatter.AccordionTerminator()
-	AccordionHeader(title string) string
+	AccordionHeader(title string) (string, error)
 
 	// AccordionTerminator generates the code necessary to terminate an
 	// accordion after the body. It is expected to be used in conjunction with
 	// AccordionHeader(). See AccordionHeader for a full description.
-	AccordionTerminator() string
+	AccordionTerminator() (string, error)
 
 	// Paragraph formats a paragraph with the provided text as the contents.
 	Paragraph(text string) (string, error)

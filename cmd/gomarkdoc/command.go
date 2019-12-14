@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/princjef/gomarkdoc"
+	"github.com/princjef/gomarkdoc/format"
 	"github.com/princjef/gomarkdoc/lang"
 )
 
@@ -49,6 +50,7 @@ type commandOptions struct {
 	headerFile            string
 	footer                string
 	footerFile            string
+	format                string
 }
 
 const configFilePrefix = ".gomarkdoc"
@@ -67,6 +69,7 @@ func buildCommand() *cobra.Command {
 			opts.includeUnexported = viper.GetBool("includeUnexported")
 			opts.output = viper.GetString("output")
 			opts.check = viper.GetBool("check")
+			opts.format = viper.GetString("format")
 			opts.templateOverrides = viper.GetStringMapString("template")
 			opts.templateFileOverrides = viper.GetStringMapString("template-file")
 			opts.header = viper.GetString("header")
@@ -93,6 +96,7 @@ func buildCommand() *cobra.Command {
 	command.Flags().BoolVarP(&opts.includeUnexported, "include-unexported", "u", false, "Output documentation for unexported symbols, methods and fields in addition to exported ones.")
 	command.Flags().StringVarP(&opts.output, "output", "o", "", "File or pattern specifying where to write documentation output. Defaults to printing to stdout.")
 	command.Flags().BoolVarP(&opts.check, "check", "c", false, "Check the output to see if it matches the generated documentation. --output must be specified to use this option.")
+	command.Flags().StringVarP(&opts.format, "format", "f", "github", "Format to use for writing output data. Valid options: github (default), azure-devops, plain")
 	command.Flags().StringToStringVarP(&opts.templateOverrides, "template", "t", map[string]string{}, "Custom template string to use for the provided template name instead of the default template.")
 	command.Flags().StringToStringVar(&opts.templateFileOverrides, "template-file", map[string]string{}, "Custom template file to use for the provided template name instead of the default template.")
 	command.Flags().StringVar(&opts.header, "header", "", "Additional content to inject at the beginning of each output file.")
@@ -103,6 +107,7 @@ func buildCommand() *cobra.Command {
 	viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
 	viper.BindPFlag("output", command.Flags().Lookup("output"))
 	viper.BindPFlag("check", command.Flags().Lookup("check"))
+	viper.BindPFlag("format", command.Flags().Lookup("format"))
 	viper.BindPFlag("template", command.Flags().Lookup("template"))
 	viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
 	viper.BindPFlag("header", command.Flags().Lookup("header"))
@@ -192,6 +197,20 @@ func resolveOverrides(opts commandOptions) ([]gomarkdoc.RendererOption, error) {
 
 		overrides = append(overrides, gomarkdoc.WithTemplateOverride(name, string(b)))
 	}
+
+	var f format.Format
+	switch opts.format {
+	case "github":
+		f = &format.GitHubFlavoredMarkdown{}
+	case "azure-devops":
+		f = &format.AzureDevOpsMarkdown{}
+	case "plain":
+		f = &format.PlainMarkdown{}
+	default:
+		return nil, fmt.Errorf("gomarkdoc: invalid format: %s", opts.format)
+	}
+
+	overrides = append(overrides, gomarkdoc.WithFormat(f))
 
 	return overrides, nil
 }
