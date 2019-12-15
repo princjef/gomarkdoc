@@ -7,6 +7,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -102,71 +103,24 @@ func ensureLinter() error {
 	defer res.Body.Close()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return fmt.Errorf("received unexpected response when downlaoding file: %d", res.StatusCode)
+		return fmt.Errorf("received unexpected response when downloading file: %d", res.StatusCode)
 	}
 
 	var name string
-	var buf bytes.Buffer
+	var data []byte
 	if getExt() == "tar.gz" {
-		zr, err := gzip.NewReader(res.Body)
+		name, data, err = extractTarFile(res.Body, func(name string) bool {
+			return strings.HasPrefix(name, "golangci-lint")
+		})
 		if err != nil {
 			return err
-		}
-
-		tr := tar.NewReader(zr)
-		for {
-			header, err := tr.Next()
-			if err == io.EOF {
-				return fmt.Errorf("no executable found in archive %s", downloadURL)
-			}
-
-			if err != nil {
-				return err
-			}
-
-			name = filepath.Base(header.Name)
-
-			if !strings.HasPrefix(name, "golangci-lint") {
-				continue
-			}
-
-			if _, err := io.Copy(&buf, tr); err != nil {
-				return err
-			}
-
-			break
 		}
 	} else {
-		var rawBuf bytes.Buffer
-		if _, err := io.Copy(&rawBuf, res.Body); err != nil {
-			return err
-		}
-
-		r := bytes.NewReader(rawBuf.Bytes())
-		zr, err := zip.NewReader(r, int64(len(rawBuf.Bytes())))
+		name, data, err = extractZipFile(res.Body, func(name string) bool {
+			return strings.HasPrefix(name, "golangci-lint")
+		})
 		if err != nil {
 			return err
-		}
-
-		for _, f := range zr.File {
-			name = filepath.Base(f.Name)
-
-			if !strings.HasPrefix(name, "golangci-lint") {
-				continue
-			}
-
-			fc, err := f.Open()
-			if err != nil {
-				return err
-			}
-
-			defer fc.Close()
-
-			if _, err := io.Copy(&buf, fc); err != nil {
-				return err
-			}
-
-			break
 		}
 	}
 
@@ -175,7 +129,84 @@ func ensureLinter() error {
 		return err
 	}
 
-	return ioutil.WriteFile(fmt.Sprintf("./bin/%s", name), buf.Bytes(), 0755)
+	return ioutil.WriteFile(fmt.Sprintf("./bin/%s", name), data, 0755)
+}
+
+func extractTarFile(r io.Reader, fileTest func(name string) bool) (name string, data []byte, err error) {
+	var buf bytes.Buffer
+
+	zr, err := gzip.NewReader(r)
+	if err != nil {
+		return "", nil, err
+	}
+
+	tr := tar.NewReader(zr)
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			return "", nil, errors.New("no executable found in archive")
+		}
+
+		if err != nil {
+			return "", nil, err
+		}
+
+		name = filepath.Base(header.Name)
+
+		if !fileTest(name) {
+			continue
+		}
+
+		if _, err := io.Copy(&buf, tr); err != nil {
+			return "", nil, err
+		}
+
+		break
+	}
+
+	return name, buf.Bytes(), nil
+}
+
+func extractZipFile(r io.Reader, fileTest func(name string) bool) (name string, data []byte, err error) {
+	var rawBuf bytes.Buffer
+	var buf bytes.Buffer
+	if _, err := io.Copy(&rawBuf, r); err != nil {
+		return "", nil, err
+	}
+
+	zr, err := zip.NewReader(bytes.NewReader(rawBuf.Bytes()), int64(len(rawBuf.Bytes())))
+	if err != nil {
+		return "", nil, err
+	}
+
+	var found bool
+	for _, f := range zr.File {
+		name = filepath.Base(f.Name)
+
+		if !fileTest(name) {
+			continue
+		}
+
+		fc, err := f.Open()
+		if err != nil {
+			return "", nil, err
+		}
+
+		defer fc.Close()
+
+		if _, err := io.Copy(&buf, fc); err != nil {
+			return "", nil, err
+		}
+
+		found = true
+		break
+	}
+
+	if !found {
+		return "", nil, errors.New("no executable found in archive")
+	}
+
+	return name, buf.Bytes(), nil
 }
 
 func getExt() string {
