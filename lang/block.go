@@ -15,9 +15,14 @@ type (
 )
 
 const (
+	// ParagraphBlock defines a block that represents a paragraph of text.
 	ParagraphBlock BlockKind = "paragraph"
-	CodeBlock      BlockKind = "code"
-	HeaderBlock    BlockKind = "header"
+
+	// CodeBlock defines a block that represents a section of code.
+	CodeBlock BlockKind = "code"
+
+	// HeaderBlock defines a block that represents a section header.
+	HeaderBlock BlockKind = "header"
 )
 
 // NewBlock creates a new block element of the provided kind and with the given

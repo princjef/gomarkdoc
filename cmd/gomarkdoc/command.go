@@ -388,7 +388,7 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 			}
 		default:
 			if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
-				return fmt.Errorf("Failed to write output file %s: %w", fileName, err)
+				return fmt.Errorf("failed to write output file %s: %w", fileName, err)
 			}
 		}
 	}
@@ -405,14 +405,14 @@ func checkFile(b *bytes.Buffer, path string) error {
 			return checkErr
 		}
 
-		return fmt.Errorf("Failed to open file %s for checking: %w", path, err)
+		return fmt.Errorf("failed to open file %s for checking: %w", path, err)
 	}
 
 	defer f.Close()
 
 	match, err := compare(b, f)
 	if err != nil {
-		return fmt.Errorf("Failure while attempting to check contents of %s: %w", path, err)
+		return fmt.Errorf("failure while attempting to check contents of %s: %w", path, err)
 	}
 
 	if !match {
@@ -577,34 +577,30 @@ func compare(r1, r2 io.Reader) (bool, error) {
 		var err error
 		// Phase 1: read data if necessary
 		if count1 == 0 {
-			count1, err = r1.Read(b1)
+			count1, err = readBytes(r1, b1)
 			if err != nil {
-				if err != io.EOF {
-					return false, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
-				}
+				return false, err
+			}
 
-				// If the other buffer has more data and we're done, they're not
-				// equal
-				if count1 == 0 && count2 > 0 {
-					return false, nil
-				}
+			// If the other buffer has more data and we're done, they're not
+			// equal
+			if count1 == 0 && count2 > 0 {
+				return false, nil
 			}
 
 			offset1 = 0
 		}
 
 		if count2 == 0 {
-			count2, err = r2.Read(b2)
+			count2, err = readBytes(r2, b2)
 			if err != nil {
-				if err != io.EOF {
-					return false, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
-				}
+				return false, err
+			}
 
-				// If the other buffer has more data and we're done, they're not
-				// equal
-				if count2 == 0 && count1 > 0 {
-					return false, nil
-				}
+			// If the other buffer has more data and we're done, they're not
+			// equal
+			if count2 == 0 && count1 > 0 {
+				return false, nil
 			}
 
 			offset2 = 0
@@ -634,4 +630,14 @@ func compare(r1, r2 io.Reader) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// readBytes reads data from a reader into an empty slice, reporting errors.
+func readBytes(r io.Reader, b []byte) (int, error) {
+	ct, err := r.Read(b)
+	if err != nil && err != io.EOF {
+		return 0, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
+	}
+
+	return ct, nil
 }
