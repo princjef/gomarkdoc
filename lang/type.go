@@ -63,11 +63,12 @@ func (typ *Type) Examples() (examples []*Example) {
 	underscorePrefix := fmt.Sprintf("%s_", typ.doc.Name)
 	for _, example := range typ.examples {
 		var name string
-		if example.Name == typ.doc.Name {
+		switch {
+		case example.Name == typ.doc.Name:
 			name = ""
-		} else if strings.HasPrefix(example.Name, underscorePrefix) && !typ.isSubexample(example.Name) {
+		case strings.HasPrefix(example.Name, underscorePrefix) && !typ.isSubexample(example.Name):
 			name = example.Name[len(underscorePrefix):]
-		} else {
+		default:
 			// TODO: better filtering
 			continue
 		}

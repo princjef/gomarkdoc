@@ -41,16 +41,16 @@ type PackageSpec struct {
 }
 
 type commandOptions struct {
-	includeUnexported     bool
 	output                string
-	check                 bool
-	templateOverrides     map[string]string
-	templateFileOverrides map[string]string
 	header                string
 	headerFile            string
 	footer                string
 	footerFile            string
 	format                string
+	templateOverrides     map[string]string
+	templateFileOverrides map[string]string
+	includeUnexported     bool
+	check                 bool
 }
 
 const configFilePrefix = ".gomarkdoc"
@@ -92,28 +92,89 @@ func buildCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().StringVar(&configFile, "config", "", fmt.Sprintf("File from which to load configuration (default: %s.yml)", configFilePrefix))
-	command.Flags().BoolVarP(&opts.includeUnexported, "include-unexported", "u", false, "Output documentation for unexported symbols, methods and fields in addition to exported ones.")
-	command.Flags().StringVarP(&opts.output, "output", "o", "", "File or pattern specifying where to write documentation output. Defaults to printing to stdout.")
-	command.Flags().BoolVarP(&opts.check, "check", "c", false, "Check the output to see if it matches the generated documentation. --output must be specified to use this option.")
-	command.Flags().StringVarP(&opts.format, "format", "f", "github", "Format to use for writing output data. Valid options: github (default), azure-devops, plain")
-	command.Flags().StringToStringVarP(&opts.templateOverrides, "template", "t", map[string]string{}, "Custom template string to use for the provided template name instead of the default template.")
-	command.Flags().StringToStringVar(&opts.templateFileOverrides, "template-file", map[string]string{}, "Custom template file to use for the provided template name instead of the default template.")
-	command.Flags().StringVar(&opts.header, "header", "", "Additional content to inject at the beginning of each output file.")
-	command.Flags().StringVar(&opts.headerFile, "header-file", "", "File containing additional content to inject at the beginning of each output file.")
-	command.Flags().StringVar(&opts.footer, "footer", "", "Additional content to inject at the end of each output file.")
-	command.Flags().StringVar(&opts.footerFile, "footer-file", "", "File containing additional content to inject at the end of each output file.")
+	command.Flags().StringVar(
+		&configFile,
+		"config",
+		"",
+		fmt.Sprintf("File from which to load configuration (default: %s.yml)", configFilePrefix),
+	)
+	command.Flags().BoolVarP(
+		&opts.includeUnexported,
+		"include-unexported",
+		"u",
+		false,
+		"Output documentation for unexported symbols, methods and fields in addition to exported ones.",
+	)
+	command.Flags().StringVarP(
+		&opts.output,
+		"output",
+		"o",
+		"",
+		"File or pattern specifying where to write documentation output. Defaults to printing to stdout.",
+	)
+	command.Flags().BoolVarP(
+		&opts.check,
+		"check",
+		"c",
+		false,
+		"Check the output to see if it matches the generated documentation. --output must be specified to use this.",
+	)
+	command.Flags().StringVarP(
+		&opts.format,
+		"format",
+		"f",
+		"github",
+		"Format to use for writing output data. Valid options: github (default), azure-devops, plain",
+	)
+	command.Flags().StringToStringVarP(
+		&opts.templateOverrides,
+		"template",
+		"t",
+		map[string]string{},
+		"Custom template string to use for the provided template name instead of the default template.",
+	)
+	command.Flags().StringToStringVar(
+		&opts.templateFileOverrides,
+		"template-file",
+		map[string]string{},
+		"Custom template file to use for the provided template name instead of the default template.",
+	)
+	command.Flags().StringVar(
+		&opts.header,
+		"header",
+		"",
+		"Additional content to inject at the beginning of each output file.",
+	)
+	command.Flags().StringVar(
+		&opts.headerFile,
+		"header-file",
+		"",
+		"File containing additional content to inject at the beginning of each output file.",
+	)
+	command.Flags().StringVar(
+		&opts.footer,
+		"footer",
+		"",
+		"Additional content to inject at the end of each output file.",
+	)
+	command.Flags().StringVar(
+		&opts.footerFile,
+		"footer-file",
+		"",
+		"File containing additional content to inject at the end of each output file.",
+	)
 
-	viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
-	viper.BindPFlag("output", command.Flags().Lookup("output"))
-	viper.BindPFlag("check", command.Flags().Lookup("check"))
-	viper.BindPFlag("format", command.Flags().Lookup("format"))
-	viper.BindPFlag("template", command.Flags().Lookup("template"))
-	viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
-	viper.BindPFlag("header", command.Flags().Lookup("header"))
-	viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
-	viper.BindPFlag("footer", command.Flags().Lookup("footer"))
-	viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
+	// We ignore the errors here because they only happen if the specified flag doesn't exist
+	_ = viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
+	_ = viper.BindPFlag("output", command.Flags().Lookup("output"))
+	_ = viper.BindPFlag("check", command.Flags().Lookup("check"))
+	_ = viper.BindPFlag("format", command.Flags().Lookup("format"))
+	_ = viper.BindPFlag("template", command.Flags().Lookup("template"))
+	_ = viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
+	_ = viper.BindPFlag("header", command.Flags().Lookup("header"))
+	_ = viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
+	_ = viper.BindPFlag("footer", command.Flags().Lookup("footer"))
+	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 
 	return command
 }
@@ -316,15 +377,16 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 			return err
 		}
 
-		if fileName == "" {
+		switch {
+		case fileName == "":
 			fmt.Fprint(os.Stdout, text)
-		} else if opts.check {
+		case opts.check:
 			var b bytes.Buffer
 			fmt.Fprint(&b, text)
 			if err := checkFile(&b, fileName); err != nil {
 				return err
 			}
-		} else {
+		default:
 			if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
 				return fmt.Errorf("Failed to write output file %s: %w", fileName, err)
 			}
@@ -338,15 +400,15 @@ func checkFile(b *bytes.Buffer, path string) error {
 	checkErr := errors.New("output does not match current files. Did you forget to run gomarkdoc?")
 
 	f, err := os.Open(path)
-	defer f.Close()
-
 	if err != nil {
 		if err == os.ErrNotExist {
 			return checkErr
-		} else {
-			return fmt.Errorf("Failed to open file %s for checking: %w", path, err)
 		}
+
+		return fmt.Errorf("Failed to open file %s for checking: %w", path, err)
 	}
+
+	defer f.Close()
 
 	match, err := compare(b, f)
 	if err != nil {

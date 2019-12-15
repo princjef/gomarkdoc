@@ -6,12 +6,9 @@ import (
 	"os"
 )
 
-func init() {
-	log.SetPrefix("gomarkdoc: ")
-	log.SetFlags(0)
-}
-
 func main() {
+	log.SetFlags(0)
+
 	cmd := buildCommand()
 
 	if err := cmd.Execute(); err != nil {
