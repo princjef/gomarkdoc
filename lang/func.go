@@ -75,11 +75,12 @@ func (fn *Func) Examples() (examples []*Example) {
 
 	for _, example := range fn.examples {
 		var name string
-		if example.Name == fullName {
+		switch {
+		case example.Name == fullName:
 			name = ""
-		} else if strings.HasPrefix(example.Name, underscorePrefix) {
+		case strings.HasPrefix(example.Name, underscorePrefix):
 			name = underscorePrefix[len(underscorePrefix):]
-		} else {
+		default:
 			// TODO: better filtering
 			continue
 		}

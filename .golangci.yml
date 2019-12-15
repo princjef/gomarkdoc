@@ -1,0 +1,35 @@
+linters:
+  enable:
+    - bodyclose
+    - golint
+    - unconvert
+    - gocyclo
+    - goimports
+    - maligned
+    - misspell
+    - lll
+    - gocritic
+    - gochecknoinits
+
+linters-settings:
+  gocyclo:
+    min-complexity: 20
+  maligned:
+    suggest-new: true
+  lll:
+    tab-width: 4
+  nakedret:
+    max-func-lines: 10
+
+issues:
+  exclude-rules:
+    # Exclude assertion lines in tests from line length
+    - path: "_test\\.go"
+      linters:
+        - lll
+      source: "^\\s*is."
+
+    # Exclude documentation files from line length
+    - path: "doc\\.go"
+      linters:
+        - lll

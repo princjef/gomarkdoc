@@ -27,7 +27,6 @@ func runeIsUpper(r rune) bool {
 	return r >= 'A' && r <= 'Z'
 }
 
-const upperToLower = 'A' - 'a'
 const lowerToUpper = 'a' - 'A'
 
 func runeToUpper(r rune) rune {

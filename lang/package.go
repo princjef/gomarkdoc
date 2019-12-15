@@ -62,82 +62,14 @@ func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, e
 
 	fs := token.NewFileSet()
 
-	pkgs, err := parser.ParseDir(
-		fs,
-		pkg.Dir,
-		func(info os.FileInfo) bool {
-			for _, name := range pkg.GoFiles {
-				if name == info.Name() {
-					return true
-				}
-			}
-
-			for _, name := range pkg.CgoFiles {
-				if name == info.Name() {
-					return true
-				}
-			}
-
-			return false
-		},
-		parser.ParseComments,
-	)
-
+	docPkg, err := getDocPkg(pkg, fs, options.includeUnexported)
 	if err != nil {
-		return nil, fmt.Errorf("gomarkdoc: failed to parse package: %w", err)
+		return nil, err
 	}
 
-	if len(pkgs) == 0 {
-		return nil, fmt.Errorf("gomarkdoc: no source-code package in directory %s", pkg.Dir)
-	}
-
-	if len(pkgs) > 1 {
-		return nil, fmt.Errorf("gomarkdoc: multiple packages in directory %s", pkg.Dir)
-	}
-
-	rawFiles, err := ioutil.ReadDir(pkg.Dir)
+	files, err := parsePkgFiles(pkg, fs)
 	if err != nil {
-		return nil, fmt.Errorf("gomarkdoc: error reading package dir: %w", err)
-	}
-
-	astPkg := pkgs[pkg.Name]
-
-	if !options.includeUnexported {
-		ast.PackageExports(astPkg)
-	}
-
-	importPath := pkg.ImportPath
-	if pkg.ImportComment != "" {
-		importPath = pkg.ImportComment
-	}
-
-	if importPath == "." {
-		if modPath, ok := findImportPath(pkg.Dir); ok {
-			importPath = modPath
-		}
-	}
-
-	docPkg := doc.New(astPkg, importPath, doc.AllDecls)
-
-	var files []*ast.File
-	for _, f := range rawFiles {
-		if !strings.HasSuffix(f.Name(), ".go") && !strings.HasSuffix(f.Name(), ".cgo") {
-			continue
-		}
-
-		p := path.Join(pkg.Dir, f.Name())
-
-		fi, err := os.Stat(p)
-		if err != nil || !fi.Mode().IsRegular() {
-			continue
-		}
-
-		parsed, err := parser.ParseFile(fs, p, nil, parser.ParseComments)
-		if err != nil {
-			return nil, fmt.Errorf("gomarkdoc: failed to parse package file %s", f.Name())
-		}
-
-		files = append(files, parsed)
+		return nil, err
 	}
 
 	examples := doc.Examples(files...)
@@ -241,11 +173,12 @@ func (pkg *Package) Types() (types []*Type) {
 func (pkg *Package) Examples() (examples []*Example) {
 	for _, example := range pkg.examples {
 		var name string
-		if example.Name == "" {
+		switch {
+		case example.Name == "":
 			name = ""
-		} else if strings.HasPrefix(example.Name, "_") {
+		case strings.HasPrefix(example.Name, "_"):
 			name = example.Name[1:]
-		} else {
+		default:
 			// TODO: better filtering
 			continue
 		}
@@ -258,10 +191,10 @@ func (pkg *Package) Examples() (examples []*Example) {
 
 var goModRegex = regexp.MustCompile(`^\s*module ([^\s]+)`)
 
-type modInfo struct {
-	name string
-	dir  string
-}
+// type modInfo struct {
+// 	name string
+// 	dir  string
+// }
 
 // findImportPath attempts to find an import path for the contents of the
 // provided dir by walking up to the nearest go.mod file and constructing an
@@ -352,4 +285,88 @@ func findFileInParent(dir, filename string, fileIsDir bool) (*os.File, bool) {
 	}
 
 	return nil, false
+}
+
+func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool) (*doc.Package, error) {
+	pkgs, err := parser.ParseDir(
+		fs,
+		pkg.Dir,
+		func(info os.FileInfo) bool {
+			for _, name := range pkg.GoFiles {
+				if name == info.Name() {
+					return true
+				}
+			}
+
+			for _, name := range pkg.CgoFiles {
+				if name == info.Name() {
+					return true
+				}
+			}
+
+			return false
+		},
+		parser.ParseComments,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("gomarkdoc: failed to parse package: %w", err)
+	}
+
+	if len(pkgs) == 0 {
+		return nil, fmt.Errorf("gomarkdoc: no source-code package in directory %s", pkg.Dir)
+	}
+
+	if len(pkgs) > 1 {
+		return nil, fmt.Errorf("gomarkdoc: multiple packages in directory %s", pkg.Dir)
+	}
+
+	astPkg := pkgs[pkg.Name]
+
+	if !includeUnexported {
+		ast.PackageExports(astPkg)
+	}
+
+	importPath := pkg.ImportPath
+	if pkg.ImportComment != "" {
+		importPath = pkg.ImportComment
+	}
+
+	if importPath == "." {
+		if modPath, ok := findImportPath(pkg.Dir); ok {
+			importPath = modPath
+		}
+	}
+
+	return doc.New(astPkg, importPath, doc.AllDecls), nil
+}
+
+func parsePkgFiles(pkg *build.Package, fs *token.FileSet) ([]*ast.File, error) {
+	rawFiles, err := ioutil.ReadDir(pkg.Dir)
+	if err != nil {
+		return nil, fmt.Errorf("gomarkdoc: error reading package dir: %w", err)
+	}
+
+	var files []*ast.File
+	for _, f := range rawFiles {
+		if !strings.HasSuffix(f.Name(), ".go") && !strings.HasSuffix(f.Name(), ".cgo") {
+			continue
+		}
+
+		p := path.Join(pkg.Dir, f.Name())
+
+		fi, err := os.Stat(p)
+		if err != nil || !fi.Mode().IsRegular() {
+			continue
+		}
+
+		parsed, err := parser.ParseFile(fs, p, nil, parser.ParseComments)
+		if err != nil {
+			return nil, fmt.Errorf("gomarkdoc: failed to parse package file %s", f.Name())
+		}
+
+		files = append(files, parsed)
+	}
+
+	return files, nil
 }
