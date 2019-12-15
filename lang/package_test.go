@@ -3,6 +3,7 @@ package lang_test
 import (
 	"go/build"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestPackage_strings(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
-	is.True(strings.HasSuffix(pkg.Dir(), "/strings"))
+	is.True(strings.HasSuffix(pkg.Dir(), filepath.FromSlash("/strings")))
 	is.Equal(pkg.Dirname(), "strings")
 	is.Equal(pkg.Name(), "strings")
 	is.Equal(pkg.Import(), `import "strings"`)
@@ -42,7 +43,7 @@ func TestPackage_textScanner(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
-	is.True(strings.HasSuffix(pkg.Dir(), "/text/scanner"))
+	is.True(strings.HasSuffix(pkg.Dir(), filepath.FromSlash("/text/scanner")))
 	is.Equal(pkg.Dirname(), "scanner")
 	is.Equal(pkg.Name(), "scanner")
 	is.Equal(pkg.Import(), `import "text/scanner"`)
@@ -64,7 +65,7 @@ func TestPackage_ioIoutil(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
-	is.True(strings.HasSuffix(pkg.Dir(), "/io/ioutil"))
+	is.True(strings.HasSuffix(pkg.Dir(), filepath.FromSlash("/io/ioutil")))
 	is.Equal(pkg.Dirname(), "ioutil")
 	is.Equal(pkg.Name(), "ioutil")
 	is.Equal(pkg.Import(), `import "io/ioutil"`)
@@ -86,7 +87,7 @@ func TestPackage_encoding(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
-	is.True(strings.HasSuffix(pkg.Dir(), "/encoding"))
+	is.True(strings.HasSuffix(pkg.Dir(), filepath.FromSlash("/encoding")))
 	is.Equal(pkg.Dirname(), "encoding")
 	is.Equal(pkg.Name(), "encoding")
 	is.Equal(pkg.Import(), `import "encoding"`)
