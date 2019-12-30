@@ -3,29 +3,27 @@ package lang
 import (
 	"fmt"
 	"go/doc"
-	"go/token"
 	"strings"
 )
 
 // Type holds documentation information for a type declaration.
 type Type struct {
-	level    int
+	cfg      *Config
 	doc      *doc.Type
-	fs       *token.FileSet
 	examples []*doc.Example
 }
 
 // NewType creates a Type from the raw documentation representation of the type,
 // the token.FileSet for the package's files and the full list of examples from
 // the containing package.
-func NewType(doc *doc.Type, fs *token.FileSet, examples []*doc.Example, level int) *Type {
-	return &Type{level, doc, fs, examples}
+func NewType(cfg *Config, doc *doc.Type, examples []*doc.Example) *Type {
+	return &Type{cfg, doc, examples}
 }
 
 // Level provides the default level that headers for the type should be
 // rendered.
 func (typ *Type) Level() int {
-	return typ.level
+	return typ.cfg.Level
 }
 
 // Name provides the name of the type
@@ -39,6 +37,12 @@ func (typ *Type) Title() string {
 	return fmt.Sprintf("type %s", typ.doc.Name)
 }
 
+// Location returns a representation of the node's location in a file within a
+// repository.
+func (typ *Type) Location() Location {
+	return NewLocation(typ.cfg, typ.doc.Decl)
+}
+
 // Summary provides the one-sentence summary of the type's documentation
 // comment.
 func (typ *Type) Summary() string {
@@ -48,13 +52,13 @@ func (typ *Type) Summary() string {
 // Doc provides the structured contents of the documentation comment for the
 // type.
 func (typ *Type) Doc() *Doc {
-	return NewDoc(typ.doc.Doc, typ.level+1)
+	return NewDoc(typ.cfg.Inc(1), typ.doc.Doc)
 }
 
 // Decl provides the raw text representation of the code for the type's
 // declaration.
 func (typ *Type) Decl() (string, error) {
-	return printNode(typ.doc.Decl, typ.fs)
+	return printNode(typ.doc.Decl, typ.cfg.FileSet)
 }
 
 // Examples lists the examples pertaining to the type from the set provided on
@@ -73,7 +77,7 @@ func (typ *Type) Examples() (examples []*Example) {
 			continue
 		}
 
-		examples = append(examples, NewExample(name, example, typ.fs, typ.level+1))
+		examples = append(examples, NewExample(typ.cfg.Inc(1), name, example))
 	}
 
 	return
@@ -95,7 +99,7 @@ func (typ *Type) isSubexample(exampleName string) bool {
 // return an instance of the type or its pointer.
 func (typ *Type) Funcs() (funcs []*Func) {
 	for _, fn := range typ.doc.Funcs {
-		funcs = append(funcs, NewFunc(fn, typ.fs, typ.examples, typ.level+1))
+		funcs = append(funcs, NewFunc(typ.cfg.Inc(1), fn, typ.examples))
 	}
 
 	return
@@ -104,7 +108,7 @@ func (typ *Type) Funcs() (funcs []*Func) {
 // Methods lists the funcs that use the type as a value or pointer receiver.
 func (typ *Type) Methods() (methods []*Func) {
 	for _, fn := range typ.doc.Methods {
-		methods = append(methods, NewFunc(fn, typ.fs, typ.examples, typ.level+1))
+		methods = append(methods, NewFunc(typ.cfg.Inc(1), fn, typ.examples))
 	}
 
 	return

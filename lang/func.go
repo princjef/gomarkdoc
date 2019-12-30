@@ -3,30 +3,28 @@ package lang
 import (
 	"fmt"
 	"go/doc"
-	"go/token"
 	"strings"
 )
 
 // Func holds documentation information for a single func declaration within a
 // package or type.
 type Func struct {
-	level    int
+	cfg      *Config
 	doc      *doc.Func
-	fs       *token.FileSet
 	examples []*doc.Example
 }
 
 // NewFunc creates a new Func from the corresponding documentation construct
 // from the standard library, the related token.FileSet for the package and
 // the list of examples for the package.
-func NewFunc(doc *doc.Func, fs *token.FileSet, examples []*doc.Example, level int) *Func {
-	return &Func{level, doc, fs, examples}
+func NewFunc(cfg *Config, doc *doc.Func, examples []*doc.Example) *Func {
+	return &Func{cfg, doc, examples}
 }
 
 // Level provides the default level at which headers for the func should be
 // rendered in the final documentation.
 func (fn *Func) Level() int {
-	return fn.level
+	return fn.cfg.Level
 }
 
 // Name provides the name of the function.
@@ -44,6 +42,18 @@ func (fn *Func) Title() string {
 	return fmt.Sprintf("func %s", fn.doc.Name)
 }
 
+// Receiver provides the type of the receiver for the function, or empty string
+// if there is no receiver type.
+func (fn *Func) Receiver() string {
+	return fn.doc.Recv
+}
+
+// Location returns a representation of the node's location in a file within a
+// repository.
+func (fn *Func) Location() Location {
+	return NewLocation(fn.cfg, fn.doc.Decl)
+}
+
 // Summary provides the one-sentence summary of the function's documentation
 // comment
 func (fn *Func) Summary() string {
@@ -53,13 +63,13 @@ func (fn *Func) Summary() string {
 // Doc provides the structured contents of the documentation comment for the
 // function.
 func (fn *Func) Doc() *Doc {
-	return NewDoc(fn.doc.Doc, fn.level+1)
+	return NewDoc(fn.cfg.Inc(1), fn.doc.Doc)
 }
 
 // Signature provides the raw text representation of the code for the
 // function's signature.
 func (fn *Func) Signature() (string, error) {
-	return printNode(fn.doc.Decl, fn.fs)
+	return printNode(fn.doc.Decl, fn.cfg.FileSet)
 }
 
 // Examples provides the list of examples from the list given on initialization
@@ -85,7 +95,7 @@ func (fn *Func) Examples() (examples []*Example) {
 			continue
 		}
 
-		examples = append(examples, NewExample(name, example, fn.fs, fn.level+1))
+		examples = append(examples, NewExample(fn.cfg.Inc(1), name, example))
 	}
 
 	return

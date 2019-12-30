@@ -1,6 +1,10 @@
 package format
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/princjef/gomarkdoc/lang"
+)
 
 // PlainMarkdown provides a Format which is compatible with the base Markdown
 // format specification.
@@ -20,12 +24,24 @@ func (f *PlainMarkdown) CodeBlock(language, code string) (string, error) {
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *PlainMarkdown) Header(level int, text string) (string, error) {
+	return header(level, escape(text))
+}
+
+// RawHeader converts the provided text into a header of the provided level
+// without escaping the header text. The level is expected to be at least 1.
+func (f *PlainMarkdown) RawHeader(level int, text string) (string, error) {
 	return header(level, text)
 }
 
 // LocalHref always returns the empty string, as header links are not supported
 // in plain markdown.
 func (f *PlainMarkdown) LocalHref(headerText string) (string, error) {
+	return "", nil
+}
+
+// CodeHref always returns the empty string, as there is no defined file linking
+// format in standard markdown.
+func (f *PlainMarkdown) CodeHref(loc lang.Location) (string, error) {
 	return "", nil
 }
 
@@ -76,4 +92,9 @@ func (f *PlainMarkdown) AccordionTerminator() (string, error) {
 // Paragraph formats a paragraph with the provided text as the contents.
 func (f *PlainMarkdown) Paragraph(text string) (string, error) {
 	return paragraph(text), nil
+}
+
+// Escape escapes special markdown characters from the provided text.
+func (f *PlainMarkdown) Escape(text string) string {
+	return escape(text)
 }

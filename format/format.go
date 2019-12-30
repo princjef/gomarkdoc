@@ -1,5 +1,7 @@
 package format
 
+import "github.com/princjef/gomarkdoc/lang"
+
 // Format is a generic interface for formatting documentation contents in a
 // particular way.
 type Format interface {
@@ -14,12 +16,19 @@ type Format interface {
 	// The level is expected to be at least 1.
 	Header(level int, text string) (string, error)
 
+	// RawHeader converts the provided text into a header of the provided level
+	// without escaping the header text. The level is expected to be at least 1.
+	RawHeader(level int, text string) (string, error)
+
 	// LocalHref generates an href for navigating to a header with the given
 	// headerText located within the same document as the href itself.
 	LocalHref(headerText string) (string, error)
 
 	// Link generates a link with the given text and href values.
 	Link(text, href string) (string, error)
+
+	// CodeHref generates an href to the provided code entry.
+	CodeHref(loc lang.Location) (string, error)
 
 	// ListEntry generates an unordered list entry with the provided text at the
 	// provided zero-indexed depth. A depth of 0 is considered the topmost level
@@ -49,4 +58,7 @@ type Format interface {
 
 	// Paragraph formats a paragraph with the provided text as the contents.
 	Paragraph(text string) (string, error)
+
+	// Escape escapes special markdown characters from the provided text.
+	Escape(text string) string
 }

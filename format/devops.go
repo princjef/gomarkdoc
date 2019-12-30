@@ -2,8 +2,12 @@ package format
 
 import (
 	"fmt"
+	"net/url"
+	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/princjef/gomarkdoc/lang"
 )
 
 // AzureDevOpsMarkdown provides a Format which is compatible with Azure
@@ -26,6 +30,12 @@ func (f *AzureDevOpsMarkdown) CodeBlock(language, code string) (string, error) {
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *AzureDevOpsMarkdown) Header(level int, text string) (string, error) {
+	return header(level, escape(text))
+}
+
+// RawHeader converts the provided text into a header of the provided level
+// without escaping the header text. The level is expected to be at least 1.
+func (f *AzureDevOpsMarkdown) RawHeader(level int, text string) (string, error) {
 	return header(level, text)
 }
 
@@ -45,6 +55,35 @@ func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error) {
 	result = devOpsLinkEscapeRegex.ReplaceAllString(result, "\\\\$1")
 
 	return fmt.Sprintf("#%s", result), nil
+}
+
+// CodeHref generates an href to the provided code entry.
+func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error) {
+	// If there's no repo, we can't compute an href
+	if loc.Repo == nil {
+		return "", nil
+	}
+
+	fullPath, err := filepath.Abs(loc.Filepath)
+	if err != nil {
+		return "", err
+	}
+
+	p, err := filepath.Rel(loc.Repo.RootDir, fullPath)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf(
+		"%s?path=%s&version=GB%s&lineStyle=plain&line=%d&lineEnd=%d&lineStartColumn=%d&lineEndColumn=%d",
+		loc.Repo.Remote,
+		url.PathEscape(p),
+		loc.Repo.DefaultBranch,
+		loc.Start.Line,
+		loc.End.Line,
+		loc.Start.Col,
+		loc.End.Col,
+	), nil
 }
 
 // Link generates a link with the given text and href values.
@@ -86,4 +125,9 @@ func (f *AzureDevOpsMarkdown) AccordionTerminator() (string, error) {
 // Paragraph formats a paragraph with the provided text as the contents.
 func (f *AzureDevOpsMarkdown) Paragraph(text string) (string, error) {
 	return paragraph(text), nil
+}
+
+// Escape escapes special markdown characters from the provided text.
+func (f *AzureDevOpsMarkdown) Escape(text string) string {
+	return escape(text)
 }

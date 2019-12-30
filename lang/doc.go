@@ -8,7 +8,7 @@ import (
 // Doc provides access to the documentation comment contents for a package or
 // symbol in a structured form.
 type Doc struct {
-	level  int
+	cfg    *Config
 	blocks []*Block
 }
 
@@ -24,7 +24,7 @@ var (
 // with headers rendered by default at the heading level provided. Documentation
 // is separated into block level elements using the standard rules from golang's
 // documentation conventions.
-func NewDoc(text string, level int) *Doc {
+func NewDoc(cfg *Config, text string) *Doc {
 	// Replace CRLF with LF
 	rawText := []byte(normalizeDoc(text) + "\n")
 
@@ -37,32 +37,32 @@ func NewDoc(text string, level int) *Doc {
 		}
 
 		// Header
-		if b, l, ok := parseHeaderBlock(rawText, level); ok {
+		if b, l, ok := parseHeaderBlock(cfg, rawText); ok {
 			blocks = append(blocks, b)
 			rawText = rawText[l:]
 			continue
 		}
 
 		// Code block
-		if b, l, ok := parseCodeBlock(rawText, level); ok {
+		if b, l, ok := parseCodeBlock(cfg, rawText); ok {
 			blocks = append(blocks, b)
 			rawText = rawText[l:]
 			continue
 		}
 
 		// Paragraph
-		b, l := parseParagraph(rawText, level)
+		b, l := parseParagraph(cfg, rawText)
 		blocks = append(blocks, b)
 		rawText = rawText[l:]
 	}
 
-	return &Doc{level, blocks}
+	return &Doc{cfg, blocks}
 }
 
 // Level provides the default level that headers within the documentation should
 // be rendered
 func (d *Doc) Level() int {
-	return d.level
+	return d.cfg.Level
 }
 
 // Blocks holds the list of block elements that makes up the documentation
@@ -80,16 +80,16 @@ func parseBlankLine(text []byte) (length int, ok bool) {
 	return 0, false
 }
 
-func parseHeaderBlock(text []byte, level int) (block *Block, length int, ok bool) {
+func parseHeaderBlock(cfg *Config, text []byte) (block *Block, length int, ok bool) {
 	if l := headerRegex.Find(text); l != nil {
 		headerText := strings.TrimSpace(string(l))
-		return NewBlock(HeaderBlock, headerText, level), len(l), true
+		return NewBlock(cfg.Inc(0), HeaderBlock, headerText), len(l), true
 	}
 
 	return nil, 0, false
 }
 
-func parseCodeBlock(text []byte, level int) (block *Block, length int, ok bool) {
+func parseCodeBlock(cfg *Config, text []byte) (block *Block, length int, ok bool) {
 	l := spaceCodeBlockRegex.Find(text)
 	var indent rune
 	if l != nil {
@@ -125,14 +125,14 @@ func parseCodeBlock(text []byte, level int) (block *Block, length int, ok bool) 
 		}
 	}
 
-	return NewBlock(CodeBlock, trimmedBlock.String(), level), len(l), true
+	return NewBlock(cfg.Inc(0), CodeBlock, trimmedBlock.String()), len(l), true
 }
 
-func parseParagraph(text []byte, level int) (block *Block, length int) {
+func parseParagraph(cfg *Config, text []byte) (block *Block, length int) {
 	if loc := multilineRegex.FindIndex(text); loc != nil {
 		// Paragraph followed by something else
 		paragraph := strings.TrimSpace(string(text[:loc[1]]))
-		return NewBlock(ParagraphBlock, formatDocParagraph(paragraph), level), loc[1]
+		return NewBlock(cfg.Inc(0), ParagraphBlock, formatDocParagraph(paragraph)), loc[1]
 	}
 
 	// Last paragraph
@@ -147,5 +147,5 @@ func parseParagraph(text []byte, level int) (block *Block, length int) {
 		mergedParagraph.WriteString(strings.TrimSpace(line))
 	}
 
-	return NewBlock(ParagraphBlock, mergedParagraph.String(), level), len(text)
+	return NewBlock(cfg.Inc(0), ParagraphBlock, mergedParagraph.String()), len(text)
 }

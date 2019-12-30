@@ -1,4 +1,4 @@
-{{- header .Level .Title -}}
+{{- codeHref .Location | link (escape .Name) | printf "type %s" | rawHeader .Level -}}
 
 {{- template "doc" .Doc -}}
 

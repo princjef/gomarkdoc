@@ -19,11 +19,9 @@ type (
 	// Package holds documentation information for a package and all of the
 	// symbols contained within it.
 	Package struct {
-		level    int
+		cfg      *Config
 		doc      *doc.Package
-		fs       *token.FileSet
 		examples []*doc.Example
-		dir      string
 	}
 
 	// PackageOptions holds options related to the configuration of the package
@@ -40,13 +38,8 @@ type (
 // raw documentation constructs provided by the standard library. This is only
 // recommended for advanced scenarios. Most consumers will find it easier to use
 // NewPackageFromBuild instead.
-func NewPackage(doc *doc.Package, fs *token.FileSet, examples []*doc.Example, dir string) (*Package, error) {
-	dir, err := filepath.Abs(dir)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Package{1, doc, fs, examples, dir}, nil
+func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package {
+	return &Package{cfg, doc, examples}
 }
 
 // NewPackageFromBuild creates a representation of a package's documentation
@@ -60,21 +53,24 @@ func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, e
 		}
 	}
 
-	fs := token.NewFileSet()
-
-	docPkg, err := getDocPkg(pkg, fs, options.includeUnexported)
+	cfg, err := NewConfig(pkg.Dir)
 	if err != nil {
 		return nil, err
 	}
 
-	files, err := parsePkgFiles(pkg, fs)
+	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported)
+	if err != nil {
+		return nil, err
+	}
+
+	files, err := parsePkgFiles(pkg, cfg.FileSet)
 	if err != nil {
 		return nil, err
 	}
 
 	examples := doc.Examples(files...)
 
-	return NewPackage(docPkg, fs, examples, pkg.Dir)
+	return NewPackage(cfg, docPkg, examples), nil
 }
 
 // PackageWithUnexportedIncluded can be used along with the NewPackageFromBuild
@@ -90,18 +86,18 @@ func PackageWithUnexportedIncluded() PackageOption {
 // Level provides the default level that headers for the package's root
 // documentation should be rendered.
 func (pkg *Package) Level() int {
-	return pkg.level
+	return pkg.cfg.Level
 }
 
 // Dir provides the name of the full directory in which the package is located.
 func (pkg *Package) Dir() string {
-	return pkg.dir
+	return pkg.cfg.PkgDir
 }
 
 // Dirname provides the name of the leaf directory in which the package is
 // located.
 func (pkg *Package) Dirname() string {
-	return filepath.Base(pkg.dir)
+	return filepath.Base(pkg.cfg.PkgDir)
 }
 
 // Name provides the name of the package as it would be seen from another
@@ -128,13 +124,13 @@ func (pkg *Package) Summary() string {
 // package.
 func (pkg *Package) Doc() *Doc {
 	// TODO: level should only be + 1, but we have special knowledge for rendering
-	return NewDoc(pkg.doc.Doc, pkg.level+2)
+	return NewDoc(pkg.cfg.Inc(2), pkg.doc.Doc)
 }
 
 // Consts lists the top-level constants provided by the package.
 func (pkg *Package) Consts() (consts []*Value) {
 	for _, c := range pkg.doc.Consts {
-		consts = append(consts, NewValue(c, pkg.fs, pkg.level+1))
+		consts = append(consts, NewValue(pkg.cfg.Inc(1), c))
 	}
 
 	return
@@ -143,7 +139,7 @@ func (pkg *Package) Consts() (consts []*Value) {
 // Vars lists the top-level variables provided by the package.
 func (pkg *Package) Vars() (vars []*Value) {
 	for _, v := range pkg.doc.Vars {
-		vars = append(vars, NewValue(v, pkg.fs, pkg.level+1))
+		vars = append(vars, NewValue(pkg.cfg.Inc(1), v))
 	}
 
 	return
@@ -152,7 +148,7 @@ func (pkg *Package) Vars() (vars []*Value) {
 // Funcs lists the top-level functions provided by the package.
 func (pkg *Package) Funcs() (funcs []*Func) {
 	for _, fn := range pkg.doc.Funcs {
-		funcs = append(funcs, NewFunc(fn, pkg.fs, pkg.examples, pkg.level+1))
+		funcs = append(funcs, NewFunc(pkg.cfg.Inc(1), fn, pkg.examples))
 	}
 
 	return
@@ -161,7 +157,7 @@ func (pkg *Package) Funcs() (funcs []*Func) {
 // Types lists the top-level types provided by the package.
 func (pkg *Package) Types() (types []*Type) {
 	for _, typ := range pkg.doc.Types {
-		types = append(types, NewType(typ, pkg.fs, pkg.examples, pkg.level+1))
+		types = append(types, NewType(pkg.cfg.Inc(1), typ, pkg.examples))
 	}
 
 	return
@@ -183,18 +179,13 @@ func (pkg *Package) Examples() (examples []*Example) {
 			continue
 		}
 
-		examples = append(examples, NewExample(name, example, pkg.fs, pkg.level+1))
+		examples = append(examples, NewExample(pkg.cfg.Inc(1), name, example))
 	}
 
 	return
 }
 
 var goModRegex = regexp.MustCompile(`^\s*module ([^\s]+)`)
-
-// type modInfo struct {
-// 	name string
-// 	dir  string
-// }
 
 // findImportPath attempts to find an import path for the contents of the
 // provided dir by walking up to the nearest go.mod file and constructing an
@@ -231,32 +222,6 @@ func findImportPath(dir string) (string, bool) {
 
 	return path.Join(string(m[1]), relative), true
 }
-
-// type repositoryInfo struct {
-// 	remote        string
-// 	defaultBranch string
-// 	tags          []string
-// }
-
-// func findRepositoryDir(dir string) (string, string, error) {
-// 	f, err := findFileInParent(dir, ".git", true)
-// 	if err != nil {
-// 		return "", err
-// 	}
-//
-// 	initialDir := filepath.Abs(dir)
-// 	if err != nil {
-// 		return "", err
-// 	}
-//
-// 	root := filepath.Join(f.Name(), "..")
-// 	path := filepath.Rel(root, initialDir)
-// 	if path == "." {
-// 		path = ""
-// 	}
-//
-// 	return root, path, nil
-// }
 
 // findFileInParent looks for a file or directory of the given name within the
 // provided dir. The returned os.File is opened and must be closed by the
