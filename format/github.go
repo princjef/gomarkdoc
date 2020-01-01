@@ -2,8 +2,11 @@ package format
 
 import (
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/princjef/gomarkdoc/lang"
 )
 
 // GitHubFlavoredMarkdown provides a Format which is compatible with GitHub
@@ -26,6 +29,12 @@ func (f *GitHubFlavoredMarkdown) CodeBlock(language, code string) (string, error
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *GitHubFlavoredMarkdown) Header(level int, text string) (string, error) {
+	return header(level, escape(text))
+}
+
+// RawHeader converts the provided text into a header of the provided level
+// without escaping the header text. The level is expected to be at least 1.
+func (f *GitHubFlavoredMarkdown) RawHeader(level int, text string) (string, error) {
 	return header(level, text)
 }
 
@@ -48,6 +57,39 @@ func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error) {
 // Link generates a link with the given text and href values.
 func (f *GitHubFlavoredMarkdown) Link(text, href string) (string, error) {
 	return link(text, href), nil
+}
+
+// CodeHref generates an href to the provided code entry.
+func (f *GitHubFlavoredMarkdown) CodeHref(loc lang.Location) (string, error) {
+	// If there's no repo, we can't compute an href
+	if loc.Repo == nil {
+		return "", nil
+	}
+
+	fullPath, err := filepath.Abs(loc.Filepath)
+	if err != nil {
+		return "", err
+	}
+
+	p, err := filepath.Rel(loc.Repo.RootDir, fullPath)
+	if err != nil {
+		return "", err
+	}
+
+	var locStr string
+	if loc.Start.Line == loc.End.Line {
+		locStr = fmt.Sprintf("L%d", loc.Start.Line)
+	} else {
+		locStr = fmt.Sprintf("L%d-L%d", loc.Start.Line, loc.End.Line)
+	}
+
+	return fmt.Sprintf(
+		"%s/blob/%s/%s#%s",
+		loc.Repo.Remote,
+		loc.Repo.DefaultBranch,
+		filepath.ToSlash(p),
+		locStr,
+	), nil
 }
 
 // ListEntry generates an unordered list entry with the provided text at the
@@ -84,4 +126,9 @@ func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error) {
 // Paragraph formats a paragraph with the provided text as the contents.
 func (f *GitHubFlavoredMarkdown) Paragraph(text string) (string, error) {
 	return paragraph(text), nil
+}
+
+// Escape escapes special markdown characters from the provided text.
+func (f *GitHubFlavoredMarkdown) Escape(text string) string {
+	return escape(text)
 }

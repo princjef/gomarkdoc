@@ -11,36 +11,44 @@ Package lang provides constructs for defining golang language constructs and ext
 ## Index
 
 - [type Block](<#type-block>)
-  - [func NewBlock(kind BlockKind, text string, level int) *Block](<#func-newblock>)
+  - [func NewBlock(cfg *Config, kind BlockKind, text string) *Block](<#func-newblock>)
   - [func (b *Block) Kind() BlockKind](<#func-block-kind>)
   - [func (b *Block) Level() int](<#func-block-level>)
   - [func (b *Block) Text() string](<#func-block-text>)
 - [type BlockKind](<#type-blockkind>)
+- [type Config](<#type-config>)
+  - [func NewConfig(pkgDir string) (*Config, error)](<#func-newconfig>)
+  - [func (c *Config) Inc(step int) *Config](<#func-config-inc>)
 - [type Doc](<#type-doc>)
-  - [func NewDoc(text string, level int) *Doc](<#func-newdoc>)
+  - [func NewDoc(cfg *Config, text string) *Doc](<#func-newdoc>)
   - [func (d *Doc) Blocks() []*Block](<#func-doc-blocks>)
   - [func (d *Doc) Level() int](<#func-doc-level>)
 - [type Example](<#type-example>)
-  - [func NewExample(name string, doc *doc.Example, fs *token.FileSet, level int) *Example](<#func-newexample>)
+  - [func NewExample(cfg *Config, name string, doc *doc.Example) *Example](<#func-newexample>)
   - [func (ex *Example) Code() (string, error)](<#func-example-code>)
   - [func (ex *Example) Doc() *Doc](<#func-example-doc>)
   - [func (ex *Example) Level() int](<#func-example-level>)
+  - [func (ex *Example) Location() Location](<#func-example-location>)
   - [func (ex *Example) Name() string](<#func-example-name>)
   - [func (ex *Example) Summary() string](<#func-example-summary>)
   - [func (ex *Example) Title() string](<#func-example-title>)
 - [type File](<#type-file>)
   - [func NewFile(header, footer string, packages []*Package) *File](<#func-newfile>)
 - [type Func](<#type-func>)
-  - [func NewFunc(doc *doc.Func, fs *token.FileSet, examples []*doc.Example, level int) *Func](<#func-newfunc>)
+  - [func NewFunc(cfg *Config, doc *doc.Func, examples []*doc.Example) *Func](<#func-newfunc>)
   - [func (fn *Func) Doc() *Doc](<#func-func-doc>)
   - [func (fn *Func) Examples() (examples []*Example)](<#func-func-examples>)
   - [func (fn *Func) Level() int](<#func-func-level>)
+  - [func (fn *Func) Location() Location](<#func-func-location>)
   - [func (fn *Func) Name() string](<#func-func-name>)
+  - [func (fn *Func) Receiver() string](<#func-func-receiver>)
   - [func (fn *Func) Signature() (string, error)](<#func-func-signature>)
   - [func (fn *Func) Summary() string](<#func-func-summary>)
   - [func (fn *Func) Title() string](<#func-func-title>)
+- [type Location](<#type-location>)
+  - [func NewLocation(cfg *Config, node ast.Node) Location](<#func-newlocation>)
 - [type Package](<#type-package>)
-  - [func NewPackage(doc *doc.Package, fs *token.FileSet, examples []*doc.Example, dir string) (*Package, error)](<#func-newpackage>)
+  - [func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package](<#func-newpackage>)
   - [func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, error)](<#func-newpackagefrombuild>)
   - [func (pkg *Package) Consts() (consts []*Value)](<#func-package-consts>)
   - [func (pkg *Package) Dir() string](<#func-package-dir>)
@@ -57,26 +65,30 @@ Package lang provides constructs for defining golang language constructs and ext
 - [type PackageOption](<#type-packageoption>)
   - [func PackageWithUnexportedIncluded() PackageOption](<#func-packagewithunexportedincluded>)
 - [type PackageOptions](<#type-packageoptions>)
+- [type Position](<#type-position>)
+- [type Repo](<#type-repo>)
 - [type Type](<#type-type>)
-  - [func NewType(doc *doc.Type, fs *token.FileSet, examples []*doc.Example, level int) *Type](<#func-newtype>)
+  - [func NewType(cfg *Config, doc *doc.Type, examples []*doc.Example) *Type](<#func-newtype>)
   - [func (typ *Type) Decl() (string, error)](<#func-type-decl>)
   - [func (typ *Type) Doc() *Doc](<#func-type-doc>)
   - [func (typ *Type) Examples() (examples []*Example)](<#func-type-examples>)
   - [func (typ *Type) Funcs() (funcs []*Func)](<#func-type-funcs>)
   - [func (typ *Type) Level() int](<#func-type-level>)
+  - [func (typ *Type) Location() Location](<#func-type-location>)
   - [func (typ *Type) Methods() (methods []*Func)](<#func-type-methods>)
   - [func (typ *Type) Name() string](<#func-type-name>)
   - [func (typ *Type) Summary() string](<#func-type-summary>)
   - [func (typ *Type) Title() string](<#func-type-title>)
 - [type Value](<#type-value>)
-  - [func NewValue(doc *doc.Value, fs *token.FileSet, level int) *Value](<#func-newvalue>)
+  - [func NewValue(cfg *Config, doc *doc.Value) *Value](<#func-newvalue>)
   - [func (v *Value) Decl() (string, error)](<#func-value-decl>)
   - [func (v *Value) Doc() *Doc](<#func-value-doc>)
   - [func (v *Value) Level() int](<#func-value-level>)
+  - [func (v *Value) Location() Location](<#func-value-location>)
   - [func (v *Value) Summary() string](<#func-value-summary>)
 
 
-## type Block
+## type [Block](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L6-L10>)
 
 Block defines a single block element \(e\.g\. paragraph\, code block\) in the documentation for a symbol or package\.
 
@@ -86,15 +98,15 @@ type Block struct {
 }
 ```
 
-### func NewBlock
+### func [NewBlock](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L30>)
 
 ```go
-func NewBlock(kind BlockKind, text string, level int) *Block
+func NewBlock(cfg *Config, kind BlockKind, text string) *Block
 ```
 
 NewBlock creates a new block element of the provided kind and with the given text contents\.
 
-### func \(\*Block\) Kind
+### func \(\*Block\) [Kind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L42>)
 
 ```go
 func (b *Block) Kind() BlockKind
@@ -102,7 +114,7 @@ func (b *Block) Kind() BlockKind
 
 Kind provides the kind of data that this block's text should be interpreted as\.
 
-### func \(\*Block\) Level
+### func \(\*Block\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L36>)
 
 ```go
 func (b *Block) Level() int
@@ -110,7 +122,7 @@ func (b *Block) Level() int
 
 Level provides the default level that a block of kind HeaderBlock will render at in the output\. The level is not used for other block types\.
 
-### func \(\*Block\) Text
+### func \(\*Block\) [Text](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L49>)
 
 ```go
 func (b *Block) Text() string
@@ -118,7 +130,7 @@ func (b *Block) Text() string
 
 Text provides the raw text of the block's contents\. The text is pre\-scrubbed and sanitized as determined by the block's Kind\(\)\, but it is not wrapped in any special constructs for rendering purposes \(such as markdown code blocks\)\.
 
-## type BlockKind
+## type [BlockKind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L14>)
 
 BlockKind identifies the type of block element represented by the corresponding Block\.
 
@@ -126,7 +138,36 @@ BlockKind identifies the type of block element represented by the corresponding 
 type BlockKind string
 ```
 
-## type Doc
+## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L19-L24>)
+
+Config defines contextual information used to resolve documentation for a construct\.
+
+```go
+type Config struct {
+    FileSet *token.FileSet
+    Level   int
+    Repo    *Repo
+    PkgDir  string
+}
+```
+
+### func [NewConfig](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L54>)
+
+```go
+func NewConfig(pkgDir string) (*Config, error)
+```
+
+NewConfig generates a Config for the provided package directory\. It will resolve the filepath and attempt to determine the repository containing the directory\. If no repository is found\, the Repo field will be set to nil\. An error is returned if the provided directory is invalid\.
+
+### func \(\*Config\) [Inc](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L78>)
+
+```go
+func (c *Config) Inc(step int) *Config
+```
+
+Inc copies the Config and increments the level by the provided step\.
+
+## type [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L10-L13>)
 
 Doc provides access to the documentation comment contents for a package or symbol in a structured form\.
 
@@ -136,15 +177,15 @@ type Doc struct {
 }
 ```
 
-### func NewDoc
+### func [NewDoc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L27>)
 
 ```go
-func NewDoc(text string, level int) *Doc
+func NewDoc(cfg *Config, text string) *Doc
 ```
 
 NewDoc initializes a Doc struct from the provided raw documentation text and with headers rendered by default at the heading level provided\. Documentation is separated into block level elements using the standard rules from golang's documentation conventions\.
 
-### func \(\*Doc\) Blocks
+### func \(\*Doc\) [Blocks](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L70>)
 
 ```go
 func (d *Doc) Blocks() []*Block
@@ -152,7 +193,7 @@ func (d *Doc) Blocks() []*Block
 
 Blocks holds the list of block elements that makes up the documentation contents\.
 
-### func \(\*Doc\) Level
+### func \(\*Doc\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L64>)
 
 ```go
 func (d *Doc) Level() int
@@ -160,7 +201,7 @@ func (d *Doc) Level() int
 
 Level provides the default level that headers within the documentation should be rendered
 
-## type Example
+## type [Example](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L11-L15>)
 
 Example holds a single documentation example for a package or symbol\.
 
@@ -170,15 +211,15 @@ type Example struct {
 }
 ```
 
-### func NewExample
+### func [NewExample](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L19>)
 
 ```go
-func NewExample(name string, doc *doc.Example, fs *token.FileSet, level int) *Example
+func NewExample(cfg *Config, name string, doc *doc.Example) *Example
 ```
 
 NewExample creates a new example from the example function's name\, its documentation example and the files holding code related to the example\.
 
-### func \(\*Example\) Code
+### func \(\*Example\) [Code](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L65>)
 
 ```go
 func (ex *Example) Code() (string, error)
@@ -186,7 +227,7 @@ func (ex *Example) Code() (string, error)
 
 Code provides the raw text code representation of the example's contents\.
 
-### func \(\*Example\) Doc
+### func \(\*Example\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L60>)
 
 ```go
 func (ex *Example) Doc() *Doc
@@ -194,7 +235,7 @@ func (ex *Example) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the example\.
 
-### func \(\*Example\) Level
+### func \(\*Example\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L25>)
 
 ```go
 func (ex *Example) Level() int
@@ -202,7 +243,15 @@ func (ex *Example) Level() int
 
 Level provides the default level that headers for the example should be rendered\.
 
-### func \(\*Example\) Name
+### func \(\*Example\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L48>)
+
+```go
+func (ex *Example) Location() Location
+```
+
+Location returns a representation of the node's location in a file within a repository\.
+
+### func \(\*Example\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L31>)
 
 ```go
 func (ex *Example) Name() string
@@ -210,7 +259,7 @@ func (ex *Example) Name() string
 
 Name provides a pretty\-printed name for the specific example\, if one was provided\.
 
-### func \(\*Example\) Summary
+### func \(\*Example\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L54>)
 
 ```go
 func (ex *Example) Summary() string
@@ -218,7 +267,7 @@ func (ex *Example) Summary() string
 
 Summary provides the one\-sentence summary of the example's documentation comment\.
 
-### func \(\*Example\) Title
+### func \(\*Example\) [Title](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L37>)
 
 ```go
 func (ex *Example) Title() string
@@ -226,7 +275,7 @@ func (ex *Example) Title() string
 
 Title provides a formatted string to print as the title of the example\. It incorporates the example's name\, if present\.
 
-## type File
+## type [File](<https://github.com/princjef/gomarkdoc/blob/master/lang/file.go#L5-L9>)
 
 File holds information for rendering a single file that contains one or more packages\.
 
@@ -238,7 +287,7 @@ type File struct {
 }
 ```
 
-### func NewFile
+### func [NewFile](<https://github.com/princjef/gomarkdoc/blob/master/lang/file.go#L12>)
 
 ```go
 func NewFile(header, footer string, packages []*Package) *File
@@ -246,7 +295,7 @@ func NewFile(header, footer string, packages []*Package) *File
 
 NewFile creates a new instance of File with the provided information\.
 
-## type Func
+## type [Func](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L11-L15>)
 
 Func holds documentation information for a single func declaration within a package or type\.
 
@@ -256,15 +305,15 @@ type Func struct {
 }
 ```
 
-### func NewFunc
+### func [NewFunc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L20>)
 
 ```go
-func NewFunc(doc *doc.Func, fs *token.FileSet, examples []*doc.Example, level int) *Func
+func NewFunc(cfg *Config, doc *doc.Func, examples []*doc.Example) *Func
 ```
 
 NewFunc creates a new Func from the corresponding documentation construct from the standard library\, the related token\.FileSet for the package and the list of examples for the package\.
 
-### func \(\*Func\) Doc
+### func \(\*Func\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L65>)
 
 ```go
 func (fn *Func) Doc() *Doc
@@ -272,7 +321,7 @@ func (fn *Func) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the function\.
 
-### func \(\*Func\) Examples
+### func \(\*Func\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L77>)
 
 ```go
 func (fn *Func) Examples() (examples []*Example)
@@ -280,7 +329,7 @@ func (fn *Func) Examples() (examples []*Example)
 
 Examples provides the list of examples from the list given on initialization that pertain to the function\.
 
-### func \(\*Func\) Level
+### func \(\*Func\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L26>)
 
 ```go
 func (fn *Func) Level() int
@@ -288,7 +337,15 @@ func (fn *Func) Level() int
 
 Level provides the default level at which headers for the func should be rendered in the final documentation\.
 
-### func \(\*Func\) Name
+### func \(\*Func\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L53>)
+
+```go
+func (fn *Func) Location() Location
+```
+
+Location returns a representation of the node's location in a file within a repository\.
+
+### func \(\*Func\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L31>)
 
 ```go
 func (fn *Func) Name() string
@@ -296,7 +353,15 @@ func (fn *Func) Name() string
 
 Name provides the name of the function\.
 
-### func \(\*Func\) Signature
+### func \(\*Func\) [Receiver](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L47>)
+
+```go
+func (fn *Func) Receiver() string
+```
+
+Receiver provides the type of the receiver for the function\, or empty string if there is no receiver type\.
+
+### func \(\*Func\) [Signature](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L71>)
 
 ```go
 func (fn *Func) Signature() (string, error)
@@ -304,7 +369,7 @@ func (fn *Func) Signature() (string, error)
 
 Signature provides the raw text representation of the code for the function's signature\.
 
-### func \(\*Func\) Summary
+### func \(\*Func\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L59>)
 
 ```go
 func (fn *Func) Summary() string
@@ -312,7 +377,7 @@ func (fn *Func) Summary() string
 
 Summary provides the one\-sentence summary of the function's documentation comment
 
-### func \(\*Func\) Title
+### func \(\*Func\) [Title](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L37>)
 
 ```go
 func (fn *Func) Title() string
@@ -320,7 +385,28 @@ func (fn *Func) Title() string
 
 Title provides the formatted name of the func\. It is primarily designed for generating headers\.
 
-## type Package
+## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L36-L41>)
+
+Location holds information for identifying a position within a file and repository\, if present\.
+
+```go
+type Location struct {
+    Start    Position
+    End      Position
+    Filepath string
+    Repo     *Repo
+}
+```
+
+### func [NewLocation](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L242>)
+
+```go
+func NewLocation(cfg *Config, node ast.Node) Location
+```
+
+NewLocation returns a location for the provided Config and ast\.Node combination\. This is typically not called directly\, but is made available via the Location\(\) methods of various lang constructs\.
+
+## type [Package](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L21-L25>)
 
 Package holds documentation information for a package and all of the symbols contained within it\.
 
@@ -330,15 +416,15 @@ type Package struct {
 }
 ```
 
-### func NewPackage
+### func [NewPackage](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L41>)
 
 ```go
-func NewPackage(doc *doc.Package, fs *token.FileSet, examples []*doc.Example, dir string) (*Package, error)
+func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package
 ```
 
 NewPackage creates a representation of a package's documentation from the raw documentation constructs provided by the standard library\. This is only recommended for advanced scenarios\. Most consumers will find it easier to use NewPackageFromBuild instead\.
 
-### func NewPackageFromBuild
+### func [NewPackageFromBuild](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L48>)
 
 ```go
 func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, error)
@@ -346,7 +432,7 @@ func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, e
 
 NewPackageFromBuild creates a representation of a package's documentation from the build metadata for that package\. It can be configured using the provided options\.
 
-### func \(\*Package\) Consts
+### func \(\*Package\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L131>)
 
 ```go
 func (pkg *Package) Consts() (consts []*Value)
@@ -354,7 +440,7 @@ func (pkg *Package) Consts() (consts []*Value)
 
 Consts lists the top\-level constants provided by the package\.
 
-### func \(\*Package\) Dir
+### func \(\*Package\) [Dir](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L93>)
 
 ```go
 func (pkg *Package) Dir() string
@@ -362,7 +448,7 @@ func (pkg *Package) Dir() string
 
 Dir provides the name of the full directory in which the package is located\.
 
-### func \(\*Package\) Dirname
+### func \(\*Package\) [Dirname](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L99>)
 
 ```go
 func (pkg *Package) Dirname() string
@@ -370,7 +456,7 @@ func (pkg *Package) Dirname() string
 
 Dirname provides the name of the leaf directory in which the package is located\.
 
-### func \(\*Package\) Doc
+### func \(\*Package\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L125>)
 
 ```go
 func (pkg *Package) Doc() *Doc
@@ -378,7 +464,7 @@ func (pkg *Package) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the package\.
 
-### func \(\*Package\) Examples
+### func \(\*Package\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L169>)
 
 ```go
 func (pkg *Package) Examples() (examples []*Example)
@@ -386,7 +472,7 @@ func (pkg *Package) Examples() (examples []*Example)
 
 Examples provides the package\-level examples that have been defined\. This does not include examples that are associated with symbols contained within the package\.
 
-### func \(\*Package\) Funcs
+### func \(\*Package\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L149>)
 
 ```go
 func (pkg *Package) Funcs() (funcs []*Func)
@@ -394,7 +480,7 @@ func (pkg *Package) Funcs() (funcs []*Func)
 
 Funcs lists the top\-level functions provided by the package\.
 
-### func \(\*Package\) Import
+### func \(\*Package\) [Import](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L113>)
 
 ```go
 func (pkg *Package) Import() string
@@ -402,7 +488,7 @@ func (pkg *Package) Import() string
 
 Import provides the raw text for the import declaration that is used to import code from the package\. If your package's documentation is generated from a local path and does not use Go Modules\, this will typically print \`import "\."\`\.
 
-### func \(\*Package\) Level
+### func \(\*Package\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L88>)
 
 ```go
 func (pkg *Package) Level() int
@@ -410,7 +496,7 @@ func (pkg *Package) Level() int
 
 Level provides the default level that headers for the package's root documentation should be rendered\.
 
-### func \(\*Package\) Name
+### func \(\*Package\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L105>)
 
 ```go
 func (pkg *Package) Name() string
@@ -418,7 +504,7 @@ func (pkg *Package) Name() string
 
 Name provides the name of the package as it would be seen from another package importing it\.
 
-### func \(\*Package\) Summary
+### func \(\*Package\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L119>)
 
 ```go
 func (pkg *Package) Summary() string
@@ -426,7 +512,7 @@ func (pkg *Package) Summary() string
 
 Summary provides the one\-sentence summary of the package's documentation comment\.
 
-### func \(\*Package\) Types
+### func \(\*Package\) [Types](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L158>)
 
 ```go
 func (pkg *Package) Types() (types []*Type)
@@ -434,7 +520,7 @@ func (pkg *Package) Types() (types []*Type)
 
 Types lists the top\-level types provided by the package\.
 
-### func \(\*Package\) Vars
+### func \(\*Package\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L140>)
 
 ```go
 func (pkg *Package) Vars() (vars []*Value)
@@ -442,7 +528,7 @@ func (pkg *Package) Vars() (vars []*Value)
 
 Vars lists the top\-level variables provided by the package\.
 
-## type PackageOption
+## type [PackageOption](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L34>)
 
 PackageOption configures one or more options for the package\.
 
@@ -450,7 +536,7 @@ PackageOption configures one or more options for the package\.
 type PackageOption func(opts *PackageOptions) error
 ```
 
-### func PackageWithUnexportedIncluded
+### func [PackageWithUnexportedIncluded](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L79>)
 
 ```go
 func PackageWithUnexportedIncluded() PackageOption
@@ -458,7 +544,7 @@ func PackageWithUnexportedIncluded() PackageOption
 
 PackageWithUnexportedIncluded can be used along with the NewPackageFromBuild function to specify that all symbols\, including unexported ones\, should be included in the documentation for the package\.
 
-## type PackageOptions
+## type [PackageOptions](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L29-L31>)
 
 PackageOptions holds options related to the configuration of the package and its documentation on creation\.
 
@@ -468,7 +554,30 @@ type PackageOptions struct {
 }
 ```
 
-## type Type
+## type [Position](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L44-L47>)
+
+Position represents a line and column number within a file\.
+
+```go
+type Position struct {
+    Line int
+    Col  int
+}
+```
+
+## type [Repo](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L28-L32>)
+
+Repo represents information about a repository relevant to documentation generation\.
+
+```go
+type Repo struct {
+    Remote        string
+    DefaultBranch string
+    RootDir       string
+}
+```
+
+## type [Type](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L10-L14>)
 
 Type holds documentation information for a type declaration\.
 
@@ -478,15 +587,15 @@ type Type struct {
 }
 ```
 
-### func NewType
+### func [NewType](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L19>)
 
 ```go
-func NewType(doc *doc.Type, fs *token.FileSet, examples []*doc.Example, level int) *Type
+func NewType(cfg *Config, doc *doc.Type, examples []*doc.Example) *Type
 ```
 
 NewType creates a Type from the raw documentation representation of the type\, the token\.FileSet for the package's files and the full list of examples from the containing package\.
 
-### func \(\*Type\) Decl
+### func \(\*Type\) [Decl](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L60>)
 
 ```go
 func (typ *Type) Decl() (string, error)
@@ -494,7 +603,7 @@ func (typ *Type) Decl() (string, error)
 
 Decl provides the raw text representation of the code for the type's declaration\.
 
-### func \(\*Type\) Doc
+### func \(\*Type\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L54>)
 
 ```go
 func (typ *Type) Doc() *Doc
@@ -502,7 +611,7 @@ func (typ *Type) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the type\.
 
-### func \(\*Type\) Examples
+### func \(\*Type\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L66>)
 
 ```go
 func (typ *Type) Examples() (examples []*Example)
@@ -510,7 +619,7 @@ func (typ *Type) Examples() (examples []*Example)
 
 Examples lists the examples pertaining to the type from the set provided on initialization\.
 
-### func \(\*Type\) Funcs
+### func \(\*Type\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L100>)
 
 ```go
 func (typ *Type) Funcs() (funcs []*Func)
@@ -518,7 +627,7 @@ func (typ *Type) Funcs() (funcs []*Func)
 
 Funcs lists the funcs related to the type\. This only includes functions which return an instance of the type or its pointer\.
 
-### func \(\*Type\) Level
+### func \(\*Type\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L25>)
 
 ```go
 func (typ *Type) Level() int
@@ -526,7 +635,15 @@ func (typ *Type) Level() int
 
 Level provides the default level that headers for the type should be rendered\.
 
-### func \(\*Type\) Methods
+### func \(\*Type\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L42>)
+
+```go
+func (typ *Type) Location() Location
+```
+
+Location returns a representation of the node's location in a file within a repository\.
+
+### func \(\*Type\) [Methods](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L109>)
 
 ```go
 func (typ *Type) Methods() (methods []*Func)
@@ -534,7 +651,7 @@ func (typ *Type) Methods() (methods []*Func)
 
 Methods lists the funcs that use the type as a value or pointer receiver\.
 
-### func \(\*Type\) Name
+### func \(\*Type\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L30>)
 
 ```go
 func (typ *Type) Name() string
@@ -542,7 +659,7 @@ func (typ *Type) Name() string
 
 Name provides the name of the type
 
-### func \(\*Type\) Summary
+### func \(\*Type\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L48>)
 
 ```go
 func (typ *Type) Summary() string
@@ -550,7 +667,7 @@ func (typ *Type) Summary() string
 
 Summary provides the one\-sentence summary of the type's documentation comment\.
 
-### func \(\*Type\) Title
+### func \(\*Type\) [Title](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L36>)
 
 ```go
 func (typ *Type) Title() string
@@ -558,7 +675,7 @@ func (typ *Type) Title() string
 
 Title provides a formatted name suitable for use in a header identifying the type\.
 
-## type Value
+## type [Value](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L8-L11>)
 
 Value holds documentation for a var or const declaration within a package\.
 
@@ -568,15 +685,15 @@ type Value struct {
 }
 ```
 
-### func NewValue
+### func [NewValue](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L15>)
 
 ```go
-func NewValue(doc *doc.Value, fs *token.FileSet, level int) *Value
+func NewValue(cfg *Config, doc *doc.Value) *Value
 ```
 
 NewValue creates a new Value from the raw const or var documentation and the token\.FileSet of files for the containing package\.
 
-### func \(\*Value\) Decl
+### func \(\*Value\) [Decl](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L45>)
 
 ```go
 func (v *Value) Decl() (string, error)
@@ -584,7 +701,7 @@ func (v *Value) Decl() (string, error)
 
 Decl provides the raw text representation of the code for declaring the const or var\.
 
-### func \(\*Value\) Doc
+### func \(\*Value\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L39>)
 
 ```go
 func (v *Value) Doc() *Doc
@@ -592,7 +709,7 @@ func (v *Value) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the example\.
 
-### func \(\*Value\) Level
+### func \(\*Value\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L21>)
 
 ```go
 func (v *Value) Level() int
@@ -600,7 +717,15 @@ func (v *Value) Level() int
 
 Level provides the default level that headers for the value should be rendered\.
 
-### func \(\*Value\) Summary
+### func \(\*Value\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L27>)
+
+```go
+func (v *Value) Location() Location
+```
+
+Location returns a representation of the node's location in a file within a repository\.
+
+### func \(\*Value\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L33>)
 
 ```go
 func (v *Value) Summary() string

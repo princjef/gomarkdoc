@@ -57,6 +57,7 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 
 				"bold":                renderer.format.Bold,
 				"header":              renderer.format.Header,
+				"rawHeader":           renderer.format.RawHeader,
 				"codeBlock":           renderer.format.CodeBlock,
 				"link":                renderer.format.Link,
 				"listEntry":           renderer.format.ListEntry,
@@ -64,7 +65,9 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 				"accordionHeader":     renderer.format.AccordionHeader,
 				"accordionTerminator": renderer.format.AccordionTerminator,
 				"localHref":           renderer.format.LocalHref,
+				"codeHref":            renderer.format.CodeHref,
 				"paragraph":           renderer.format.Paragraph,
+				"escape":              renderer.format.Escape,
 			})
 
 			if _, err := tmpl.Parse(tmplStr); err != nil {

@@ -1,4 +1,8 @@
-{{- header .Level .Title -}}
+{{- if .Receiver -}}
+	{{- codeHref .Location | link (escape .Name) | printf "func \\(%s\\) %s" (escape .Receiver) | rawHeader .Level -}}
+{{- else -}}
+	{{- codeHref .Location | link (escape .Name) | printf "func %s" | rawHeader .Level -}}
+{{- end -}}
 
 {{- codeBlock "go" .Signature -}}
 

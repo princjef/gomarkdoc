@@ -4,9 +4,9 @@ type (
 	// Block defines a single block element (e.g. paragraph, code block) in the
 	// documentation for a symbol or package.
 	Block struct {
-		kind  BlockKind
-		text  string
-		level int
+		cfg  *Config
+		kind BlockKind
+		text string
 	}
 
 	// BlockKind identifies the type of block element represented by the
@@ -27,14 +27,14 @@ const (
 
 // NewBlock creates a new block element of the provided kind and with the given
 // text contents.
-func NewBlock(kind BlockKind, text string, level int) *Block {
-	return &Block{kind, text, level}
+func NewBlock(cfg *Config, kind BlockKind, text string) *Block {
+	return &Block{cfg, kind, text}
 }
 
 // Level provides the default level that a block of kind HeaderBlock will render
 // at in the output. The level is not used for other block types.
 func (b *Block) Level() int {
-	return b.level
+	return b.cfg.Level
 }
 
 // Kind provides the kind of data that this block's text should be interpreted

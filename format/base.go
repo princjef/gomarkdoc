@@ -46,18 +46,18 @@ func header(level int, text string) (string, error) {
 
 	switch level {
 	case 1:
-		return fmt.Sprintf("# %s\n\n", escape(text)), nil
+		return fmt.Sprintf("# %s\n\n", text), nil
 	case 2:
-		return fmt.Sprintf("## %s\n\n", escape(text)), nil
+		return fmt.Sprintf("## %s\n\n", text), nil
 	case 3:
-		return fmt.Sprintf("### %s\n\n", escape(text)), nil
+		return fmt.Sprintf("### %s\n\n", text), nil
 	case 4:
-		return fmt.Sprintf("#### %s\n\n", escape(text)), nil
+		return fmt.Sprintf("#### %s\n\n", text), nil
 	case 5:
-		return fmt.Sprintf("##### %s\n\n", escape(text)), nil
+		return fmt.Sprintf("##### %s\n\n", text), nil
 	default:
 		// Only go up to 6 levels. Anything higher is also level 6
-		return fmt.Sprintf("###### %s\n\n", escape(text)), nil
+		return fmt.Sprintf("###### %s\n\n", text), nil
 	}
 }
 
