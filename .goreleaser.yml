@@ -1,0 +1,25 @@
+builds:
+  - main: ./cmd/gomarkdoc/
+    goos:
+      - darwin
+      - windows
+      - linux
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+      - 386
+      - ppc64le
+      - s390x
+    goarm:
+      - 6
+      - 7
+    env:
+      - CGO_ENABLED=0
+    ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+archives:
+  - wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip
