@@ -65,7 +65,7 @@ AzureDevOpsMarkdown provides a Format which is compatible with Azure DevOps's sy
 type AzureDevOpsMarkdown struct{}
 ```
 
-### func \(\*AzureDevOpsMarkdown\) [Accordion](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L103>)
+### func \(\*AzureDevOpsMarkdown\) [Accordion](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L102>)
 
 ```go
 func (f *AzureDevOpsMarkdown) Accordion(title, body string) (string, error)
@@ -73,7 +73,7 @@ func (f *AzureDevOpsMarkdown) Accordion(title, body string) (string, error)
 
 Accordion generates a collapsible content\. The accordion's visible title while collapsed is the provided title and the expanded content is the body\.
 
-### func \(\*AzureDevOpsMarkdown\) [AccordionHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L114>)
+### func \(\*AzureDevOpsMarkdown\) [AccordionHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L113>)
 
 ```go
 func (f *AzureDevOpsMarkdown) AccordionHeader(title string) (string, error)
@@ -87,7 +87,7 @@ The AccordionHeader is expected to be used in conjunction with AccordionTerminat
 accordion := format.AccordionHeader("Accordion Title") + "Accordion Body" + format.AccordionTerminator()
 ```
 
-### func \(\*AzureDevOpsMarkdown\) [AccordionTerminator](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L121>)
+### func \(\*AzureDevOpsMarkdown\) [AccordionTerminator](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L120>)
 
 ```go
 func (f *AzureDevOpsMarkdown) AccordionTerminator() (string, error)
@@ -111,7 +111,7 @@ func (f *AzureDevOpsMarkdown) CodeBlock(language, code string) (string, error)
 
 CodeBlock wraps the provided code as a code block and tags it with the provided language \(or no language if the empty string is provided\)\.
 
-### func \(\*AzureDevOpsMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L61>)
+### func \(\*AzureDevOpsMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L60>)
 
 ```go
 func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error)
@@ -119,7 +119,7 @@ func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error)
 
 CodeHref generates an href to the provided code entry\.
 
-### func \(\*AzureDevOpsMarkdown\) [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L131>)
+### func \(\*AzureDevOpsMarkdown\) [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L130>)
 
 ```go
 func (f *AzureDevOpsMarkdown) Escape(text string) string
@@ -135,7 +135,7 @@ func (f *AzureDevOpsMarkdown) Header(level int, text string) (string, error)
 
 Header converts the provided text into a header of the provided level\. The level is expected to be at least 1\.
 
-### func \(\*AzureDevOpsMarkdown\) [Link](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L90>)
+### func \(\*AzureDevOpsMarkdown\) [Link](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L89>)
 
 ```go
 func (f *AzureDevOpsMarkdown) Link(text, href string) (string, error)
@@ -143,7 +143,7 @@ func (f *AzureDevOpsMarkdown) Link(text, href string) (string, error)
 
 Link generates a link with the given text and href values\.
 
-### func \(\*AzureDevOpsMarkdown\) [ListEntry](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L97>)
+### func \(\*AzureDevOpsMarkdown\) [ListEntry](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L96>)
 
 ```go
 func (f *AzureDevOpsMarkdown) ListEntry(depth int, text string) (string, error)
@@ -151,7 +151,7 @@ func (f *AzureDevOpsMarkdown) ListEntry(depth int, text string) (string, error)
 
 ListEntry generates an unordered list entry with the provided text at the provided zero\-indexed depth\. A depth of 0 is considered the topmost level of list\.
 
-### func \(\*AzureDevOpsMarkdown\) [LocalHref](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L51>)
+### func \(\*AzureDevOpsMarkdown\) [LocalHref](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L48>)
 
 ```go
 func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error)
@@ -159,7 +159,7 @@ func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error)
 
 LocalHref generates an href for navigating to a header with the given headerText located within the same document as the href itself\. Link generation follows the guidelines here: https://docs\.microsoft\.com/en\-us/azure/devops/project/wiki/markdown\-guidance?view=azure\-devops\#anchor\-links
 
-### func \(\*AzureDevOpsMarkdown\) [Paragraph](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L126>)
+### func \(\*AzureDevOpsMarkdown\) [Paragraph](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L125>)
 
 ```go
 func (f *AzureDevOpsMarkdown) Paragraph(text string) (string, error)
@@ -248,7 +248,7 @@ GitHubFlavoredMarkdown provides a Format which is compatible with GitHub Flavore
 type GitHubFlavoredMarkdown struct{}
 ```
 
-### func \(\*GitHubFlavoredMarkdown\) [Accordion](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L104>)
+### func \(\*GitHubFlavoredMarkdown\) [Accordion](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L105>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error)
@@ -256,7 +256,7 @@ func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error)
 
 Accordion generates a collapsible content\. The accordion's visible title while collapsed is the provided title and the expanded content is the body\.
 
-### func \(\*GitHubFlavoredMarkdown\) [AccordionHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L115>)
+### func \(\*GitHubFlavoredMarkdown\) [AccordionHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L116>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) AccordionHeader(title string) (string, error)
@@ -270,7 +270,7 @@ The AccordionHeader is expected to be used in conjunction with AccordionTerminat
 accordion := format.AccordionHeader("Accordion Title") + "Accordion Body" + format.AccordionTerminator()
 ```
 
-### func \(\*GitHubFlavoredMarkdown\) [AccordionTerminator](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L122>)
+### func \(\*GitHubFlavoredMarkdown\) [AccordionTerminator](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L123>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error)
@@ -294,7 +294,7 @@ func (f *GitHubFlavoredMarkdown) CodeBlock(language, code string) (string, error
 
 CodeBlock wraps the provided code as a code block and tags it with the provided language \(or no language if the empty string is provided\)\.
 
-### func \(\*GitHubFlavoredMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L63>)
+### func \(\*GitHubFlavoredMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L64>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) CodeHref(loc lang.Location) (string, error)
@@ -302,7 +302,7 @@ func (f *GitHubFlavoredMarkdown) CodeHref(loc lang.Location) (string, error)
 
 CodeHref generates an href to the provided code entry\.
 
-### func \(\*GitHubFlavoredMarkdown\) [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L132>)
+### func \(\*GitHubFlavoredMarkdown\) [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L133>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) Escape(text string) string
@@ -318,7 +318,7 @@ func (f *GitHubFlavoredMarkdown) Header(level int, text string) (string, error)
 
 Header converts the provided text into a header of the provided level\. The level is expected to be at least 1\.
 
-### func \(\*GitHubFlavoredMarkdown\) [Link](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L58>)
+### func \(\*GitHubFlavoredMarkdown\) [Link](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L59>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) Link(text, href string) (string, error)
@@ -326,7 +326,7 @@ func (f *GitHubFlavoredMarkdown) Link(text, href string) (string, error)
 
 Link generates a link with the given text and href values\.
 
-### func \(\*GitHubFlavoredMarkdown\) [ListEntry](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L98>)
+### func \(\*GitHubFlavoredMarkdown\) [ListEntry](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L99>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) ListEntry(depth int, text string) (string, error)
@@ -342,7 +342,7 @@ func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error)
 
 LocalHref generates an href for navigating to a header with the given headerText located within the same document as the href itself\.
 
-### func \(\*GitHubFlavoredMarkdown\) [Paragraph](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L127>)
+### func \(\*GitHubFlavoredMarkdown\) [Paragraph](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L128>)
 
 ```go
 func (f *GitHubFlavoredMarkdown) Paragraph(text string) (string, error)
@@ -412,13 +412,13 @@ func (f *PlainMarkdown) CodeBlock(language, code string) (string, error)
 
 CodeBlock wraps the provided code as a code block\. The provided language is ignored as it is not supported in plain markdown\.
 
-### func \(\*PlainMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/plain.go#L43>)
+### func \(\*PlainMarkdown\) [CodeHref](<https://github.com/princjef/gomarkdoc/blob/master/format/plain.go#L44>)
 
 ```go
 func (f *PlainMarkdown) CodeHref(loc lang.Location) (string, error)
 ```
 
-CodeHref generates an href to the provided code entry\.
+CodeHref always returns the empty string\, as there is no defined file linking format in standard markdown\.
 
 ### func \(\*PlainMarkdown\) [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/plain.go#L98>)
 

@@ -39,10 +39,7 @@ func (f *AzureDevOpsMarkdown) RawHeader(level int, text string) (string, error) 
 	return header(level, text)
 }
 
-var (
-	devOpsWhitespaceRegex = regexp.MustCompile(`\s`)
-	devOpsLinkEscapeRegex = regexp.MustCompile("([\\\\`*{}\\[\\]()<>#!])")
-)
+var devOpsWhitespaceRegex = regexp.MustCompile(`\s`)
 
 // LocalHref generates an href for navigating to a header with the given
 // headerText located within the same document as the href itself. Link
@@ -52,7 +49,9 @@ func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error) {
 	result := strings.ToLower(headerText)
 	result = strings.TrimSpace(result)
 	result = devOpsWhitespaceRegex.ReplaceAllString(result, "-")
-	result = devOpsLinkEscapeRegex.ReplaceAllString(result, "\\\\$1")
+	result = url.PathEscape(result)
+	// We also have to escape the `:` character if present
+	result = strings.ReplaceAll(result, ":", "%3A")
 
 	return fmt.Sprintf("#%s", result), nil
 }

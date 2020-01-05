@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 // bold converts the provided text to bold
@@ -122,4 +124,40 @@ var specialCharacterRegex = regexp.MustCompile("([\\\\`*_{}\\[\\]()<>#+-.!])")
 
 func escape(text string) string {
 	return specialCharacterRegex.ReplaceAllString(text, "\\$1")
+}
+
+// plainText converts a markdown string to the plain text that appears in the
+// rendered output.
+func plainText(text string) string {
+	md := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
+	node := md.Parse([]byte(text))
+
+	var builder strings.Builder
+	plainTextInner(node, &builder)
+
+	return builder.String()
+}
+
+func plainTextInner(node *blackfriday.Node, builder *strings.Builder) {
+	// Only text nodes produce output
+	if node.Type == blackfriday.Text {
+		builder.Write(node.Literal)
+	}
+
+	// Run the children first
+	if node.FirstChild != nil {
+		plainTextInner(node.FirstChild, builder)
+	}
+
+	// Then run any other siblings
+	if node.Next != nil {
+		// Add extra space if necessary between nodes
+		if node.Type == blackfriday.Paragraph ||
+			node.Type == blackfriday.CodeBlock ||
+			node.Type == blackfriday.Heading {
+			builder.WriteRune(' ')
+		}
+
+		plainTextInner(node.Next, builder)
+	}
 }
