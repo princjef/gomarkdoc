@@ -29,6 +29,10 @@ func Lint() error {
 	return pipedCmd("./bin/golangci-lint", "run")
 }
 
+func Generate() error {
+	return pipedCmd("go", "generate", ".")
+}
+
 func Doc() error {
 	if err := pipedCmd("go", "run", "./cmd/gomarkdoc", "."); err != nil {
 		return err

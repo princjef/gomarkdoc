@@ -46,7 +46,8 @@ var (
 // LocalHref generates an href for navigating to a header with the given
 // headerText located within the same document as the href itself.
 func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error) {
-	result := strings.ToLower(headerText)
+	result := plainText(headerText)
+	result = strings.ToLower(result)
 	result = strings.TrimSpace(result)
 	result = gfmWhitespaceRegex.ReplaceAllString(result, "-")
 	result = gfmRemoveRegex.ReplaceAllString(result, "")
