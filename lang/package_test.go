@@ -9,6 +9,7 @@ import (
 
 	"github.com/matryer/is"
 	"github.com/princjef/gomarkdoc/lang"
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 func TestPackage_strings(t *testing.T) {
@@ -17,7 +18,8 @@ func TestPackage_strings(t *testing.T) {
 	buildPkg, err := getBuildPackage("strings")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
@@ -39,7 +41,8 @@ func TestPackage_textScanner(t *testing.T) {
 	buildPkg, err := getBuildPackage("text/scanner")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
@@ -61,7 +64,8 @@ func TestPackage_ioIoutil(t *testing.T) {
 	buildPkg, err := getBuildPackage("io/ioutil")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root
@@ -83,7 +87,8 @@ func TestPackage_encoding(t *testing.T) {
 	buildPkg, err := getBuildPackage("encoding")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	is.Equal(pkg.Level(), 1) // level should be root

@@ -20,6 +20,7 @@ import (
 	"github.com/princjef/gomarkdoc"
 	"github.com/princjef/gomarkdoc/format"
 	"github.com/princjef/gomarkdoc/lang"
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 // PackageSpec defines the data available to the --output option's template.
@@ -51,6 +52,7 @@ type commandOptions struct {
 	templateFileOverrides map[string]string
 	includeUnexported     bool
 	check                 bool
+	verbosity             int
 }
 
 const configFilePrefix = ".gomarkdoc"
@@ -162,6 +164,12 @@ func buildCommand() *cobra.Command {
 		"footer-file",
 		"",
 		"File containing additional content to inject at the end of each output file.",
+	)
+	command.Flags().CountVarP(
+		&opts.verbosity,
+		"verbose",
+		"v",
+		"Log additional output from the execution of the command. Can be chained for additional verbosity.",
 	)
 
 	// We ignore the errors here because they only happen if the specified flag doesn't exist
@@ -312,8 +320,11 @@ func resolveFooter(opts commandOptions) (string, error) {
 
 func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 	for _, spec := range specs {
+		log := logger.New(getLogLevel(opts.verbosity), logger.WithField("dir", spec.Dir))
+
 		buildPkg, err := getBuildPackage(spec.ImportPath)
 		if err != nil {
+			log.Debugf("unable to load package in directory: %s", err)
 			// We don't care if a wildcard path produces nothing
 			if spec.isWildcard {
 				continue
@@ -327,7 +338,7 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 			pkgOpts = append(pkgOpts, lang.PackageWithUnexportedIncluded())
 		}
 
-		pkg, err := lang.NewPackageFromBuild(buildPkg, pkgOpts...)
+		pkg, err := lang.NewPackageFromBuild(log, buildPkg, pkgOpts...)
 		if err != nil {
 			return err
 		}
@@ -640,4 +651,17 @@ func readBytes(r io.Reader, b []byte) (int, error) {
 	}
 
 	return ct, nil
+}
+
+func getLogLevel(verbosity int) logger.Level {
+	switch verbosity {
+	case 0:
+		return logger.WarnLevel
+	case 1:
+		return logger.InfoLevel
+	case 2:
+		return logger.DebugLevel
+	default:
+		return logger.DebugLevel
+	}
 }

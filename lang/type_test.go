@@ -5,6 +5,7 @@ import (
 
 	"github.com/matryer/is"
 	"github.com/princjef/gomarkdoc/lang"
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 func TestFunc_netHttpResponseWriter(t *testing.T) {
@@ -13,7 +14,8 @@ func TestFunc_netHttpResponseWriter(t *testing.T) {
 	buildPkg, err := getBuildPackage("net/http")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	var typ *lang.Type
@@ -105,7 +107,8 @@ func TestFunc_netHttpResponse(t *testing.T) {
 	buildPkg, err := getBuildPackage("net/http")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	var typ *lang.Type
