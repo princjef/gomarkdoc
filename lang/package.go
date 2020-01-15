@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 type (
@@ -45,7 +47,7 @@ func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package
 // NewPackageFromBuild creates a representation of a package's documentation
 // from the build metadata for that package. It can be configured using the
 // provided options.
-func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, error) {
+func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageOption) (*Package, error) {
 	var options PackageOptions
 	for _, opt := range opts {
 		if err := opt(&options); err != nil {
@@ -53,7 +55,7 @@ func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, e
 		}
 	}
 
-	cfg, err := NewConfig(pkg.Dir)
+	cfg, err := NewConfig(log, pkg.Dir)
 	if err != nil {
 		return nil, err
 	}

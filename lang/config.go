@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/princjef/gomarkdoc/logger"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
@@ -21,6 +22,7 @@ type (
 		Level   int
 		Repo    *Repo
 		PkgDir  string
+		Log     logger.Logger
 	}
 
 	// Repo represents information about a repository relevant to documentation
@@ -51,26 +53,35 @@ type (
 // resolve the filepath and attempt to determine the repository containing the
 // directory. If no repository is found, the Repo field will be set to nil. An
 // error is returned if the provided directory is invalid.
-func NewConfig(pkgDir string) (*Config, error) {
+func NewConfig(log logger.Logger, pkgDir string) (*Config, error) {
 	dir, err := filepath.Abs(pkgDir)
 	if err != nil {
 		return nil, err
 	}
 
-	repo, err := getRepoForDir(dir)
+	repo, err := getRepoForDir(log, dir)
 	if err != nil {
+		log.Infof("unable to resolve repository due to error: %s")
 		return &Config{
 			FileSet: token.NewFileSet(),
 			Level:   1,
 			PkgDir:  dir,
+			Log:     log,
 		}, nil
 	}
 
+	log.Debugf(
+		"resolved repository with remote %s, default branch %s, root directory %s",
+		repo.Remote,
+		repo.DefaultBranch,
+		repo.RootDir,
+	)
 	return &Config{
 		FileSet: token.NewFileSet(),
 		Level:   1,
 		Repo:    repo,
 		PkgDir:  dir,
+		Log:     log,
 	}, nil
 }
 
@@ -83,7 +94,7 @@ func (c *Config) Inc(step int) *Config {
 	}
 }
 
-func getRepoForDir(dir string) (*Repo, error) {
+func getRepoForDir(log logger.Logger, dir string) (*Repo, error) {
 	var ri *Repo
 
 	repo, err := git.PlainOpenWithOptions(dir, &git.PlainOpenOptions{
@@ -99,12 +110,7 @@ func getRepoForDir(dir string) (*Repo, error) {
 	}
 
 	for _, r := range remotes {
-		// TODO: configurable remote name?
-		if r.Config().Name != "origin" {
-			continue
-		}
-
-		if repo, ok := processRemote(r); ok {
+		if repo, ok := processRemote(log, r); ok {
 			ri = repo
 			break
 		}
@@ -116,7 +122,7 @@ func getRepoForDir(dir string) (*Repo, error) {
 			return nil, errors.New("no remotes found for repository")
 		}
 
-		repo, ok := processRemote(remotes[0])
+		repo, ok := processRemote(log, remotes[0])
 		if !ok {
 			return nil, errors.New("no remotes found for repository")
 		}
@@ -134,34 +140,39 @@ func getRepoForDir(dir string) (*Repo, error) {
 	return ri, nil
 }
 
-func processRemote(remote *git.Remote) (*Repo, bool) {
+func processRemote(log logger.Logger, remote *git.Remote) (*Repo, bool) {
 	repo := &Repo{}
 
 	c := remote.Config()
 
 	// TODO: configurable remote name?
 	if c.Name != "origin" || len(c.URLs) == 0 {
+		log.Debugf("skipping remote because it is not the origin or it has no URLs")
 		return nil, false
 	}
 
 	refs, err := remote.List(&git.ListOptions{})
 	if err != nil {
+		log.Debugf("skipping remote %s because list its refs failed: %s", c.URLs[0], err)
 		return nil, false
 	}
 
 	for _, ref := range refs {
 		if ref.Name() == plumbing.HEAD && strings.HasPrefix(string(ref.Target()), "refs/heads/") {
 			repo.DefaultBranch = strings.TrimPrefix(string(ref.Target()), "refs/heads/")
+			log.Debugf("found default branch %s for remote %s", repo.DefaultBranch, c.URLs[0])
 			break
 		}
 	}
 
 	if repo.DefaultBranch == "" {
+		log.Debugf("skipping remote %s because no default branch was found", c.URLs[0])
 		return nil, false
 	}
 
 	normalized, ok := normalizeRemote(c.URLs[0])
 	if !ok {
+		log.Debugf("skipping remote %s because its remote URL could not be normalized", c.URLs[0])
 		return nil, false
 	}
 

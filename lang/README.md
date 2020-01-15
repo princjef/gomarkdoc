@@ -17,7 +17,7 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func (b *Block) Text() string](<#func-block-text>)
 - [type BlockKind](<#type-blockkind>)
 - [type Config](<#type-config>)
-  - [func NewConfig(pkgDir string) (*Config, error)](<#func-newconfig>)
+  - [func NewConfig(log logger.Logger, pkgDir string) (*Config, error)](<#func-newconfig>)
   - [func (c *Config) Inc(step int) *Config](<#func-config-inc>)
 - [type Doc](<#type-doc>)
   - [func NewDoc(cfg *Config, text string) *Doc](<#func-newdoc>)
@@ -49,7 +49,7 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func NewLocation(cfg *Config, node ast.Node) Location](<#func-newlocation>)
 - [type Package](<#type-package>)
   - [func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package](<#func-newpackage>)
-  - [func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, error)](<#func-newpackagefrombuild>)
+  - [func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageOption) (*Package, error)](<#func-newpackagefrombuild>)
   - [func (pkg *Package) Consts() (consts []*Value)](<#func-package-consts>)
   - [func (pkg *Package) Dir() string](<#func-package-dir>)
   - [func (pkg *Package) Dirname() string](<#func-package-dirname>)
@@ -138,7 +138,7 @@ BlockKind identifies the type of block element represented by the corresponding 
 type BlockKind string
 ```
 
-## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L19-L24>)
+## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L20-L26>)
 
 Config defines contextual information used to resolve documentation for a construct\.
 
@@ -148,18 +148,19 @@ type Config struct {
     Level   int
     Repo    *Repo
     PkgDir  string
+    Log     logger.Logger
 }
 ```
 
-### func [NewConfig](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L54>)
+### func [NewConfig](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L56>)
 
 ```go
-func NewConfig(pkgDir string) (*Config, error)
+func NewConfig(log logger.Logger, pkgDir string) (*Config, error)
 ```
 
 NewConfig generates a Config for the provided package directory\. It will resolve the filepath and attempt to determine the repository containing the directory\. If no repository is found\, the Repo field will be set to nil\. An error is returned if the provided directory is invalid\.
 
-### func \(\*Config\) [Inc](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L78>)
+### func \(\*Config\) [Inc](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L89>)
 
 ```go
 func (c *Config) Inc(step int) *Config
@@ -385,7 +386,7 @@ func (fn *Func) Title() string
 
 Title provides the formatted name of the func\. It is primarily designed for generating headers\.
 
-## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L36-L41>)
+## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L38-L43>)
 
 Location holds information for identifying a position within a file and repository\, if present\.
 
@@ -398,7 +399,7 @@ type Location struct {
 }
 ```
 
-### func [NewLocation](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L242>)
+### func [NewLocation](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L253>)
 
 ```go
 func NewLocation(cfg *Config, node ast.Node) Location
@@ -406,7 +407,7 @@ func NewLocation(cfg *Config, node ast.Node) Location
 
 NewLocation returns a location for the provided Config and ast\.Node combination\. This is typically not called directly\, but is made available via the Location\(\) methods of various lang constructs\.
 
-## type [Package](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L21-L25>)
+## type [Package](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L23-L27>)
 
 Package holds documentation information for a package and all of the symbols contained within it\.
 
@@ -416,7 +417,7 @@ type Package struct {
 }
 ```
 
-### func [NewPackage](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L41>)
+### func [NewPackage](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L43>)
 
 ```go
 func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package
@@ -424,15 +425,15 @@ func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package
 
 NewPackage creates a representation of a package's documentation from the raw documentation constructs provided by the standard library\. This is only recommended for advanced scenarios\. Most consumers will find it easier to use NewPackageFromBuild instead\.
 
-### func [NewPackageFromBuild](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L48>)
+### func [NewPackageFromBuild](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L50>)
 
 ```go
-func NewPackageFromBuild(pkg *build.Package, opts ...PackageOption) (*Package, error)
+func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageOption) (*Package, error)
 ```
 
 NewPackageFromBuild creates a representation of a package's documentation from the build metadata for that package\. It can be configured using the provided options\.
 
-### func \(\*Package\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L131>)
+### func \(\*Package\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L133>)
 
 ```go
 func (pkg *Package) Consts() (consts []*Value)
@@ -440,7 +441,7 @@ func (pkg *Package) Consts() (consts []*Value)
 
 Consts lists the top\-level constants provided by the package\.
 
-### func \(\*Package\) [Dir](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L93>)
+### func \(\*Package\) [Dir](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L95>)
 
 ```go
 func (pkg *Package) Dir() string
@@ -448,7 +449,7 @@ func (pkg *Package) Dir() string
 
 Dir provides the name of the full directory in which the package is located\.
 
-### func \(\*Package\) [Dirname](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L99>)
+### func \(\*Package\) [Dirname](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L101>)
 
 ```go
 func (pkg *Package) Dirname() string
@@ -456,7 +457,7 @@ func (pkg *Package) Dirname() string
 
 Dirname provides the name of the leaf directory in which the package is located\.
 
-### func \(\*Package\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L125>)
+### func \(\*Package\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L127>)
 
 ```go
 func (pkg *Package) Doc() *Doc
@@ -464,7 +465,7 @@ func (pkg *Package) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the package\.
 
-### func \(\*Package\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L169>)
+### func \(\*Package\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L171>)
 
 ```go
 func (pkg *Package) Examples() (examples []*Example)
@@ -472,7 +473,7 @@ func (pkg *Package) Examples() (examples []*Example)
 
 Examples provides the package\-level examples that have been defined\. This does not include examples that are associated with symbols contained within the package\.
 
-### func \(\*Package\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L149>)
+### func \(\*Package\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L151>)
 
 ```go
 func (pkg *Package) Funcs() (funcs []*Func)
@@ -480,7 +481,7 @@ func (pkg *Package) Funcs() (funcs []*Func)
 
 Funcs lists the top\-level functions provided by the package\.
 
-### func \(\*Package\) [Import](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L113>)
+### func \(\*Package\) [Import](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L115>)
 
 ```go
 func (pkg *Package) Import() string
@@ -488,7 +489,7 @@ func (pkg *Package) Import() string
 
 Import provides the raw text for the import declaration that is used to import code from the package\. If your package's documentation is generated from a local path and does not use Go Modules\, this will typically print \`import "\."\`\.
 
-### func \(\*Package\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L88>)
+### func \(\*Package\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L90>)
 
 ```go
 func (pkg *Package) Level() int
@@ -496,7 +497,7 @@ func (pkg *Package) Level() int
 
 Level provides the default level that headers for the package's root documentation should be rendered\.
 
-### func \(\*Package\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L105>)
+### func \(\*Package\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L107>)
 
 ```go
 func (pkg *Package) Name() string
@@ -504,7 +505,7 @@ func (pkg *Package) Name() string
 
 Name provides the name of the package as it would be seen from another package importing it\.
 
-### func \(\*Package\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L119>)
+### func \(\*Package\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L121>)
 
 ```go
 func (pkg *Package) Summary() string
@@ -512,7 +513,7 @@ func (pkg *Package) Summary() string
 
 Summary provides the one\-sentence summary of the package's documentation comment\.
 
-### func \(\*Package\) [Types](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L158>)
+### func \(\*Package\) [Types](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L160>)
 
 ```go
 func (pkg *Package) Types() (types []*Type)
@@ -520,7 +521,7 @@ func (pkg *Package) Types() (types []*Type)
 
 Types lists the top\-level types provided by the package\.
 
-### func \(\*Package\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L140>)
+### func \(\*Package\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L142>)
 
 ```go
 func (pkg *Package) Vars() (vars []*Value)
@@ -528,7 +529,7 @@ func (pkg *Package) Vars() (vars []*Value)
 
 Vars lists the top\-level variables provided by the package\.
 
-## type [PackageOption](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L34>)
+## type [PackageOption](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L36>)
 
 PackageOption configures one or more options for the package\.
 
@@ -536,7 +537,7 @@ PackageOption configures one or more options for the package\.
 type PackageOption func(opts *PackageOptions) error
 ```
 
-### func [PackageWithUnexportedIncluded](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L79>)
+### func [PackageWithUnexportedIncluded](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L81>)
 
 ```go
 func PackageWithUnexportedIncluded() PackageOption
@@ -544,7 +545,7 @@ func PackageWithUnexportedIncluded() PackageOption
 
 PackageWithUnexportedIncluded can be used along with the NewPackageFromBuild function to specify that all symbols\, including unexported ones\, should be included in the documentation for the package\.
 
-## type [PackageOptions](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L29-L31>)
+## type [PackageOptions](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L31-L33>)
 
 PackageOptions holds options related to the configuration of the package and its documentation on creation\.
 
@@ -554,7 +555,7 @@ type PackageOptions struct {
 }
 ```
 
-## type [Position](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L44-L47>)
+## type [Position](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L46-L49>)
 
 Position represents a line and column number within a file\.
 
@@ -565,7 +566,7 @@ type Position struct {
 }
 ```
 
-## type [Repo](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L28-L32>)
+## type [Repo](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L30-L34>)
 
 Repo represents information about a repository relevant to documentation generation\.
 

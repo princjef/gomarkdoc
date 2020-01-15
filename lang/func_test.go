@@ -5,6 +5,7 @@ import (
 
 	"github.com/matryer/is"
 	"github.com/princjef/gomarkdoc/lang"
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 func TestFunc_stringsCompare(t *testing.T) {
@@ -13,7 +14,8 @@ func TestFunc_stringsCompare(t *testing.T) {
 	buildPkg, err := getBuildPackage("strings")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	var fn *lang.Func
@@ -43,7 +45,8 @@ func TestFunc_textScannerInit(t *testing.T) {
 	buildPkg, err := getBuildPackage("text/scanner")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	var typ *lang.Type
@@ -82,7 +85,8 @@ func TestFunc_ioIoutilTempFile(t *testing.T) {
 	buildPkg, err := getBuildPackage("io/ioutil")
 	is.NoErr(err)
 
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	is.NoErr(err)
 
 	var fn *lang.Func
