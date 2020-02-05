@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"io"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/princjef/gomarkdoc/logger"
 	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 type (
@@ -61,7 +61,7 @@ func NewConfig(log logger.Logger, pkgDir string) (*Config, error) {
 
 	repo, err := getRepoForDir(log, dir)
 	if err != nil {
-		log.Infof("unable to resolve repository due to error: %s")
+		log.Infof("unable to resolve repository due to error: %s", err)
 		return &Config{
 			FileSet: token.NewFileSet(),
 			Level:   1,
@@ -110,7 +110,7 @@ func getRepoForDir(log logger.Logger, dir string) (*Repo, error) {
 	}
 
 	for _, r := range remotes {
-		if repo, ok := processRemote(log, r); ok {
+		if repo, ok := processRemote(log, repo, r); ok {
 			ri = repo
 			break
 		}
@@ -122,7 +122,7 @@ func getRepoForDir(log logger.Logger, dir string) (*Repo, error) {
 			return nil, errors.New("no remotes found for repository")
 		}
 
-		repo, ok := processRemote(log, remotes[0])
+		repo, ok := processRemote(log, repo, remotes[0])
 		if !ok {
 			return nil, errors.New("no remotes found for repository")
 		}
@@ -140,7 +140,7 @@ func getRepoForDir(log logger.Logger, dir string) (*Repo, error) {
 	return ri, nil
 }
 
-func processRemote(log logger.Logger, remote *git.Remote) (*Repo, bool) {
+func processRemote(log logger.Logger, repository *git.Repository, remote *git.Remote) (*Repo, bool) {
 	repo := &Repo{}
 
 	c := remote.Config()
@@ -151,15 +151,33 @@ func processRemote(log logger.Logger, remote *git.Remote) (*Repo, bool) {
 		return nil, false
 	}
 
-	refs, err := remote.List(&git.ListOptions{})
+	refs, err := repository.References()
 	if err != nil {
-		log.Debugf("skipping remote %s because list its refs failed: %s", c.URLs[0], err)
+		log.Debugf("skipping remote %s because listing its refs failed: %s", c.URLs[0], err)
 		return nil, false
 	}
 
-	for _, ref := range refs {
-		if ref.Name() == plumbing.HEAD && strings.HasPrefix(string(ref.Target()), "refs/heads/") {
-			repo.DefaultBranch = strings.TrimPrefix(string(ref.Target()), "refs/heads/")
+	prefix := fmt.Sprintf("refs/remotes/%s/", c.Name)
+	headRef := fmt.Sprintf("refs/remotes/%s/HEAD", c.Name)
+
+	for {
+		ref, err := refs.Next()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			log.Debugf("skipping remote %s because listing its refs failed: %s", c.URLs[0], err)
+			return nil, false
+		}
+		defer refs.Close()
+
+		if ref == nil {
+			break
+		}
+
+		if string(ref.Name()) == headRef && strings.HasPrefix(string(ref.Target()), prefix) {
+			repo.DefaultBranch = strings.TrimPrefix(string(ref.Target()), prefix)
 			log.Debugf("found default branch %s for remote %s", repo.DefaultBranch, c.URLs[0])
 			break
 		}
