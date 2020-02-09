@@ -20,10 +20,6 @@ jobs:
           go-version: 1.13.x
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set Remote Head
-        # Needed so that we can point to the default branch for link generation
-        # purposes.
-        run: git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/master
       - name: Lint
         uses: crazy-max/ghaction-mage@v1
         with:

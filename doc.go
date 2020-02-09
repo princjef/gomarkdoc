@@ -17,23 +17,26 @@
 //	$ gomarkdoc --help
 //	generate markdown documentation for golang code
 //
-//	Usage:
-//	  gomarkdoc [flags] [package ...]
+// 	Usage:
+// 	  gomarkdoc [flags] [package ...]
 //
 // 	Flags:
-// 	  -c, --check                          Check the output to see if it matches the generated documentation. --output must be specified to use this.
-// 	      --config string                  File from which to load configuration (default: .gomarkdoc.yml)
-// 	      --footer string                  Additional content to inject at the end of each output file.
-// 	      --footer-file string             File containing additional content to inject at the end of each output file.
-// 	  -f, --format string                  Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
-// 	      --header string                  Additional content to inject at the beginning of each output file.
-// 	      --header-file string             File containing additional content to inject at the beginning of each output file.
-// 	  -h, --help                           help for gomarkdoc
-// 	  -u, --include-unexported             Output documentation for unexported symbols, methods and fields in addition to exported ones.
-// 	  -o, --output string                  File or pattern specifying where to write documentation output. Defaults to printing to stdout.
-// 	  -t, --template stringToString        Custom template string to use for the provided template name instead of the default template. (default [])
-// 	      --template-file stringToString   Custom template file to use for the provided template name instead of the default template. (default [])
-// 	  -v, --verbose count                  Log additional output from the execution of the command. Can be chained for additional verbosity.
+// 	  -c, --check                              Check the output to see if it matches the generated documentation. --output must be specified to use this.
+// 	      --config string                      File from which to load configuration (default: .gomarkdoc.yml)
+// 	      --footer string                      Additional content to inject at the end of each output file.
+// 	      --footer-file string                 File containing additional content to inject at the end of each output file.
+// 	  -f, --format string                      Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
+// 	      --header string                      Additional content to inject at the beginning of each output file.
+// 	      --header-file string                 File containing additional content to inject at the beginning of each output file.
+// 	  -h, --help                               help for gomarkdoc
+// 	  -u, --include-unexported                 Output documentation for unexported symbols, methods and fields in addition to exported ones.
+// 	  -o, --output string                      File or pattern specifying where to write documentation output. Defaults to printing to stdout.
+// 	      --repository.default-branch string   Manual override for the git repository URL used in place of automatic detection.
+// 	      --repository.directory string        Manual override for the root directory of the git repository use in place of automatic detection.
+// 	      --repository.url string              Manual override for the git repository URL used in place of automatic detection.
+// 	  -t, --template stringToString            Custom template string to use for the provided template name instead of the default template. (default [])
+// 	      --template-file stringToString       Custom template file to use for the provided template name instead of the default template. (default [])
+// 	  -v, --verbose count                      Log additional output from the execution of the command. Can be chained for additional verbosity.
 //
 // The gomarkdoc command processes each of the provided packages, generating
 // documentation for the package in markdown format and writing it to console.
@@ -125,6 +128,22 @@
 // provided there is what the tool is checking:
 //
 //	gomarkdoc -o README.md -c .
+//
+// If you're experiencing difficulty with gomarkdoc or just want to get more
+// information about how it's executing underneath, you can add -v to show more
+// logs. This can be chained a second time to show even more verbose logs:
+//
+//	gomarkdoc -vv -o README.md .
+//
+// Some features of gomarkdoc rely on being able to detect information from the
+// git repository containing the project. Since individual local git
+// repositories may be configured differently from person to person, you may
+// want to manually specify the information for the repository to remove any
+// inconsistencies. This can be achieved with the --repository.url,
+// --repository.default-branch and --repository.directory options. For example,
+// this repository would be configured with:
+//
+//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.defaultBranch master --repository.directory . -o README.md .
 //
 // Configuring via File
 //

@@ -50,6 +50,7 @@ type commandOptions struct {
 	format                string
 	templateOverrides     map[string]string
 	templateFileOverrides map[string]string
+	repository            lang.Repo
 	includeUnexported     bool
 	check                 bool
 	verbosity             int
@@ -73,11 +74,14 @@ func buildCommand() *cobra.Command {
 			opts.check = viper.GetBool("check")
 			opts.format = viper.GetString("format")
 			opts.templateOverrides = viper.GetStringMapString("template")
-			opts.templateFileOverrides = viper.GetStringMapString("template-file")
+			opts.templateFileOverrides = viper.GetStringMapString("templateFile")
 			opts.header = viper.GetString("header")
 			opts.headerFile = viper.GetString("headerFile")
 			opts.footer = viper.GetString("footer")
 			opts.footerFile = viper.GetString("footerFile")
+			opts.repository.Remote = viper.GetString("repository.url")
+			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
+			opts.repository.RootDir = viper.GetString("repository.directory")
 
 			if opts.check && opts.output == "" {
 				log.Fatal("check mode cannot be run without an output set")
@@ -171,6 +175,24 @@ func buildCommand() *cobra.Command {
 		"v",
 		"Log additional output from the execution of the command. Can be chained for additional verbosity.",
 	)
+	command.Flags().StringVar(
+		&opts.repository.Remote,
+		"repository.url",
+		"",
+		"Manual override for the git repository URL used in place of automatic detection.",
+	)
+	command.Flags().StringVar(
+		&opts.repository.DefaultBranch,
+		"repository.default-branch",
+		"",
+		"Manual override for the git repository URL used in place of automatic detection.",
+	)
+	command.Flags().StringVar(
+		&opts.repository.RootDir,
+		"repository.directory",
+		"",
+		"Manual override for the root directory of the git repository use in place of automatic detection.",
+	)
 
 	// We ignore the errors here because they only happen if the specified flag doesn't exist
 	_ = viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
@@ -183,6 +205,9 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
 	_ = viper.BindPFlag("footer", command.Flags().Lookup("footer"))
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
+	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
+	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
+	_ = viper.BindPFlag("repository.directory", command.Flags().Lookup("repository.directory"))
 
 	return command
 }
@@ -334,6 +359,8 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 		}
 
 		var pkgOpts []lang.PackageOption
+		pkgOpts = append(pkgOpts, lang.PackageWithRepositoryOverrides(&opts.repository))
+
 		if opts.includeUnexported {
 			pkgOpts = append(pkgOpts, lang.PackageWithUnexportedIncluded())
 		}

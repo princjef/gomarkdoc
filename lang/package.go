@@ -29,7 +29,8 @@ type (
 	// PackageOptions holds options related to the configuration of the package
 	// and its documentation on creation.
 	PackageOptions struct {
-		includeUnexported bool
+		includeUnexported   bool
+		repositoryOverrides *Repo
 	}
 
 	// PackageOption configures one or more options for the package.
@@ -55,7 +56,7 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		}
 	}
 
-	cfg, err := NewConfig(log, pkg.Dir)
+	cfg, err := NewConfig(log, pkg.Dir, ConfigWithRepoOverrides(options.repositoryOverrides))
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +82,16 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 func PackageWithUnexportedIncluded() PackageOption {
 	return func(opts *PackageOptions) error {
 		opts.includeUnexported = true
+		return nil
+	}
+}
+
+// PackageWithRepositoryOverrides can be used along with the NewPackageFromBuild
+// function to define manual overrides to the automatic repository detection
+// logic.
+func PackageWithRepositoryOverrides(repo *Repo) PackageOption {
+	return func(opts *PackageOptions) error {
+		opts.repositoryOverrides = repo
 		return nil
 	}
 }
