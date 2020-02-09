@@ -138,7 +138,7 @@ BlockKind identifies the type of block element represented by the corresponding 
 type BlockKind string
 ```
 
-## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L19-L25>)
+## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L20-L26>)
 
 Config defines contextual information used to resolve documentation for a construct\.
 
@@ -152,7 +152,7 @@ type Config struct {
 }
 ```
 
-### func [NewConfig](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L55>)
+### func [NewConfig](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L56>)
 
 ```go
 func NewConfig(log logger.Logger, pkgDir string) (*Config, error)
@@ -160,7 +160,7 @@ func NewConfig(log logger.Logger, pkgDir string) (*Config, error)
 
 NewConfig generates a Config for the provided package directory\. It will resolve the filepath and attempt to determine the repository containing the directory\. If no repository is found\, the Repo field will be set to nil\. An error is returned if the provided directory is invalid\.
 
-### func \(\*Config\) [Inc](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L88>)
+### func \(\*Config\) [Inc](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L89>)
 
 ```go
 func (c *Config) Inc(step int) *Config
@@ -386,7 +386,7 @@ func (fn *Func) Title() string
 
 Title provides the formatted name of the func\. It is primarily designed for generating headers\.
 
-## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L37-L42>)
+## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L38-L43>)
 
 Location holds information for identifying a position within a file and repository\, if present\.
 
@@ -399,7 +399,7 @@ type Location struct {
 }
 ```
 
-### func [NewLocation](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L266>)
+### func [NewLocation](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L271>)
 
 ```go
 func NewLocation(cfg *Config, node ast.Node) Location
@@ -555,7 +555,7 @@ type PackageOptions struct {
 }
 ```
 
-## type [Position](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L45-L48>)
+## type [Position](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L46-L49>)
 
 Position represents a line and column number within a file\.
 
@@ -566,7 +566,7 @@ type Position struct {
 }
 ```
 
-## type [Repo](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L29-L33>)
+## type [Repo](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L30-L34>)
 
 Repo represents information about a repository relevant to documentation generation\.
 
