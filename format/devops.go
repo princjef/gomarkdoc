@@ -76,7 +76,7 @@ func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error) {
 	return fmt.Sprintf(
 		"%s?path=%s&version=GB%s&lineStyle=plain&line=%d&lineEnd=%d&lineStartColumn=%d&lineEndColumn=%d",
 		loc.Repo.Remote,
-		url.PathEscape(p),
+		url.PathEscape(filepath.ToSlash(p)),
 		loc.Repo.DefaultBranch,
 		loc.Start.Line,
 		loc.End.Line,
