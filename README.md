@@ -29,10 +29,11 @@ Usage:
   gomarkdoc [flags] [package ...]
 
 Flags:
-  -c, --check                          Check the output to see if it matches the generated documentation. --output must be specified to use this option.
+  -c, --check                          Check the output to see if it matches the generated documentation. --output must be specified to use this.
       --config string                  File from which to load configuration (default: .gomarkdoc.yml)
       --footer string                  Additional content to inject at the end of each output file.
       --footer-file string             File containing additional content to inject at the end of each output file.
+  -f, --format string                  Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
       --header string                  Additional content to inject at the beginning of each output file.
       --header-file string             File containing additional content to inject at the beginning of each output file.
   -h, --help                           help for gomarkdoc
@@ -40,6 +41,7 @@ Flags:
   -o, --output string                  File or pattern specifying where to write documentation output. Defaults to printing to stdout.
   -t, --template stringToString        Custom template string to use for the provided template name instead of the default template. (default [])
       --template-file stringToString   Custom template file to use for the provided template name instead of the default template. (default [])
+  -v, --verbose count                  Log additional output from the execution of the command. Can be chained for additional verbosity.
 ```
 
 The gomarkdoc command processes each of the provided packages\, generating documentation for the package in markdown format and writing it to console\. For example\, if you have a package in your current directory and want to send it to a documentation markdown file\, you might do something like this:
