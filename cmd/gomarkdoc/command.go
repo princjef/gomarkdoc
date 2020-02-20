@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -42,6 +43,7 @@ type PackageSpec struct {
 }
 
 type commandOptions struct {
+	repository            lang.Repo
 	output                string
 	header                string
 	headerFile            string
@@ -50,11 +52,14 @@ type commandOptions struct {
 	format                string
 	templateOverrides     map[string]string
 	templateFileOverrides map[string]string
-	repository            lang.Repo
+	verbosity             int
 	includeUnexported     bool
 	check                 bool
-	verbosity             int
+	version               bool
 }
+
+// Flags populated by goreleaser
+var version = ""
 
 const configFilePrefix = ".gomarkdoc"
 
@@ -68,6 +73,11 @@ func buildCommand() *cobra.Command {
 		Use:   "gomarkdoc [package ...]",
 		Short: "generate markdown documentation for golang code",
 		Run: func(cmd *cobra.Command, args []string) {
+			if opts.version {
+				printVersion()
+				return
+			}
+
 			// Load configuration from viper
 			opts.includeUnexported = viper.GetBool("includeUnexported")
 			opts.output = viper.GetString("output")
@@ -192,6 +202,12 @@ func buildCommand() *cobra.Command {
 		"repository.directory",
 		"",
 		"Manual override for the root directory of the git repository use in place of automatic detection.",
+	)
+	command.Flags().BoolVar(
+		&opts.version,
+		"version",
+		false,
+		"Print the version.",
 	)
 
 	// We ignore the errors here because they only happen if the specified flag doesn't exist
@@ -690,5 +706,18 @@ func getLogLevel(verbosity int) logger.Level {
 		return logger.DebugLevel
 	default:
 		return logger.DebugLevel
+	}
+}
+
+func printVersion() {
+	if version != "" {
+		fmt.Println(version)
+		return
+	}
+
+	if info, ok := debug.ReadBuildInfo(); ok {
+		fmt.Println(info.Main.Version)
+	} else {
+		fmt.Println("<unknown>")
 	}
 }
