@@ -91,7 +91,7 @@ func buildCommand() *cobra.Command {
 			opts.footerFile = viper.GetString("footerFile")
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
-			opts.repository.RootDir = viper.GetString("repository.directory")
+			opts.repository.PathFromRoot = viper.GetString("repository.path")
 
 			if opts.check && opts.output == "" {
 				log.Fatal("check mode cannot be run without an output set")
@@ -198,10 +198,10 @@ func buildCommand() *cobra.Command {
 		"Manual override for the git repository URL used in place of automatic detection.",
 	)
 	command.Flags().StringVar(
-		&opts.repository.RootDir,
-		"repository.directory",
+		&opts.repository.PathFromRoot,
+		"repository.path",
 		"",
-		"Manual override for the root directory of the git repository use in place of automatic detection.",
+		"Manual override for the path from the root of the git repository used in place of automatic detection.",
 	)
 	command.Flags().BoolVar(
 		&opts.version,
@@ -223,7 +223,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
-	_ = viper.BindPFlag("repository.directory", command.Flags().Lookup("repository.directory"))
+	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
 
 	return command
 }

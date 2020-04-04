@@ -56,7 +56,12 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		}
 	}
 
-	cfg, err := NewConfig(log, pkg.Dir, ConfigWithRepoOverrides(options.repositoryOverrides))
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	cfg, err := NewConfig(log, wd, pkg.Dir, ConfigWithRepoOverrides(options.repositoryOverrides))
 	if err != nil {
 		return nil, err
 	}
