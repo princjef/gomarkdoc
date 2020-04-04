@@ -63,12 +63,21 @@ func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error) {
 		return "", nil
 	}
 
-	fullPath, err := filepath.Abs(loc.Filepath)
-	if err != nil {
-		return "", err
+	var (
+		relative string
+		err      error
+	)
+	if filepath.IsAbs(loc.Filepath) {
+		relative, err = filepath.Rel(loc.WorkDir, loc.Filepath)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		relative = loc.Filepath
 	}
 
-	p, err := filepath.Rel(loc.Repo.RootDir, fullPath)
+	full := filepath.Join(loc.Repo.PathFromRoot, relative)
+	p, err := filepath.Rel(string(filepath.Separator), full)
 	if err != nil {
 		return "", err
 	}

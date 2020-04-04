@@ -119,22 +119,20 @@ func TestLocalHref(t *testing.T) {
 func TestCodeHref(t *testing.T) {
 	is := is.New(t)
 
-	repoDir, err := filepath.Abs(".")
+	wd, err := filepath.Abs(".")
 	is.NoErr(err)
-
-	locPath, err := filepath.Abs(".")
-	is.NoErr(err)
-	locPath = filepath.Join(locPath, "subdir", "file.go")
+	locPath := filepath.Join(wd, "subdir", "file.go")
 
 	var f format.AzureDevOpsMarkdown
 	res, err := f.CodeHref(lang.Location{
 		Start:    lang.Position{Line: 12, Col: 1},
 		End:      lang.Position{Line: 14, Col: 43},
 		Filepath: locPath,
+		WorkDir:  wd,
 		Repo: &lang.Repo{
 			Remote:        "https://dev.azure.com/org/project/_git/repo",
 			DefaultBranch: "master",
-			RootDir:       repoDir,
+			PathFromRoot:  "/",
 		},
 	})
 	is.NoErr(err)
@@ -144,15 +142,16 @@ func TestCodeHref(t *testing.T) {
 func TestCodeHref_noRepo(t *testing.T) {
 	is := is.New(t)
 
-	locPath, err := filepath.Abs(".")
+	wd, err := filepath.Abs(".")
 	is.NoErr(err)
-	locPath = filepath.Join(locPath, "subdir", "file.go")
+	locPath := filepath.Join(wd, "subdir", "file.go")
 
 	var f format.AzureDevOpsMarkdown
 	res, err := f.CodeHref(lang.Location{
 		Start:    lang.Position{Line: 12, Col: 1},
 		End:      lang.Position{Line: 14, Col: 43},
 		Filepath: locPath,
+		WorkDir:  wd,
 		Repo:     nil,
 	})
 	is.NoErr(err)

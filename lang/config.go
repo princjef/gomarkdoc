@@ -22,6 +22,7 @@ type (
 		Level   int
 		Repo    *Repo
 		PkgDir  string
+		WorkDir string
 		Log     logger.Logger
 	}
 
@@ -30,7 +31,7 @@ type (
 	Repo struct {
 		Remote        string
 		DefaultBranch string
-		RootDir       string
+		PathFromRoot  string
 	}
 
 	// Location holds information for identifying a position within a file and
@@ -39,6 +40,7 @@ type (
 		Start    Position
 		End      Position
 		Filepath string
+		WorkDir  string
 		Repo     *Repo
 	}
 
@@ -56,7 +58,7 @@ type (
 // resolve the filepath and attempt to determine the repository containing the
 // directory. If no repository is found, the Repo field will be set to nil. An
 // error is returned if the provided directory is invalid.
-func NewConfig(log logger.Logger, pkgDir string, opts ...ConfigOption) (*Config, error) {
+func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigOption) (*Config, error) {
 	cfg := &Config{
 		FileSet: token.NewFileSet(),
 		Level:   1,
@@ -69,15 +71,20 @@ func NewConfig(log logger.Logger, pkgDir string, opts ...ConfigOption) (*Config,
 		}
 	}
 
-	dir, err := filepath.Abs(pkgDir)
+	var err error
+
+	cfg.PkgDir, err = filepath.Abs(pkgDir)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg.PkgDir = dir
+	cfg.WorkDir, err = filepath.Abs(workDir)
+	if err != nil {
+		return nil, err
+	}
 
-	if cfg.Repo == nil || cfg.Repo.Remote == "" || cfg.Repo.DefaultBranch == "" || cfg.Repo.RootDir == "" {
-		repo, err := getRepoForDir(log, dir, cfg.Repo)
+	if cfg.Repo == nil || cfg.Repo.Remote == "" || cfg.Repo.DefaultBranch == "" || cfg.Repo.PathFromRoot == "" {
+		repo, err := getRepoForDir(log, cfg.WorkDir, cfg.PkgDir, cfg.Repo)
 		if err != nil {
 			log.Infof("unable to resolve repository due to error: %s", err)
 			cfg.Repo = nil
@@ -85,10 +92,10 @@ func NewConfig(log logger.Logger, pkgDir string, opts ...ConfigOption) (*Config,
 		}
 
 		log.Debugf(
-			"resolved repository with remote %s, default branch %s, root directory %s",
+			"resolved repository with remote %s, default branch %s, path from root %s",
 			repo.Remote,
 			repo.DefaultBranch,
-			repo.RootDir,
+			repo.PathFromRoot,
 		)
 		cfg.Repo = repo
 	} else {
@@ -103,7 +110,10 @@ func (c *Config) Inc(step int) *Config {
 	return &Config{
 		FileSet: c.FileSet,
 		Level:   c.Level + step,
+		PkgDir:  c.PkgDir,
+		WorkDir: c.WorkDir,
 		Repo:    c.Repo,
+		Log:     c.Log,
 	}
 }
 
@@ -111,14 +121,19 @@ func (c *Config) Inc(step int) *Config {
 // information to be used in place of automatic repository detection.
 func ConfigWithRepoOverrides(overrides *Repo) ConfigOption {
 	return func(c *Config) error {
-		// The root dir must be absolute. Make sure it's normalized
-		if overrides != nil && overrides.RootDir != "" {
-			dir, err := filepath.Abs(overrides.RootDir)
-			if err != nil {
-				return fmt.Errorf("lang: unable to convert repository root directory into an absolute path: %w", err)
+		if overrides == nil {
+			return nil
+		}
+
+		if overrides.PathFromRoot != "" {
+			// Convert it to the right pathing system
+			unslashed := filepath.FromSlash(overrides.PathFromRoot)
+
+			if len(unslashed) == 0 || unslashed[0] != filepath.Separator {
+				return fmt.Errorf("provided repository path %s must be absolute", overrides.PathFromRoot)
 			}
 
-			overrides.RootDir = dir
+			overrides.PathFromRoot = unslashed
 		}
 
 		c.Repo = overrides
@@ -126,7 +141,7 @@ func ConfigWithRepoOverrides(overrides *Repo) ConfigOption {
 	}
 }
 
-func getRepoForDir(log logger.Logger, dir string, ri *Repo) (*Repo, error) {
+func getRepoForDir(log logger.Logger, wd string, dir string, ri *Repo) (*Repo, error) {
 	if ri == nil {
 		ri = &Repo{}
 	}
@@ -138,14 +153,21 @@ func getRepoForDir(log logger.Logger, dir string, ri *Repo) (*Repo, error) {
 		return nil, err
 	}
 
-	// Set the root dir if there wasn't one
-	if ri.RootDir == "" {
+	// Set the path from root if there wasn't one
+	if ri.PathFromRoot == "" {
 		t, err := repo.Worktree()
 		if err != nil {
 			return nil, err
 		}
 
-		ri.RootDir = t.Filesystem.Root()
+		// Get the path from the root of the repo to the working dir, then make
+		// it absolute (i.e. prefix with /).
+		p, err := filepath.Rel(t.Filesystem.Root(), wd)
+		if err != nil {
+			return nil, err
+		}
+
+		ri.PathFromRoot = filepath.Join(string(filepath.Separator), p)
 	}
 
 	// No need to check remotes if we already have a url and a default branch
@@ -326,6 +348,7 @@ func NewLocation(cfg *Config, node ast.Node) Location {
 		Start:    Position{start.Line, start.Column},
 		End:      Position{end.Line, end.Column},
 		Filepath: start.Filename,
+		WorkDir:  cfg.WorkDir,
 		Repo:     cfg.Repo,
 	}
 }

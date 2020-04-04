@@ -6,4 +6,4 @@ header: |+
 repository:
   url: https://github.com/princjef/gomarkdoc
   defaultBranch: master
-  directory: .
+  path: /
