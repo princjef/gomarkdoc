@@ -4,6 +4,14 @@
 
 {{- codeBlock "go" .Decl -}}
 
+{{- range .Consts -}}
+	{{- template "value" . -}}
+{{- end -}}
+
+{{- range .Vars -}}
+	{{- template "value" . -}}
+{{- end -}}
+
 {{- range .Examples -}}
 	{{- template "example" . -}}
 {{- end -}}
