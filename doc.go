@@ -32,11 +32,12 @@
 // 	  -u, --include-unexported                 Output documentation for unexported symbols, methods and fields in addition to exported ones.
 // 	  -o, --output string                      File or pattern specifying where to write documentation output. Defaults to printing to stdout.
 // 	      --repository.default-branch string   Manual override for the git repository URL used in place of automatic detection.
-// 	      --repository.directory string        Manual override for the root directory of the git repository use in place of automatic detection.
+// 	      --repository.path string             Manual override for the path from the root of the git repository used in place of automatic detection.
 // 	      --repository.url string              Manual override for the git repository URL used in place of automatic detection.
 // 	  -t, --template stringToString            Custom template string to use for the provided template name instead of the default template. (default [])
 // 	      --template-file stringToString       Custom template file to use for the provided template name instead of the default template. (default [])
 // 	  -v, --verbose count                      Log additional output from the execution of the command. Can be chained for additional verbosity.
+// 	      --version                            Print the version.
 //
 // The gomarkdoc command processes each of the provided packages, generating
 // documentation for the package in markdown format and writing it to console.
@@ -140,10 +141,10 @@
 // repositories may be configured differently from person to person, you may
 // want to manually specify the information for the repository to remove any
 // inconsistencies. This can be achieved with the --repository.url,
-// --repository.default-branch and --repository.directory options. For example,
-// this repository would be configured with:
+// --repository.default-branch and --repository.path options. For example, this
+// repository would be configured with:
 //
-//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.defaultBranch master --repository.directory . -o README.md .
+//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.defaultBranch master --repository.path / -o README.md .
 //
 // Configuring via File
 //
