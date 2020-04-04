@@ -97,19 +97,41 @@ func (typ *Type) isSubexample(exampleName string) bool {
 
 // Funcs lists the funcs related to the type. This only includes functions which
 // return an instance of the type or its pointer.
-func (typ *Type) Funcs() (funcs []*Func) {
-	for _, fn := range typ.doc.Funcs {
-		funcs = append(funcs, NewFunc(typ.cfg.Inc(1), fn, typ.examples))
+func (typ *Type) Funcs() []*Func {
+	funcs := make([]*Func, len(typ.doc.Funcs))
+	for i, fn := range typ.doc.Funcs {
+		funcs[i] = NewFunc(typ.cfg.Inc(1), fn, typ.examples)
 	}
 
-	return
+	return funcs
 }
 
 // Methods lists the funcs that use the type as a value or pointer receiver.
-func (typ *Type) Methods() (methods []*Func) {
-	for _, fn := range typ.doc.Methods {
-		methods = append(methods, NewFunc(typ.cfg.Inc(1), fn, typ.examples))
+func (typ *Type) Methods() []*Func {
+	methods := make([]*Func, len(typ.doc.Methods))
+	for i, fn := range typ.doc.Methods {
+		methods[i] = NewFunc(typ.cfg.Inc(1), fn, typ.examples)
 	}
 
-	return
+	return methods
+}
+
+// Consts lists the const declaration blocks containing values of this type.
+func (typ *Type) Consts() []*Value {
+	consts := make([]*Value, len(typ.doc.Consts))
+	for i, c := range typ.doc.Consts {
+		consts[i] = NewValue(typ.cfg.Inc(1), c)
+	}
+
+	return consts
+}
+
+// Vars lists the var declaration blocks containing values of this type.
+func (typ *Type) Vars() []*Value {
+	vars := make([]*Value, len(typ.doc.Vars))
+	for i, v := range typ.doc.Vars {
+		vars[i] = NewValue(typ.cfg.Inc(1), v)
+	}
+
+	return vars
 }

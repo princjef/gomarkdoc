@@ -72,16 +72,18 @@ Package lang provides constructs for defining golang language constructs and ext
 - [type Repo](<#type-repo>)
 - [type Type](<#type-type>)
   - [func NewType(cfg *Config, doc *doc.Type, examples []*doc.Example) *Type](<#func-newtype>)
+  - [func (typ *Type) Consts() []*Value](<#func-type-consts>)
   - [func (typ *Type) Decl() (string, error)](<#func-type-decl>)
   - [func (typ *Type) Doc() *Doc](<#func-type-doc>)
   - [func (typ *Type) Examples() (examples []*Example)](<#func-type-examples>)
-  - [func (typ *Type) Funcs() (funcs []*Func)](<#func-type-funcs>)
+  - [func (typ *Type) Funcs() []*Func](<#func-type-funcs>)
   - [func (typ *Type) Level() int](<#func-type-level>)
   - [func (typ *Type) Location() Location](<#func-type-location>)
-  - [func (typ *Type) Methods() (methods []*Func)](<#func-type-methods>)
+  - [func (typ *Type) Methods() []*Func](<#func-type-methods>)
   - [func (typ *Type) Name() string](<#func-type-name>)
   - [func (typ *Type) Summary() string](<#func-type-summary>)
   - [func (typ *Type) Title() string](<#func-type-title>)
+  - [func (typ *Type) Vars() []*Value](<#func-type-vars>)
 - [type Value](<#type-value>)
   - [func NewValue(cfg *Config, doc *doc.Value) *Value](<#func-newvalue>)
   - [func (v *Value) Decl() (string, error)](<#func-value-decl>)
@@ -139,6 +141,19 @@ BlockKind identifies the type of block element represented by the corresponding 
 
 ```go
 type BlockKind string
+```
+
+```go
+const (
+    // ParagraphBlock defines a block that represents a paragraph of text.
+    ParagraphBlock BlockKind = "paragraph"
+
+    // CodeBlock defines a block that represents a section of code.
+    CodeBlock BlockKind = "code"
+
+    // HeaderBlock defines a block that represents a section header.
+    HeaderBlock BlockKind = "header"
+)
 ```
 
 ## type [Config](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L20-L27>)
@@ -625,6 +640,14 @@ func NewType(cfg *Config, doc *doc.Type, examples []*doc.Example) *Type
 
 NewType creates a Type from the raw documentation representation of the type\, the token\.FileSet for the package's files and the full list of examples from the containing package\.
 
+### func \(\*Type\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L120>)
+
+```go
+func (typ *Type) Consts() []*Value
+```
+
+Consts lists the const declaration blocks containing values of this type\.
+
 ### func \(\*Type\) [Decl](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L60>)
 
 ```go
@@ -652,7 +675,7 @@ Examples lists the examples pertaining to the type from the set provided on init
 ### func \(\*Type\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L100>)
 
 ```go
-func (typ *Type) Funcs() (funcs []*Func)
+func (typ *Type) Funcs() []*Func
 ```
 
 Funcs lists the funcs related to the type\. This only includes functions which return an instance of the type or its pointer\.
@@ -673,10 +696,10 @@ func (typ *Type) Location() Location
 
 Location returns a representation of the node's location in a file within a repository\.
 
-### func \(\*Type\) [Methods](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L109>)
+### func \(\*Type\) [Methods](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L110>)
 
 ```go
-func (typ *Type) Methods() (methods []*Func)
+func (typ *Type) Methods() []*Func
 ```
 
 Methods lists the funcs that use the type as a value or pointer receiver\.
@@ -704,6 +727,14 @@ func (typ *Type) Title() string
 ```
 
 Title provides a formatted name suitable for use in a header identifying the type\.
+
+### func \(\*Type\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/type.go#L130>)
+
+```go
+func (typ *Type) Vars() []*Value
+```
+
+Vars lists the var declaration blocks containing values of this type\.
 
 ## type [Value](<https://github.com/princjef/gomarkdoc/blob/master/lang/value.go#L8-L11>)
 
