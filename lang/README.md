@@ -32,6 +32,7 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func (ex *Example) Level() int](<#func-example-level>)
   - [func (ex *Example) Location() Location](<#func-example-location>)
   - [func (ex *Example) Name() string](<#func-example-name>)
+  - [func (ex *Example) Output() string](<#func-example-output>)
   - [func (ex *Example) Summary() string](<#func-example-summary>)
   - [func (ex *Example) Title() string](<#func-example-title>)
 - [type File](<#type-file>)
@@ -294,6 +295,14 @@ func (ex *Example) Name() string
 ```
 
 Name provides a pretty\-printed name for the specific example\, if one was provided\.
+
+### func \(\*Example\) [Output](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L82>)
+
+```go
+func (ex *Example) Output() string
+```
+
+Output provides the code's example output\.
 
 ### func \(\*Example\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L54>)
 
