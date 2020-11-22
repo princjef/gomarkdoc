@@ -77,3 +77,8 @@ func (ex *Example) Code() (string, error) {
 
 	return code.String(), nil
 }
+
+// Output provides the code's example output.
+func (ex *Example) Output() string {
+	return ex.doc.Output
+}

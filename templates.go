@@ -18,7 +18,11 @@ var templates = map[string]string{
 
 {{- template "doc" .Doc -}}
 
-{{- codeBlock "go" .Code -}}
+{{- codeBlock "go" .Code }}
+
+Output:
+
+{{ codeBlock "output" .Output -}}
 
 {{- accordionTerminator -}}
 
