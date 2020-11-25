@@ -20,9 +20,13 @@ var templates = map[string]string{
 
 {{- codeBlock "go" .Code }}
 
-Output:
+{{- if .HasOutput -}}
 
-{{ codeBlock "output" .Output -}}
+	{{- header 4 "Output" -}}
+
+	{{- codeBlock "" .Output -}}
+    
+{{- end -}}
 
 {{- accordionTerminator -}}
 

@@ -4,9 +4,13 @@
 
 {{- codeBlock "go" .Code }}
 
-Output:
+{{- if .HasOutput -}}
 
-{{ codeBlock "" .Output -}}
+	{{- header 4 "Output" -}}
+
+	{{- codeBlock "" .Output -}}
+    
+{{- end -}}
 
 {{- accordionTerminator -}}
 

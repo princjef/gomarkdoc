@@ -82,3 +82,8 @@ func (ex *Example) Code() (string, error) {
 func (ex *Example) Output() string {
 	return ex.doc.Output
 }
+
+// HasOutput indicates whether the example contains any example output.
+func (ex *Example) HasOutput() bool {
+	return ex.doc.Output != "" && !ex.doc.EmptyOutput
+}
