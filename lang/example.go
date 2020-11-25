@@ -85,5 +85,5 @@ func (ex *Example) Output() string {
 
 // HasOutput indicates whether the example contains any example output.
 func (ex *Example) HasOutput() bool {
-	return ex.doc.Output != "" && !ex.doc.EmptyOutput
+	return ex.doc.Output != "" || ex.doc.EmptyOutput
 }
