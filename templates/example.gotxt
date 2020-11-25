@@ -6,7 +6,7 @@
 
 Output:
 
-{{ codeBlock "output" .Output -}}
+{{ codeBlock "" .Output -}}
 
 {{- accordionTerminator -}}
 
