@@ -29,9 +29,11 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func NewExample(cfg *Config, name string, doc *doc.Example) *Example](<#func-newexample>)
   - [func (ex *Example) Code() (string, error)](<#func-example-code>)
   - [func (ex *Example) Doc() *Doc](<#func-example-doc>)
+  - [func (ex *Example) HasOutput() bool](<#func-example-hasoutput>)
   - [func (ex *Example) Level() int](<#func-example-level>)
   - [func (ex *Example) Location() Location](<#func-example-location>)
   - [func (ex *Example) Name() string](<#func-example-name>)
+  - [func (ex *Example) Output() string](<#func-example-output>)
   - [func (ex *Example) Summary() string](<#func-example-summary>)
   - [func (ex *Example) Title() string](<#func-example-title>)
 - [type File](<#type-file>)
@@ -271,6 +273,14 @@ func (ex *Example) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the example\.
 
+### func \(\*Example\) [HasOutput](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L87>)
+
+```go
+func (ex *Example) HasOutput() bool
+```
+
+HasOutput indicates whether the example contains any example output\.
+
 ### func \(\*Example\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L25>)
 
 ```go
@@ -294,6 +304,14 @@ func (ex *Example) Name() string
 ```
 
 Name provides a pretty\-printed name for the specific example\, if one was provided\.
+
+### func \(\*Example\) [Output](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L82>)
+
+```go
+func (ex *Example) Output() string
+```
+
+Output provides the code's example output\.
 
 ### func \(\*Example\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L54>)
 
