@@ -6,6 +6,7 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/matryer/is v1.3.0
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/mvdan/xurls v1.1.0 // indirect
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.3 // indirect
 	github.com/pelletier/go-toml v1.6.0 // indirect
@@ -21,4 +22,6 @@ require (
 	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	gopkg.in/src-d/go-git.v4 v4.13.1
+	mvdan.cc/xurls v1.1.0
+	mvdan.cc/xurls/v2 v2.2.0
 )
