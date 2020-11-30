@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/russross/blackfriday/v2"
+	"mvdan.cc/xurls/v2"
 )
 
 // bold converts the provided text to bold
@@ -120,10 +121,44 @@ func paragraph(text string) string {
 	return fmt.Sprintf("%s\n\n", escape(text))
 }
 
-var specialCharacterRegex = regexp.MustCompile("([\\\\`*_{}\\[\\]()<>#+-.!])")
+var (
+	specialCharacterRegex = regexp.MustCompile("([\\\\`*_{}\\[\\]()<>#+-.!~])")
+	urlRegex              = xurls.Strict() // Require a scheme in URLs
+)
 
 func escape(text string) string {
-	return specialCharacterRegex.ReplaceAllString(text, "\\$1")
+	b := []byte(text)
+
+	var (
+		cursor  int
+		builder strings.Builder
+	)
+
+	for _, urlLoc := range urlRegex.FindAllIndex(b, -1) {
+		// Walk through each found URL, escaping the text before the URL and
+		// leaving the text in the URL unchanged.
+		if urlLoc[0] > cursor {
+			// Escape the previous section if its length is nonzero
+			builder.Write(escapeRaw(b[cursor:urlLoc[0]]))
+		}
+
+		// Add the unescaped URL to the end of it
+		builder.Write(b[urlLoc[0]:urlLoc[1]])
+
+		// Move the cursor forward for the next iteration
+		cursor = urlLoc[1]
+	}
+
+	// Escape the end of the string after the last URL if there's anything left
+	if len(b) > cursor {
+		builder.Write(escapeRaw(b[cursor:]))
+	}
+
+	return builder.String()
+}
+
+func escapeRaw(segment []byte) []byte {
+	return specialCharacterRegex.ReplaceAll(segment, []byte("\\$1"))
 }
 
 // plainText converts a markdown string to the plain text that appears in the

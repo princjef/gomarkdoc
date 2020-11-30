@@ -8,7 +8,7 @@ import "github.com/princjef/gomarkdoc/cmd/gomarkdoc"
 
 Package gomarkdoc provides a command line interface for writing golang documentation in markdown format\.
 
-See github\.com/princjef/gomarkdoc for full documentation of this tool\.
+See https://github.com/princjef/gomarkdoc for full documentation of this tool\.
 
 ## Index
 

@@ -9,7 +9,7 @@
 import "github.com/princjef/gomarkdoc"
 ```
 
-Package gomarkdoc formats documentation for one or more packages as markdown for usage outside of the main godoc\.org site\. It supports custom templates for tweaking representation of documentation at fine\-grained levels\, exporting both exported and unexported symbols\, and custom formatters for different backends\.
+Package gomarkdoc formats documentation for one or more packages as markdown for usage outside of the main https://pkg.go.dev site\. It supports custom templates for tweaking representation of documentation at fine\-grained levels\, exporting both exported and unexported symbols\, and custom formatters for different backends\.
 
 ### Command Line Usage
 
