@@ -9,7 +9,7 @@
 // If you want to use this package as a command-line tool, you can install the
 // command by running:
 //
-//	go get -u github.com/princjef/gomarkdoc/cmd/gomarkdoc
+//	GO111MODULE=on go get -u github.com/princjef/gomarkdoc/cmd/gomarkdoc
 //
 // The command line tool supports configuration for all of the features of the
 // importable package:
