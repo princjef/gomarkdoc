@@ -144,7 +144,7 @@
 // --repository.default-branch and --repository.path options. For example, this
 // repository would be configured with:
 //
-//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.defaultBranch master --repository.path / -o README.md .
+//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.default-branch master --repository.path / -o README.md .
 //
 // Configuring via File
 //

@@ -133,7 +133,7 @@ gomarkdoc -vv -o README.md .
 Some features of gomarkdoc rely on being able to detect information from the git repository containing the project\. Since individual local git repositories may be configured differently from person to person\, you may want to manually specify the information for the repository to remove any inconsistencies\. This can be achieved with the \-\-repository\.url\, \-\-repository\.default\-branch and \-\-repository\.path options\. For example\, this repository would be configured with:
 
 ```
-gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.defaultBranch master --repository.path / -o README.md .
+gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.default-branch master --repository.path / -o README.md .
 ```
 
 ### Configuring via File
