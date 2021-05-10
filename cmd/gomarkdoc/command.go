@@ -441,10 +441,26 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 				return err
 			}
 		default:
-			if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
+			if err := writeFile(fileName, text); err != nil {
 				return fmt.Errorf("failed to write output file %s: %w", fileName, err)
 			}
 		}
+	}
+
+	return nil
+}
+
+func writeFile(fileName string, text string) error {
+	folder := filepath.Dir(fileName)
+
+	if folder != "" {
+		if err := os.MkdirAll(folder, 0755); err != nil {
+			return fmt.Errorf("failed to create folder %s: %w", folder, err)
+		}
+	}
+
+	if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", fileName, err)
 	}
 
 	return nil
