@@ -1,26 +1,24 @@
 linters:
   enable:
     - bodyclose
-    - golint
-    - unconvert
+    - gochecknoinits
+    - gocritic
     - gocyclo
     - goimports
-    - maligned
-    - misspell
+    - govet
     - lll
-    - gocritic
-    - gochecknoinits
+    - misspell
+    - revive
+    - unconvert
 
 linters-settings:
   gocyclo:
     min-complexity: 15
-  maligned:
-    suggest-new: true
   lll:
     tab-width: 4
   nakedret:
     max-func-lines: 10
-  golint:
+  revive:
     min-confidence: 0.5
 
 issues:
