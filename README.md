@@ -159,6 +159,7 @@ import (
 
 	"github.com/princjef/gomarkdoc"
 	"github.com/princjef/gomarkdoc/lang"
+	"github.com/princjef/gomarkdoc/logger"
 )
 
 func main() {
@@ -173,14 +174,15 @@ func main() {
 		// handle error
 	}
 
-	buildPkg, err := build.ImportDir(".", wd, build.ImportComment)
+	buildPkg, err := build.ImportDir(wd, build.ImportComment)
 	if err != nil {
 		// handle error
 	}
 
 	// Create a documentation package from the build representation of our
 	// package.
-	pkg, err := lang.NewPackageFromBuild(buildPkg)
+	log := logger.New(logger.DebugLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
 	if err != nil {
 		// handle error
 	}
@@ -188,6 +190,7 @@ func main() {
 	// Write the documentation out to console.
 	fmt.Println(out.Package(pkg))
 }
+
 ```
 
 ## Index
