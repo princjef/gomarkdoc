@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"go/build"
+	"hash/fnv"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -632,84 +633,17 @@ func isLocalPath(path string) bool {
 }
 
 func compare(r1, r2 io.Reader) (bool, error) {
-	b1 := make([]byte, 1024)
-	b2 := make([]byte, 1024)
-
-	var count1 int
-	var count2 int
-
-	var offset1 int
-	var offset2 int
-
-	start := true
-
-	for start || count1 > 0 || count2 > 0 {
-		var err error
-		// Phase 1: read data if necessary
-		if count1 == 0 {
-			count1, err = readBytes(r1, b1)
-			if err != nil {
-				return false, err
-			}
-
-			// If the other buffer has more data and we're done, they're not
-			// equal
-			if count1 == 0 && count2 > 0 {
-				return false, nil
-			}
-
-			offset1 = 0
-		}
-
-		if count2 == 0 {
-			count2, err = readBytes(r2, b2)
-			if err != nil {
-				return false, err
-			}
-
-			// If the other buffer has more data and we're done, they're not
-			// equal
-			if count2 == 0 && count1 > 0 {
-				return false, nil
-			}
-
-			offset2 = 0
-		}
-
-		// Phase 2: compare buffers
-		var bytesToRead int
-		if count1 < count2 {
-			bytesToRead = count1
-		} else {
-			bytesToRead = count2
-		}
-
-		for i := 0; i < bytesToRead; i++ {
-			if b1[offset1+i] != b2[offset2+i] {
-				return false, nil
-			}
-		}
-
-		// Phase 3: update counters
-		count1 -= bytesToRead
-		count2 -= bytesToRead
-		offset1 += bytesToRead
-		offset2 += bytesToRead
-
-		start = false
+	r1Hash := fnv.New128()
+	if _, err := io.Copy(r1Hash, r1); err != nil {
+		return false, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
 	}
 
-	return true, nil
-}
-
-// readBytes reads data from a reader into an empty slice, reporting errors.
-func readBytes(r io.Reader, b []byte) (int, error) {
-	ct, err := r.Read(b)
-	if err != nil && err != io.EOF {
-		return 0, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
+	r2Hash := fnv.New128()
+	if _, err := io.Copy(r2Hash, r2); err != nil {
+		return false, fmt.Errorf("gomarkdoc: failed when checking documentation: %w", err)
 	}
 
-	return ct, nil
+	return bytes.Equal(r1Hash.Sum(nil), r2Hash.Sum(nil)), nil
 }
 
 func getLogLevel(verbosity int) logger.Level {
