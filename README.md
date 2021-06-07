@@ -190,7 +190,6 @@ func main() {
 	// Write the documentation out to console.
 	fmt.Println(out.Package(pkg))
 }
-
 ```
 
 ## Index
