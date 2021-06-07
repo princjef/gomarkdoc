@@ -13,9 +13,10 @@ type (
 	// Renderer provides capabilities for rendering various types of
 	// documentation with the configured format and templates.
 	Renderer struct {
-		templateOverrides map[string]string
-		tmpl              *template.Template
-		format            format.Format
+		templateOverrides      map[string]string
+		tmplFunctionsOverrides map[string]interface{}
+		tmpl                   *template.Template
+		format                 format.Format
 	}
 
 	// RendererOption configures the renderer's behavior.
@@ -29,8 +30,9 @@ type (
 // templates and the GitHubFlavoredMarkdown.
 func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 	renderer := &Renderer{
-		templateOverrides: make(map[string]string),
-		format:            &format.GitHubFlavoredMarkdown{},
+		templateOverrides:      make(map[string]string),
+		tmplFunctionsOverrides: make(map[string]interface{}),
+		format:                 &format.GitHubFlavoredMarkdown{},
 	}
 
 	for _, opt := range opts {
@@ -69,6 +71,8 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 				"paragraph":           renderer.format.Paragraph,
 				"escape":              renderer.format.Escape,
 			})
+			// Overrides the template functions with those provided by the user.
+			tmpl.Funcs(renderer.tmplFunctionsOverrides)
 
 			if _, err := tmpl.Parse(tmplStr); err != nil {
 				return nil, err
@@ -93,6 +97,15 @@ func WithTemplateOverride(name, tmpl string) RendererOption {
 
 		renderer.templateOverrides[name] = tmpl
 
+		return nil
+	}
+}
+
+// WithTemplateFunctionOverride allows to override a template function
+// identified by the provided name using the provided function value.
+func WithTemplateFunctionOverride(name string, function interface{}) RendererOption {
+	return func(renderer *Renderer) error {
+		renderer.tmplFunctionsOverrides[name] = function
 		return nil
 	}
 }
