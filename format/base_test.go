@@ -51,7 +51,7 @@ func TestPlainText(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
 			is := is.New(t)
-			is.Equal(plainText(test.in), test.out) // Wrong output for plainText()
+			is.Equal(PlainText(test.in), test.out) // Wrong output for plainText()
 		})
 	}
 }
@@ -95,7 +95,7 @@ func TestEscape(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
 			is := is.New(t)
-			is.Equal(escape(test.in), test.out) // Wrong output for escape()
+			is.Equal(Escape(test.in), test.out) // Wrong output for escape()
 		})
 	}
 }
