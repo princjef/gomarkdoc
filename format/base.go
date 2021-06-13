@@ -139,7 +139,7 @@ func Escape(text string) string {
 		// leaving the text in the URL unchanged.
 		if urlLoc[0] > cursor {
 			// Escape the previous section if its length is nonzero
-			builder.Write(EscapeRaw(b[cursor:urlLoc[0]]))
+			builder.Write(escapeRaw(b[cursor:urlLoc[0]]))
 		}
 
 		// Add the unescaped URL to the end of it
@@ -151,13 +151,13 @@ func Escape(text string) string {
 
 	// Escape the end of the string after the last URL if there's anything left
 	if len(b) > cursor {
-		builder.Write(EscapeRaw(b[cursor:]))
+		builder.Write(escapeRaw(b[cursor:]))
 	}
 
 	return builder.String()
 }
 
-func EscapeRaw(segment []byte) []byte {
+func escapeRaw(segment []byte) []byte {
 	return specialCharacterRegex.ReplaceAll(segment, []byte("\\$1"))
 }
 
@@ -168,12 +168,12 @@ func PlainText(text string) string {
 	node := md.Parse([]byte(text))
 
 	var builder strings.Builder
-	PlainTextInner(node, &builder)
+	plainTextInner(node, &builder)
 
 	return builder.String()
 }
 
-func PlainTextInner(node *blackfriday.Node, builder *strings.Builder) {
+func plainTextInner(node *blackfriday.Node, builder *strings.Builder) {
 	// Only text nodes produce output
 	if node.Type == blackfriday.Text {
 		builder.Write(node.Literal)
@@ -181,7 +181,7 @@ func PlainTextInner(node *blackfriday.Node, builder *strings.Builder) {
 
 	// Run the children first
 	if node.FirstChild != nil {
-		PlainTextInner(node.FirstChild, builder)
+		plainTextInner(node.FirstChild, builder)
 	}
 
 	// Then run any other siblings
@@ -193,6 +193,6 @@ func PlainTextInner(node *blackfriday.Node, builder *strings.Builder) {
 			builder.WriteRune(' ')
 		}
 
-		PlainTextInner(node.Next, builder)
+		plainTextInner(node.Next, builder)
 	}
 }
