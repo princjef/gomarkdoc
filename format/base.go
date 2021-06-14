@@ -10,7 +10,7 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-// bold converts the provided text to bold
+// Bold converts the provided text to bold
 func Bold(text string) string {
 	if text == "" {
 		return ""
@@ -19,7 +19,7 @@ func Bold(text string) string {
 	return fmt.Sprintf("**%s**", Escape(text))
 }
 
-// codeBlock wraps the provided code as a code block. Language syntax
+// CodeBlock wraps the provided code as a code block. Language syntax
 // highlighting is not supported.
 func CodeBlock(code string) string {
 	var builder strings.Builder
@@ -33,14 +33,14 @@ func CodeBlock(code string) string {
 	return builder.String()
 }
 
-// gfmCodeBlock wraps the provided code as a code block and tags it with the
+// GfmCodeBlock wraps the provided code as a code block and tags it with the
 // provided language (or no language if the empty string is provided), using
 // the triple backtick format from GitHub Flavored Markdown.
 func GfmCodeBlock(language, code string) string {
 	return fmt.Sprintf("```%s\n%s\n```\n\n", language, strings.TrimSpace(code))
 }
 
-// header converts the provided text into a header of the provided level. The
+// Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func Header(level int, text string) (string, error) {
 	if level < 1 {
@@ -64,7 +64,7 @@ func Header(level int, text string) (string, error) {
 	}
 }
 
-// link generates a link with the given text and href values.
+// Link generates a link with the given text and href values.
 func Link(text, href string) string {
 	if text == "" {
 		return ""
@@ -77,7 +77,7 @@ func Link(text, href string) string {
 	return fmt.Sprintf("[%s](<%s>)", text, href)
 }
 
-// listEntry generates an unordered list entry with the provided text at the
+// ListEntry generates an unordered list entry with the provided text at the
 // provided zero-indexed depth. A depth of 0 is considered the topmost level of
 // list.
 func ListEntry(depth int, text string) string {
@@ -90,33 +90,33 @@ func ListEntry(depth int, text string) string {
 	return fmt.Sprintf("%s- %s\n", prefix, text)
 }
 
-// gfmAccordion generates a collapsible content. The accordion's visible title
+// GfmAccordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
 func GfmAccordion(title, body string) string {
 	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n%s</p>\n</details>\n\n", title, Escape(body))
 }
 
-// gfmAccordionHeader generates the header visible when an accordion is
+// GfmAccordionHeader generates the header visible when an accordion is
 // collapsed.
 //
-// The gfmAccordionHeader is expected to be used in conjunction with
-// gfmAccordionTerminator() when the demands of the body's rendering requires
+// The GfmAccordionHeader is expected to be used in conjunction with
+// GfmAccordionTerminator() when the demands of the body's rendering requires
 // it to be generated independently. The result looks conceptually like the
 // following:
 //
-//	accordion := gfmAccordionHeader("Accordion Title") + "Accordion Body" + gfmAccordionTerminator()
+//	accordion := GfmAccordionHeader("Accordion Title") + "Accordion Body" + GfmAccordionTerminator()
 func GfmAccordionHeader(title string) string {
 	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n", title)
 }
 
-// gfmAccordionTerminator generates the code necessary to terminate an
+// GfmAccordionTerminator generates the code necessary to terminate an
 // accordion after the body. It is expected to be used in conjunction with
-// gfmAccordionHeader(). See gfmAccordionHeader for a full description.
+// GfmAccordionHeader(). See GfmAccordionHeader for a full description.
 func GfmAccordionTerminator() string {
 	return "</p>\n</details>\n\n"
 }
 
-// paragraph formats a paragraph with the provided text as the contents.
+// Paragraph formats a paragraph with the provided text as the contents.
 func Paragraph(text string) string {
 	return fmt.Sprintf("%s\n\n", Escape(text))
 }
@@ -126,6 +126,9 @@ var (
 	urlRegex              = xurls.Strict() // Require a scheme in URLs
 )
 
+// Escape escapes the special characters in the provided text, but leaves URLs
+// found intact. Note that the URLs included must begin with a scheme to skip
+// the escaping.
 func Escape(text string) string {
 	b := []byte(text)
 
@@ -161,7 +164,7 @@ func escapeRaw(segment []byte) []byte {
 	return specialCharacterRegex.ReplaceAll(segment, []byte("\\$1"))
 }
 
-// plainText converts a markdown string to the plain text that appears in the
+// PlainText converts a markdown string to the plain text that appears in the
 // rendered output.
 func PlainText(text string) string {
 	md := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
