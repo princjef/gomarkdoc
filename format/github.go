@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/princjef/gomarkdoc/formatcore"
 	"github.com/princjef/gomarkdoc/lang"
 )
 
@@ -17,25 +18,25 @@ type GitHubFlavoredMarkdown struct{}
 
 // Bold converts the provided text to bold
 func (f *GitHubFlavoredMarkdown) Bold(text string) (string, error) {
-	return Bold(text), nil
+	return formatcore.Bold(text), nil
 }
 
 // CodeBlock wraps the provided code as a code block and tags it with the
 // provided language (or no language if the empty string is provided).
 func (f *GitHubFlavoredMarkdown) CodeBlock(language, code string) (string, error) {
-	return GFMCodeBlock(language, code), nil
+	return formatcore.GFMCodeBlock(language, code), nil
 }
 
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *GitHubFlavoredMarkdown) Header(level int, text string) (string, error) {
-	return Header(level, Escape(text))
+	return formatcore.Header(level, formatcore.Escape(text))
 }
 
 // RawHeader converts the provided text into a header of the provided level
 // without escaping the header text. The level is expected to be at least 1.
 func (f *GitHubFlavoredMarkdown) RawHeader(level int, text string) (string, error) {
-	return Header(level, text)
+	return formatcore.Header(level, text)
 }
 
 var (
@@ -46,7 +47,7 @@ var (
 // LocalHref generates an href for navigating to a header with the given
 // headerText located within the same document as the href itself.
 func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error) {
-	result := PlainText(headerText)
+	result := formatcore.PlainText(headerText)
 	result = strings.ToLower(result)
 	result = strings.TrimSpace(result)
 	result = gfmWhitespaceRegex.ReplaceAllString(result, "-")
@@ -57,7 +58,7 @@ func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error) {
 
 // Link generates a link with the given text and href values.
 func (f *GitHubFlavoredMarkdown) Link(text, href string) (string, error) {
-	return Link(text, href), nil
+	return formatcore.Link(text, href), nil
 }
 
 // CodeHref generates an href to the provided code entry.
@@ -106,13 +107,13 @@ func (f *GitHubFlavoredMarkdown) CodeHref(loc lang.Location) (string, error) {
 // provided zero-indexed depth. A depth of 0 is considered the topmost level of
 // list.
 func (f *GitHubFlavoredMarkdown) ListEntry(depth int, text string) (string, error) {
-	return ListEntry(depth, text), nil
+	return formatcore.ListEntry(depth, text), nil
 }
 
 // Accordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
 func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error) {
-	return GFMAccordion(title, body), nil
+	return formatcore.GFMAccordion(title, body), nil
 }
 
 // AccordionHeader generates the header visible when an accordion is collapsed.
@@ -123,22 +124,22 @@ func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error) {
 //
 //	accordion := format.AccordionHeader("Accordion Title") + "Accordion Body" + format.AccordionTerminator()
 func (f *GitHubFlavoredMarkdown) AccordionHeader(title string) (string, error) {
-	return GFMAccordionHeader(title), nil
+	return formatcore.GFMAccordionHeader(title), nil
 }
 
 // AccordionTerminator generates the code necessary to terminate an accordion
 // after the body. It is expected to be used in conjunction with
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error) {
-	return GFMAccordionTerminator(), nil
+	return formatcore.GFMAccordionTerminator(), nil
 }
 
 // Paragraph formats a paragraph with the provided text as the contents.
 func (f *GitHubFlavoredMarkdown) Paragraph(text string) (string, error) {
-	return Paragraph(text), nil
+	return formatcore.Paragraph(text), nil
 }
 
 // Escape escapes special markdown characters from the provided text.
 func (f *GitHubFlavoredMarkdown) Escape(text string) string {
-	return Escape(text)
+	return formatcore.Escape(text)
 }
