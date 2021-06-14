@@ -23,7 +23,7 @@ func (f *GitHubFlavoredMarkdown) Bold(text string) (string, error) {
 // CodeBlock wraps the provided code as a code block and tags it with the
 // provided language (or no language if the empty string is provided).
 func (f *GitHubFlavoredMarkdown) CodeBlock(language, code string) (string, error) {
-	return GfmCodeBlock(language, code), nil
+	return GFMCodeBlock(language, code), nil
 }
 
 // Header converts the provided text into a header of the provided level. The
@@ -112,7 +112,7 @@ func (f *GitHubFlavoredMarkdown) ListEntry(depth int, text string) (string, erro
 // Accordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
 func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error) {
-	return GfmAccordion(title, body), nil
+	return GFMAccordion(title, body), nil
 }
 
 // AccordionHeader generates the header visible when an accordion is collapsed.
@@ -123,14 +123,14 @@ func (f *GitHubFlavoredMarkdown) Accordion(title, body string) (string, error) {
 //
 //	accordion := format.AccordionHeader("Accordion Title") + "Accordion Body" + format.AccordionTerminator()
 func (f *GitHubFlavoredMarkdown) AccordionHeader(title string) (string, error) {
-	return GfmAccordionHeader(title), nil
+	return GFMAccordionHeader(title), nil
 }
 
 // AccordionTerminator generates the code necessary to terminate an accordion
 // after the body. It is expected to be used in conjunction with
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error) {
-	return GfmAccordionTerminator(), nil
+	return GFMAccordionTerminator(), nil
 }
 
 // Paragraph formats a paragraph with the provided text as the contents.

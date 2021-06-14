@@ -33,10 +33,10 @@ func CodeBlock(code string) string {
 	return builder.String()
 }
 
-// GfmCodeBlock wraps the provided code as a code block and tags it with the
+// GFMCodeBlock wraps the provided code as a code block and tags it with the
 // provided language (or no language if the empty string is provided), using
 // the triple backtick format from GitHub Flavored Markdown.
-func GfmCodeBlock(language, code string) string {
+func GFMCodeBlock(language, code string) string {
 	return fmt.Sprintf("```%s\n%s\n```\n\n", language, strings.TrimSpace(code))
 }
 
@@ -90,29 +90,29 @@ func ListEntry(depth int, text string) string {
 	return fmt.Sprintf("%s- %s\n", prefix, text)
 }
 
-// GfmAccordion generates a collapsible content. The accordion's visible title
+// GFMAccordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
-func GfmAccordion(title, body string) string {
+func GFMAccordion(title, body string) string {
 	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n%s</p>\n</details>\n\n", title, Escape(body))
 }
 
-// GfmAccordionHeader generates the header visible when an accordion is
+// GFMAccordionHeader generates the header visible when an accordion is
 // collapsed.
 //
-// The GfmAccordionHeader is expected to be used in conjunction with
-// GfmAccordionTerminator() when the demands of the body's rendering requires
+// The GFMAccordionHeader is expected to be used in conjunction with
+// GFMAccordionTerminator() when the demands of the body's rendering requires
 // it to be generated independently. The result looks conceptually like the
 // following:
 //
-//	accordion := GfmAccordionHeader("Accordion Title") + "Accordion Body" + GfmAccordionTerminator()
-func GfmAccordionHeader(title string) string {
+//	accordion := GFMAccordionHeader("Accordion Title") + "Accordion Body" + GFMAccordionTerminator()
+func GFMAccordionHeader(title string) string {
 	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n", title)
 }
 
-// GfmAccordionTerminator generates the code necessary to terminate an
+// GFMAccordionTerminator generates the code necessary to terminate an
 // accordion after the body. It is expected to be used in conjunction with
-// GfmAccordionHeader(). See GfmAccordionHeader for a full description.
-func GfmAccordionTerminator() string {
+// GFMAccordionHeader(). See GFMAccordionHeader for a full description.
+func GFMAccordionTerminator() string {
 	return "</p>\n</details>\n\n"
 }
 
