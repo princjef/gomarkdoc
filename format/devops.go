@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/princjef/gomarkdoc/format/formatcore"
 	"github.com/princjef/gomarkdoc/lang"
 )
 
@@ -18,25 +19,25 @@ type AzureDevOpsMarkdown struct{}
 
 // Bold converts the provided text to bold
 func (f *AzureDevOpsMarkdown) Bold(text string) (string, error) {
-	return bold(text), nil
+	return formatcore.Bold(text), nil
 }
 
 // CodeBlock wraps the provided code as a code block and tags it with the
 // provided language (or no language if the empty string is provided).
 func (f *AzureDevOpsMarkdown) CodeBlock(language, code string) (string, error) {
-	return gfmCodeBlock(language, code), nil
+	return formatcore.GFMCodeBlock(language, code), nil
 }
 
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *AzureDevOpsMarkdown) Header(level int, text string) (string, error) {
-	return header(level, escape(text))
+	return formatcore.Header(level, formatcore.Escape(text))
 }
 
 // RawHeader converts the provided text into a header of the provided level
 // without escaping the header text. The level is expected to be at least 1.
 func (f *AzureDevOpsMarkdown) RawHeader(level int, text string) (string, error) {
-	return header(level, text)
+	return formatcore.Header(level, text)
 }
 
 var devOpsWhitespaceRegex = regexp.MustCompile(`\s`)
@@ -96,20 +97,20 @@ func (f *AzureDevOpsMarkdown) CodeHref(loc lang.Location) (string, error) {
 
 // Link generates a link with the given text and href values.
 func (f *AzureDevOpsMarkdown) Link(text, href string) (string, error) {
-	return link(text, href), nil
+	return formatcore.Link(text, href), nil
 }
 
 // ListEntry generates an unordered list entry with the provided text at the
 // provided zero-indexed depth. A depth of 0 is considered the topmost level of
 // list.
 func (f *AzureDevOpsMarkdown) ListEntry(depth int, text string) (string, error) {
-	return listEntry(depth, text), nil
+	return formatcore.ListEntry(depth, text), nil
 }
 
 // Accordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
 func (f *AzureDevOpsMarkdown) Accordion(title, body string) (string, error) {
-	return gfmAccordion(title, body), nil
+	return formatcore.GFMAccordion(title, body), nil
 }
 
 // AccordionHeader generates the header visible when an accordion is collapsed.
@@ -120,22 +121,22 @@ func (f *AzureDevOpsMarkdown) Accordion(title, body string) (string, error) {
 //
 //	accordion := format.AccordionHeader("Accordion Title") + "Accordion Body" + format.AccordionTerminator()
 func (f *AzureDevOpsMarkdown) AccordionHeader(title string) (string, error) {
-	return gfmAccordionHeader(title), nil
+	return formatcore.GFMAccordionHeader(title), nil
 }
 
 // AccordionTerminator generates the code necessary to terminate an accordion
 // after the body. It is expected to be used in conjunction with
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *AzureDevOpsMarkdown) AccordionTerminator() (string, error) {
-	return gfmAccordionTerminator(), nil
+	return formatcore.GFMAccordionTerminator(), nil
 }
 
 // Paragraph formats a paragraph with the provided text as the contents.
 func (f *AzureDevOpsMarkdown) Paragraph(text string) (string, error) {
-	return paragraph(text), nil
+	return formatcore.Paragraph(text), nil
 }
 
 // Escape escapes special markdown characters from the provided text.
 func (f *AzureDevOpsMarkdown) Escape(text string) string {
-	return escape(text)
+	return formatcore.Escape(text)
 }
