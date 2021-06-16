@@ -3,7 +3,7 @@ package format
 import (
 	"fmt"
 
-	"github.com/princjef/gomarkdoc/formatcore"
+	"github.com/princjef/gomarkdoc/format/formatcore"
 	"github.com/princjef/gomarkdoc/lang"
 )
 
