@@ -6,6 +6,8 @@
 import "github.com/princjef/gomarkdoc/format/formatcore"
 ```
 
+Package formatcore provides utilities for creating formatters like those found in the format package\.
+
 ## Index
 
 - [func Bold(text string) string](<#func-bold>)
