@@ -89,7 +89,7 @@ func (fn *Func) Examples() (examples []*Example) {
 		case example.Name == fullName:
 			name = ""
 		case strings.HasPrefix(example.Name, underscorePrefix):
-			name = underscorePrefix[len(underscorePrefix):]
+			name = example.Name[len(underscorePrefix):]
 		default:
 			// TODO: better filtering
 			continue
