@@ -7,7 +7,11 @@
 // Command Line Usage
 //
 // If you want to use this package as a command-line tool, you can install the
-// command by running:
+// command by running the following on go 1.16+:
+//
+//	go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+//
+// For older versions of go, you can install using the following method instead:
 //
 //	GO111MODULE=on go get -u github.com/princjef/gomarkdoc/cmd/gomarkdoc
 //
