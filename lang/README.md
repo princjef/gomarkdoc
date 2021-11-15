@@ -349,7 +349,7 @@ func NewFile(header, footer string, packages []*Package) *File
 
 NewFile creates a new instance of File with the provided information\.
 
-## type [Func](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L11-L15>)
+## type [Func](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L12-L16>)
 
 Func holds documentation information for a single func declaration within a package or type\.
 
@@ -359,7 +359,7 @@ type Func struct {
 }
 ```
 
-### func [NewFunc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L20>)
+### func [NewFunc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L21>)
 
 ```go
 func NewFunc(cfg *Config, doc *doc.Func, examples []*doc.Example) *Func
@@ -367,7 +367,7 @@ func NewFunc(cfg *Config, doc *doc.Func, examples []*doc.Example) *Func
 
 NewFunc creates a new Func from the corresponding documentation construct from the standard library\, the related token\.FileSet for the package and the list of examples for the package\.
 
-### func \(\*Func\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L65>)
+### func \(\*Func\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L66>)
 
 ```go
 func (fn *Func) Doc() *Doc
@@ -375,7 +375,7 @@ func (fn *Func) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the function\.
 
-### func \(\*Func\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L77>)
+### func \(\*Func\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L79>)
 
 ```go
 func (fn *Func) Examples() (examples []*Example)
@@ -383,7 +383,7 @@ func (fn *Func) Examples() (examples []*Example)
 
 Examples provides the list of examples from the list given on initialization that pertain to the function\.
 
-### func \(\*Func\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L26>)
+### func \(\*Func\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L27>)
 
 ```go
 func (fn *Func) Level() int
@@ -391,7 +391,7 @@ func (fn *Func) Level() int
 
 Level provides the default level at which headers for the func should be rendered in the final documentation\.
 
-### func \(\*Func\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L53>)
+### func \(\*Func\) [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L54>)
 
 ```go
 func (fn *Func) Location() Location
@@ -399,7 +399,7 @@ func (fn *Func) Location() Location
 
 Location returns a representation of the node's location in a file within a repository\.
 
-### func \(\*Func\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L31>)
+### func \(\*Func\) [Name](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L32>)
 
 ```go
 func (fn *Func) Name() string
@@ -407,7 +407,7 @@ func (fn *Func) Name() string
 
 Name provides the name of the function\.
 
-### func \(\*Func\) [Receiver](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L47>)
+### func \(\*Func\) [Receiver](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L48>)
 
 ```go
 func (fn *Func) Receiver() string
@@ -415,7 +415,7 @@ func (fn *Func) Receiver() string
 
 Receiver provides the type of the receiver for the function\, or empty string if there is no receiver type\.
 
-### func \(\*Func\) [Signature](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L71>)
+### func \(\*Func\) [Signature](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L72>)
 
 ```go
 func (fn *Func) Signature() (string, error)
@@ -423,7 +423,7 @@ func (fn *Func) Signature() (string, error)
 
 Signature provides the raw text representation of the code for the function's signature\.
 
-### func \(\*Func\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L59>)
+### func \(\*Func\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L60>)
 
 ```go
 func (fn *Func) Summary() string
@@ -431,7 +431,7 @@ func (fn *Func) Summary() string
 
 Summary provides the one\-sentence summary of the function's documentation comment
 
-### func \(\*Func\) [Title](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L37>)
+### func \(\*Func\) [Title](<https://github.com/princjef/gomarkdoc/blob/master/lang/func.go#L38>)
 
 ```go
 func (fn *Func) Title() string
