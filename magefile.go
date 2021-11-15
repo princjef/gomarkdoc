@@ -1,4 +1,5 @@
-//+build mage
+//go:build mage
+// +build mage
 
 package main
 
@@ -9,7 +10,7 @@ import (
 
 var linter = bintool.Must(bintool.New(
 	"golangci-lint{{.BinExt}}",
-	"1.40.1",
+	"1.43.0",
 	"https://github.com/golangci/golangci-lint/releases/download/v{{.Version}}/golangci-lint-{{.Version}}-{{.GOOS}}-{{.GOARCH}}{{.ArchiveExt}}",
 ))
 
