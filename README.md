@@ -49,6 +49,7 @@ Flags:
       --repository.default-branch string   Manual override for the git repository URL used in place of automatic detection.
       --repository.path string             Manual override for the path from the root of the git repository used in place of automatic detection.
       --repository.url string              Manual override for the git repository URL used in place of automatic detection.
+      --tags strings                       Set of build tags to apply when choosing which files to include for documentation generation.
   -t, --template stringToString            Custom template string to use for the provided template name instead of the default template. (default [])
       --template-file stringToString       Custom template file to use for the provided template name instead of the default template. (default [])
   -v, --verbose count                      Log additional output from the execution of the command. Can be chained for additional verbosity.
@@ -129,6 +130,12 @@ As with the godoc tool itself\, only exported symbols will be shown in documenta
 
 ```
 gomarkdoc -u -o README.md .
+```
+
+If you would like to include files that are part of a build tag\, you can specify build tags with the \-\-tags flag\. Tags are also supported through GOFLAGS\, though command line and configuration file definitions override tags specified through GOFLAGS\.
+
+```
+gomarkdoc --tags sometag .
 ```
 
 You can also run gomarkdoc in a verification mode with the \-\-check/\-c flag\. This is particularly useful for continuous integration when you want to make sure that a commit correctly updated the generated documentation\. This flag is only supported when the \-\-output/\-o flag is specified\, as the file provided there is what the tool is checking:
