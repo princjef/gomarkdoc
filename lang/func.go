@@ -3,6 +3,7 @@ package lang
 import (
 	"fmt"
 	"go/doc"
+	"go/token"
 	"strings"
 )
 
@@ -69,7 +70,8 @@ func (fn *Func) Doc() *Doc {
 // Signature provides the raw text representation of the code for the
 // function's signature.
 func (fn *Func) Signature() (string, error) {
-	return printNode(fn.doc.Decl, fn.cfg.FileSet)
+	// We use a custom FileSet so that we don't inherit multiline formatting
+	return printNode(fn.doc.Decl, token.NewFileSet())
 }
 
 // Examples provides the list of examples from the list given on initialization
