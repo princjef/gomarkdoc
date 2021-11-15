@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"container/list"
 	"errors"
+	"flag"
 	"fmt"
 	"go/build"
 	"hash/fnv"
@@ -51,6 +52,7 @@ type commandOptions struct {
 	footer                string
 	footerFile            string
 	format                string
+	tags                  []string
 	templateOverrides     map[string]string
 	templateFileOverrides map[string]string
 	verbosity             int
@@ -90,6 +92,7 @@ func buildCommand() *cobra.Command {
 			opts.headerFile = viper.GetString("headerFile")
 			opts.footer = viper.GetString("footer")
 			opts.footerFile = viper.GetString("footerFile")
+			opts.tags = viper.GetStringSlice("tags")
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
@@ -180,6 +183,12 @@ func buildCommand() *cobra.Command {
 		"",
 		"File containing additional content to inject at the end of each output file.",
 	)
+	command.Flags().StringSliceVar(
+		&opts.tags,
+		"tags",
+		defaultTags(),
+		"Set of build tags to apply when choosing which files to include for documentation generation.",
+	)
 	command.Flags().CountVarP(
 		&opts.verbosity,
 		"verbose",
@@ -222,11 +231,32 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
 	_ = viper.BindPFlag("footer", command.Flags().Lookup("footer"))
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
+	_ = viper.BindPFlag("tags", command.Flags().Lookup("tags"))
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
 	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
 
 	return command
+}
+
+func defaultTags() []string {
+	f, ok := os.LookupEnv("GOFLAGS")
+	if !ok {
+		return nil
+	}
+
+	fs := flag.NewFlagSet("goflags", flag.ContinueOnError)
+	tags := fs.String("tags", "", "")
+
+	if err := fs.Parse(strings.Fields(f)); err != nil {
+		return nil
+	}
+
+	if tags == nil {
+		return nil
+	}
+
+	return strings.Split(*tags, ",")
 }
 
 func buildConfig(configFile string) {
@@ -364,7 +394,7 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 	for _, spec := range specs {
 		log := logger.New(getLogLevel(opts.verbosity), logger.WithField("dir", spec.Dir))
 
-		buildPkg, err := getBuildPackage(spec.ImportPath)
+		buildPkg, err := getBuildPackage(spec.ImportPath, opts.tags)
 		if err != nil {
 			log.Debugf("unable to load package in directory: %s", err)
 			// We don't care if a wildcard path produces nothing
@@ -493,9 +523,12 @@ func checkFile(b *bytes.Buffer, path string) error {
 	return nil
 }
 
-func getBuildPackage(path string) (*build.Package, error) {
+func getBuildPackage(path string, tags []string) (*build.Package, error) {
+	ctx := build.Default
+	ctx.BuildTags = tags
+
 	if isLocalPath(path) {
-		pkg, err := build.ImportDir(path, build.ImportComment)
+		pkg, err := ctx.ImportDir(path, build.ImportComment)
 		if err != nil {
 			return nil, fmt.Errorf("gomarkdoc: invalid package in directory: %s", path)
 		}
@@ -508,7 +541,7 @@ func getBuildPackage(path string) (*build.Package, error) {
 		return nil, err
 	}
 
-	pkg, err := build.Import(path, wd, build.ImportComment)
+	pkg, err := ctx.Import(path, wd, build.ImportComment)
 	if err != nil {
 		return nil, fmt.Errorf("gomarkdoc: invalid package at import path: %s", path)
 	}

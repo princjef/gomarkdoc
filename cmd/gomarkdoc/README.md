@@ -15,7 +15,7 @@ See https://github.com/princjef/gomarkdoc for full documentation of this tool\.
 - [type PackageSpec](<#type-packagespec>)
 
 
-## type [PackageSpec](<https://github.com/princjef/gomarkdoc/blob/master/cmd/gomarkdoc/command.go#L30-L44>)
+## type [PackageSpec](<https://github.com/princjef/gomarkdoc/blob/master/cmd/gomarkdoc/command.go#L31-L45>)
 
 PackageSpec defines the data available to the \-\-output option's template\. Information is recomputed for each package generated\.
 
