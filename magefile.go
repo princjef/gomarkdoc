@@ -45,9 +45,9 @@ func DocVerify() error {
 }
 
 func Test() error {
-	return shellcmd.Command(`go test -coverprofile=coverage.out ./...`).Run()
+	return shellcmd.Command(`go test -coverprofile=coverage.txt ./...`).Run()
 }
 
 func Coverage() error {
-	return shellcmd.Command(`go tool cover -html=coverage.out`).Run()
+	return shellcmd.Command(`go tool cover -html=coverage.txt`).Run()
 }
