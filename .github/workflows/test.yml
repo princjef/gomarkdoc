@@ -35,3 +35,6 @@ jobs:
         with:
           version: latest
           args: test
+      - name: Upload Coverage
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        uses: codecov/codecov-action@v2
