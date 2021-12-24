@@ -25,10 +25,16 @@ func CodeBlock(code string) string {
 	var builder strings.Builder
 
 	lines := strings.Split(code, "\n")
-	for _, line := range lines {
+	for i, line := range lines {
+		if i != 0 {
+			builder.WriteRune('\n')
+		}
+
 		builder.WriteRune('\t')
 		builder.WriteString(line)
 	}
+
+	builder.WriteString("\n\n")
 
 	return builder.String()
 }

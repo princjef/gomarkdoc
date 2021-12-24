@@ -4,6 +4,9 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/princjef/mageutil/bintool"
 	"github.com/princjef/mageutil/shellcmd"
 )
@@ -44,8 +47,33 @@ func DocVerify() error {
 	)
 }
 
+func RegenerateTestDocs() error {
+	dirs, err := os.ReadDir("./testData")
+	if err != nil {
+		return err
+	}
+
+	base, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	for _, dir := range dirs {
+		if !dir.IsDir() {
+			continue
+		}
+
+		os.Chdir(filepath.Join(base, "./testData", dir.Name()))
+		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README.md" ./...`).Run(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func Test() error {
-	return shellcmd.Command(`go test -coverprofile=coverage.txt ./...`).Run()
+	return shellcmd.Command(`go test -count 1 -coverprofile=coverage.txt ./...`).Run()
 }
 
 func Coverage() error {
