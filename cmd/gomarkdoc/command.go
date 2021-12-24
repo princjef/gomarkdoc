@@ -11,7 +11,6 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -70,16 +69,18 @@ func buildCommand() *cobra.Command {
 	var opts commandOptions
 	var configFile string
 
-	cobra.OnInitialize(func() { buildConfig(configFile) })
+	// cobra.OnInitialize(func() { buildConfig(configFile) })
 
 	var command = &cobra.Command{
 		Use:   "gomarkdoc [package ...]",
 		Short: "generate markdown documentation for golang code",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.version {
 				printVersion()
-				return
+				return nil
 			}
+
+			buildConfig(configFile)
 
 			// Load configuration from viper
 			opts.includeUnexported = viper.GetBool("includeUnexported")
@@ -98,7 +99,7 @@ func buildCommand() *cobra.Command {
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
 
 			if opts.check && opts.output == "" {
-				log.Fatal("check mode cannot be run without an output set")
+				return errors.New("gomarkdoc: check mode cannot be run without an output set")
 			}
 
 			if len(args) == 0 {
@@ -106,9 +107,7 @@ func buildCommand() *cobra.Command {
 				args = []string{"."}
 			}
 
-			if err := runCommand(args, opts); err != nil {
-				log.Fatal(err)
-			}
+			return runCommand(args, opts)
 		},
 	}
 
