@@ -279,6 +279,33 @@ func TestCommand_tagsWithGOFLAGSNoParse(t *testing.T) {
 	verifyNotEqual(t, "./tags")
 }
 
+func TestCommand_embed(t *testing.T) {
+	is := is.New(t)
+
+	err := os.Chdir(filepath.Join(wd, "../../testData"))
+	is.NoErr(err)
+
+	os.Args = []string{
+		"gomarkdoc", "./embed",
+		"--embed",
+		"-o", "{{.Dir}}/README-test.md",
+		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.default-branch", "master",
+		"--repository.path", "/testData/",
+	}
+	cleanup("embed")
+
+	data, err := os.ReadFile("./embed/README-template.md")
+	is.NoErr(err)
+
+	err = os.WriteFile("./embed/README-test.md", data, 0644)
+	is.NoErr(err)
+
+	main()
+
+	verify(t, "./embed")
+}
+
 func TestCommand_untagged(t *testing.T) {
 	is := is.New(t)
 

@@ -57,6 +57,7 @@ type commandOptions struct {
 	verbosity             int
 	includeUnexported     bool
 	check                 bool
+	embed                 bool
 	version               bool
 }
 
@@ -86,6 +87,7 @@ func buildCommand() *cobra.Command {
 			opts.includeUnexported = viper.GetBool("includeUnexported")
 			opts.output = viper.GetString("output")
 			opts.check = viper.GetBool("check")
+			opts.embed = viper.GetBool("embed")
 			opts.format = viper.GetString("format")
 			opts.templateOverrides = viper.GetStringMapString("template")
 			opts.templateFileOverrides = viper.GetStringMapString("templateFile")
@@ -137,6 +139,13 @@ func buildCommand() *cobra.Command {
 		"c",
 		false,
 		"Check the output to see if it matches the generated documentation. --output must be specified to use this.",
+	)
+	command.Flags().BoolVarP(
+		&opts.embed,
+		"embed",
+		"e",
+		false,
+		"Embed documentation into existing markdown files if available, otherwise append to file.",
 	)
 	command.Flags().StringVarP(
 		&opts.format,
@@ -223,6 +232,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
 	_ = viper.BindPFlag("output", command.Flags().Lookup("output"))
 	_ = viper.BindPFlag("check", command.Flags().Lookup("check"))
+	_ = viper.BindPFlag("embed", command.Flags().Lookup("embed"))
 	_ = viper.BindPFlag("format", command.Flags().Lookup("format"))
 	_ = viper.BindPFlag("template", command.Flags().Lookup("template"))
 	_ = viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
@@ -417,106 +427,6 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 		}
 
 		spec.pkg = pkg
-	}
-
-	return nil
-}
-
-func writeOutput(specs []*PackageSpec, opts commandOptions) error {
-	overrides, err := resolveOverrides(opts)
-	if err != nil {
-		return err
-	}
-
-	out, err := gomarkdoc.NewRenderer(overrides...)
-	if err != nil {
-		return err
-	}
-
-	header, err := resolveHeader(opts)
-	if err != nil {
-		return err
-	}
-
-	footer, err := resolveFooter(opts)
-	if err != nil {
-		return err
-	}
-
-	filePkgs := make(map[string][]*lang.Package)
-
-	for _, spec := range specs {
-		if spec.pkg == nil {
-			continue
-		}
-
-		filePkgs[spec.outputFile] = append(filePkgs[spec.outputFile], spec.pkg)
-	}
-
-	for fileName, pkgs := range filePkgs {
-		file := lang.NewFile(header, footer, pkgs)
-
-		text, err := out.File(file)
-		if err != nil {
-			return err
-		}
-
-		switch {
-		case fileName == "":
-			fmt.Fprint(os.Stdout, text)
-		case opts.check:
-			var b bytes.Buffer
-			fmt.Fprint(&b, text)
-			if err := checkFile(&b, fileName); err != nil {
-				return err
-			}
-		default:
-			if err := writeFile(fileName, text); err != nil {
-				return fmt.Errorf("failed to write output file %s: %w", fileName, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func writeFile(fileName string, text string) error {
-	folder := filepath.Dir(fileName)
-
-	if folder != "" {
-		if err := os.MkdirAll(folder, 0755); err != nil {
-			return fmt.Errorf("failed to create folder %s: %w", folder, err)
-		}
-	}
-
-	if err := ioutil.WriteFile(fileName, []byte(text), 0755); err != nil {
-		return fmt.Errorf("failed to write file %s: %w", fileName, err)
-	}
-
-	return nil
-}
-
-func checkFile(b *bytes.Buffer, path string) error {
-	checkErr := errors.New("output does not match current files. Did you forget to run gomarkdoc?")
-
-	f, err := os.Open(path)
-	if err != nil {
-		if err == os.ErrNotExist {
-			return checkErr
-		}
-
-		return fmt.Errorf("failed to open file %s for checking: %w", path, err)
-	}
-
-	defer f.Close()
-
-	match, err := compare(b, f)
-	if err != nil {
-		return fmt.Errorf("failure while attempting to check contents of %s: %w", path, err)
-	}
-
-	if !match {
-		return checkErr
 	}
 
 	return nil
