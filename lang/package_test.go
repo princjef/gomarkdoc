@@ -12,6 +12,53 @@ import (
 	"github.com/princjef/gomarkdoc/logger"
 )
 
+func TestPackage_Consts(t *testing.T) {
+	is := is.New(t)
+
+	pkg, err := loadPackage("../testData/lang/function")
+	is.NoErr(err)
+
+	consts := pkg.Consts()
+	is.Equal(len(consts), 1)
+
+	decl, err := consts[0].Decl()
+	is.NoErr(err)
+	is.Equal(decl, `const (
+    ConstA = "string"
+    ConstB = true
+)`)
+}
+
+func TestPackage_Vars(t *testing.T) {
+	is := is.New(t)
+
+	pkg, err := loadPackage("../testData/lang/function")
+	is.NoErr(err)
+
+	vars := pkg.Vars()
+	is.Equal(len(vars), 1)
+
+	decl, err := vars[0].Decl()
+	is.NoErr(err)
+	is.Equal(decl, `var Variable = 5`)
+}
+
+func TestPackage_dotImport(t *testing.T) {
+	is := is.New(t)
+
+	err := os.Chdir("../testData/lang/function")
+	is.NoErr(err)
+
+	defer func() {
+		_ = os.Chdir("../../../lang")
+	}()
+
+	pkg, err := loadPackage(".")
+	is.NoErr(err)
+
+	is.Equal(pkg.Import(), `import "github.com/princjef/gomarkdoc/testData/lang/function"`)
+}
+
 func TestPackage_strings(t *testing.T) {
 	is := is.New(t)
 
@@ -111,4 +158,19 @@ func getBuildPackage(path string) (*build.Package, error) {
 	}
 
 	return build.Import(path, wd, build.ImportComment)
+}
+
+func loadPackage(dir string) (*lang.Package, error) {
+	buildPkg, err := getBuildPackage(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	log := logger.New(logger.ErrorLevel)
+	pkg, err := lang.NewPackageFromBuild(log, buildPkg)
+	if err != nil {
+		return nil, err
+	}
+
+	return pkg, nil
 }
