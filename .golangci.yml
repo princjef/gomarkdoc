@@ -11,6 +11,13 @@ linters:
     - revive
     - unconvert
 
+  # Not currently compatible with go 1.18
+  disable:
+    - gosimple
+    - staticcheck
+    - structcheck
+    - unused
+
 linters-settings:
   gocyclo:
     min-complexity: 15
