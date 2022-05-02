@@ -13,7 +13,7 @@ import (
 
 var linter = bintool.Must(bintool.New(
 	"golangci-lint{{.BinExt}}",
-	"1.43.0",
+	"1.45.2",
 	"https://github.com/golangci/golangci-lint/releases/download/v{{.Version}}/golangci-lint-{{.Version}}-{{.GOOS}}-{{.GOARCH}}{{.ArchiveExt}}",
 ))
 
