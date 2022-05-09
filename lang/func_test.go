@@ -118,6 +118,18 @@ func TestFunc_Location(t *testing.T) {
 	is.True(strings.HasSuffix(loc.Filepath, "func.go"))
 }
 
+func TestFunc_Examples_generic(t *testing.T) {
+	is := is.New(t)
+	fn, err := loadFunc("../testData/lang/function", "WithGenericReceiver")
+	is.NoErr(err)
+
+	examples := fn.Examples()
+	is.Equal(len(examples), 1)
+
+	ex := examples[0]
+	is.Equal(ex.Name(), "")
+}
+
 func TestFunc_stringsCompare(t *testing.T) {
 	is := is.New(t)
 
