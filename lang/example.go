@@ -3,7 +3,7 @@ package lang
 import (
 	"fmt"
 	"go/doc"
-	"go/format"
+	"go/printer"
 	"strings"
 )
 
@@ -67,15 +67,26 @@ func (ex *Example) Code() (string, error) {
 	if ex.doc.Play != nil {
 		codeNode = ex.doc.Play
 	} else {
-		codeNode = ex.doc.Code
+		codeNode = &printer.CommentedNode{Node: ex.doc.Code, Comments: ex.doc.Comments}
 	}
 
 	var code strings.Builder
-	if err := format.Node(&code, ex.cfg.FileSet, codeNode); err != nil {
+	err := (&printer.Config{Mode: printer.TabIndent | printer.UseSpaces, Tabwidth: 8}).Fprint(&code, ex.cfg.FileSet, codeNode)
+	if err != nil {
 		return "", err
 	}
 
-	return code.String(), nil
+	str := code.String()
+
+	// additional formatting if this is a function body
+	if i := len(str); i >= 2 && str[0] == '{' && str[i-1] == '}' {
+		// remove surrounding braces
+		str = str[1 : i-1]
+		// unindent
+		str = strings.ReplaceAll(str, "\n\t", "\n")
+	}
+
+	return str, nil
 }
 
 // Output provides the code's example output.
