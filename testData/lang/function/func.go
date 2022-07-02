@@ -28,3 +28,9 @@ func (r Receiver) WithReceiver() {}
 
 // WithPtrReceiver has a pointer receiver.
 func (r *Receiver) WithPtrReceiver() {}
+
+// Generic is a struct with a generic type.
+type Generic[T any] struct{}
+
+// WithGenericReceiver has a receiver with a generic type.
+func (r Generic[T]) WithGenericReceiver() {}

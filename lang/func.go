@@ -104,9 +104,12 @@ func (fn *Func) Examples() (examples []*Example) {
 }
 
 func (fn *Func) rawRecv() string {
-	if strings.HasPrefix(fn.doc.Recv, "*") {
-		return fn.doc.Recv[1:]
+	// remove type parameters
+	recv := strings.Split(fn.doc.Recv, "[")[0]
+
+	if strings.HasPrefix(recv, "*") {
+		return recv[1:]
 	}
 
-	return fn.doc.Recv
+	return recv
 }
