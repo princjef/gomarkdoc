@@ -55,6 +55,10 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 			return err
 		}
 
+		if opts.embed && fileName != "" {
+			text = embedContents(log, fileName, text)
+		}
+
 		switch {
 		case fileName == "":
 			fmt.Fprint(os.Stdout, text)
@@ -65,10 +69,6 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 				return err
 			}
 		default:
-			if opts.embed {
-				text = embedContents(log, fileName, text)
-			}
-
 			if err := writeFile(fileName, text); err != nil {
 				return fmt.Errorf("failed to write output file %s: %w", fileName, err)
 			}
