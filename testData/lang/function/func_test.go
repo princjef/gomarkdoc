@@ -27,3 +27,8 @@ func ExampleReceiver_subTest() {
 	var r function.Receiver
 	r.WithReceiver()
 }
+
+func ExampleGeneric_WithGenericReceiver() {
+	r := function.Generic[int]{}
+	r.WithGenericReceiver()
+}
