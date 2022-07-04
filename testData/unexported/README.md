@@ -6,7 +6,7 @@
 import "github.com/princjef/gomarkdoc/testData/unexported"
 ```
 
-Package unexported contains some simple code to exercise basic scenarios for documentation purposes\.
+Package unexported contains some simple code to exercise basic scenarios for documentation purposes.
 
 ## Index
 
@@ -18,9 +18,9 @@ Package unexported contains some simple code to exercise basic scenarios for doc
 
 ## type [Num](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L8>)
 
-Num is a number\.
+Num is a number.
 
-It is just a test type so that we can make sure this works\.
+It is just a test type so that we can make sure this works.
 
 ```go
 type Num int
@@ -32,7 +32,7 @@ type Num int
 func AddNums(num1, num2 Num) Num
 ```
 
-AddNums adds two Nums together\.
+AddNums adds two Nums together.
 
 ### func [addInternal](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L21>)
 
@@ -40,7 +40,7 @@ AddNums adds two Nums together\.
 func addInternal(num1, num2 Num) Num
 ```
 
-addInternal is a private version of AddNums\.
+addInternal is a private version of AddNums.
 
 ### func \(Num\) [Add](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L11>)
 
@@ -48,7 +48,7 @@ addInternal is a private version of AddNums\.
 func (n Num) Add(num Num) Num
 ```
 
-Add adds the other num to this one\.
+Add adds the other num to this one.
 
 
 

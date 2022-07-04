@@ -6,7 +6,7 @@
 import "github.com/princjef/gomarkdoc/testData/simple"
 ```
 
-Package simple contains some simple code to exercise basic scenarios for documentation purposes\.
+Package simple contains, some simple code to exercise basic scenarios for documentation purposes.
 
 ## Index
 
@@ -17,9 +17,9 @@ Package simple contains some simple code to exercise basic scenarios for documen
 
 ## type [Num](<https://github.com/princjef/gomarkdoc/blob/master/testData/simple/main.go#L8>)
 
-Num is a number\.
+Num is a number.
 
-It is just a test type so that we can make sure this works\.
+It is just a test type so that we can make sure this works.
 
 ```go
 type Num int
@@ -31,7 +31,7 @@ type Num int
 func AddNums(num1, num2 Num) Num
 ```
 
-AddNums adds two Nums together\.
+AddNums adds two Nums together.
 
 ### func \(Num\) [Add](<https://github.com/princjef/gomarkdoc/blob/master/testData/simple/main.go#L11>)
 
@@ -39,7 +39,7 @@ AddNums adds two Nums together\.
 func (n Num) Add(num Num) Num
 ```
 
-Add adds the other num to this one\.
+Add adds the other num to this one.
 
 
 

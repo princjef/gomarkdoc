@@ -61,8 +61,8 @@ func TestEscape(t *testing.T) {
 		in, out string
 	}{
 		{
-			in:  "plain text",
-			out: `plain text`,
+			in:  "plain, text.",
+			out: `plain, text.`,
 		},
 		{
 			in:  "**bold** text",

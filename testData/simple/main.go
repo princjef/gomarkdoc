@@ -1,4 +1,4 @@
-// Package simple contains some simple code to exercise basic scenarios
+// Package simple contains, some simple code to exercise basic scenarios
 // for documentation purposes.
 package simple
 

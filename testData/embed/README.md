@@ -10,7 +10,7 @@ This is content before the embed
 import "github.com/princjef/gomarkdoc/testData/embed"
 ```
 
-Package embed tests out embedding of documentation in an existing readme\.
+Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
@@ -23,7 +23,7 @@ Package embed tests out embedding of documentation in an existing readme\.
 func EmbeddedFunc(param int) int
 ```
 
-EmbeddedFunc is present in embedded content\.
+EmbeddedFunc is present in embedded content.
 
 
 
@@ -44,7 +44,7 @@ This is content after the embed
 import "github.com/princjef/gomarkdoc/testData/embed"
 ```
 
-Package embed tests out embedding of documentation in an existing readme\.
+Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
@@ -57,7 +57,7 @@ Package embed tests out embedding of documentation in an existing readme\.
 func EmbeddedFunc(param int) int
 ```
 
-EmbeddedFunc is present in embedded content\.
+EmbeddedFunc is present in embedded content.
 
 
 
@@ -78,7 +78,7 @@ This is content after the second embed
 import "github.com/princjef/gomarkdoc/testData/embed"
 ```
 
-Package embed tests out embedding of documentation in an existing readme\.
+Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
@@ -91,7 +91,7 @@ Package embed tests out embedding of documentation in an existing readme\.
 func EmbeddedFunc(param int) int
 ```
 
-EmbeddedFunc is present in embedded content\.
+EmbeddedFunc is present in embedded content.
 
 
 

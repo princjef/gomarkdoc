@@ -128,7 +128,7 @@ func Paragraph(text string) string {
 }
 
 var (
-	specialCharacterRegex = regexp.MustCompile("([\\\\`*_{}\\[\\]()<>#+-.!~])")
+	specialCharacterRegex = regexp.MustCompile("([\\\\`*_{}\\[\\]()<>#+\\-!~])")
 	urlRegex              = xurls.Strict() // Require a scheme in URLs
 )
 

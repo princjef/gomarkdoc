@@ -6,7 +6,7 @@
 import "github.com/princjef/gomarkdoc/testData/tags"
 ```
 
-Package tags contains code to demonstrate usage of build tags\.
+Package tags contains code to demonstrate usage of build tags.
 
 ## Index
 
@@ -20,7 +20,7 @@ Package tags contains code to demonstrate usage of build tags\.
 func Tagged() int
 ```
 
-Tagged is only visible with tags\.
+Tagged is only visible with tags.
 
 ## func [Untagged](<https://github.com/princjef/gomarkdoc/blob/master/testData/tags/untagged.go#L5>)
 
@@ -28,7 +28,7 @@ Tagged is only visible with tags\.
 func Untagged() int
 ```
 
-Untagged is visible without tags\.
+Untagged is visible without tags.
 
 
 
