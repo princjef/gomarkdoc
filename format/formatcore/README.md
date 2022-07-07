@@ -6,7 +6,7 @@
 import "github.com/princjef/gomarkdoc/format/formatcore"
 ```
 
-Package formatcore provides utilities for creating formatters like those found in the format package\.
+Package formatcore provides utilities for creating formatters like those found in the format package.
 
 ## Index
 
@@ -38,7 +38,7 @@ Bold converts the provided text to bold
 func CodeBlock(code string) string
 ```
 
-CodeBlock wraps the provided code as a code block\. Language syntax highlighting is not supported\.
+CodeBlock wraps the provided code as a code block. Language syntax highlighting is not supported.
 
 ## func [Escape](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L138>)
 
@@ -46,7 +46,7 @@ CodeBlock wraps the provided code as a code block\. Language syntax highlighting
 func Escape(text string) string
 ```
 
-Escape escapes the special characters in the provided text\, but leaves URLs found intact\. Note that the URLs included must begin with a scheme to skip the escaping\.
+Escape escapes the special characters in the provided text, but leaves URLs found intact. Note that the URLs included must begin with a scheme to skip the escaping.
 
 ## func [GFMAccordion](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L101>)
 
@@ -54,7 +54,7 @@ Escape escapes the special characters in the provided text\, but leaves URLs fou
 func GFMAccordion(title, body string) string
 ```
 
-GFMAccordion generates a collapsible content\. The accordion's visible title while collapsed is the provided title and the expanded content is the body\.
+GFMAccordion generates a collapsible content. The accordion's visible title while collapsed is the provided title and the expanded content is the body.
 
 ## func [GFMAccordionHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L114>)
 
@@ -62,9 +62,9 @@ GFMAccordion generates a collapsible content\. The accordion's visible title whi
 func GFMAccordionHeader(title string) string
 ```
 
-GFMAccordionHeader generates the header visible when an accordion is collapsed\.
+GFMAccordionHeader generates the header visible when an accordion is collapsed.
 
-The GFMAccordionHeader is expected to be used in conjunction with GFMAccordionTerminator\(\) when the demands of the body's rendering requires it to be generated independently\. The result looks conceptually like the following:
+The GFMAccordionHeader is expected to be used in conjunction with GFMAccordionTerminator\(\) when the demands of the body's rendering requires it to be generated independently. The result looks conceptually like the following:
 
 ```
 accordion := GFMAccordionHeader("Accordion Title") + "Accordion Body" + GFMAccordionTerminator()
@@ -76,7 +76,7 @@ accordion := GFMAccordionHeader("Accordion Title") + "Accordion Body" + GFMAccor
 func GFMAccordionTerminator() string
 ```
 
-GFMAccordionTerminator generates the code necessary to terminate an accordion after the body\. It is expected to be used in conjunction with GFMAccordionHeader\(\)\. See GFMAccordionHeader for a full description\.
+GFMAccordionTerminator generates the code necessary to terminate an accordion after the body. It is expected to be used in conjunction with GFMAccordionHeader\(\). See GFMAccordionHeader for a full description.
 
 ## func [GFMCodeBlock](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L45>)
 
@@ -84,7 +84,7 @@ GFMAccordionTerminator generates the code necessary to terminate an accordion af
 func GFMCodeBlock(language, code string) string
 ```
 
-GFMCodeBlock wraps the provided code as a code block and tags it with the provided language \(or no language if the empty string is provided\)\, using the triple backtick format from GitHub Flavored Markdown\.
+GFMCodeBlock wraps the provided code as a code block and tags it with the provided language \(or no language if the empty string is provided\), using the triple backtick format from GitHub Flavored Markdown.
 
 ## func [Header](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L51>)
 
@@ -92,7 +92,7 @@ GFMCodeBlock wraps the provided code as a code block and tags it with the provid
 func Header(level int, text string) (string, error)
 ```
 
-Header converts the provided text into a header of the provided level\. The level is expected to be at least 1\.
+Header converts the provided text into a header of the provided level. The level is expected to be at least 1.
 
 ## func [Link](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L74>)
 
@@ -100,7 +100,7 @@ Header converts the provided text into a header of the provided level\. The leve
 func Link(text, href string) string
 ```
 
-Link generates a link with the given text and href values\.
+Link generates a link with the given text and href values.
 
 ## func [ListEntry](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L89>)
 
@@ -108,7 +108,7 @@ Link generates a link with the given text and href values\.
 func ListEntry(depth int, text string) string
 ```
 
-ListEntry generates an unordered list entry with the provided text at the provided zero\-indexed depth\. A depth of 0 is considered the topmost level of list\.
+ListEntry generates an unordered list entry with the provided text at the provided zero\-indexed depth. A depth of 0 is considered the topmost level of list.
 
 ## func [Paragraph](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L126>)
 
@@ -116,7 +116,7 @@ ListEntry generates an unordered list entry with the provided text at the provid
 func Paragraph(text string) string
 ```
 
-Paragraph formats a paragraph with the provided text as the contents\.
+Paragraph formats a paragraph with the provided text as the contents.
 
 ## func [PlainText](<https://github.com/princjef/gomarkdoc/blob/master/format/formatcore/base.go#L175>)
 
@@ -124,7 +124,7 @@ Paragraph formats a paragraph with the provided text as the contents\.
 func PlainText(text string) string
 ```
 
-PlainText converts a markdown string to the plain text that appears in the rendered output\.
+PlainText converts a markdown string to the plain text that appears in the rendered output.
 
 
 

@@ -6,7 +6,7 @@
 import "github.com/princjef/gomarkdoc/testData/untagged"
 ```
 
-Package untagged contains code to demonstrate usage of build tags\.
+Package untagged contains code to demonstrate usage of build tags.
 
 ## Index
 
@@ -19,7 +19,7 @@ Package untagged contains code to demonstrate usage of build tags\.
 func Untagged() int
 ```
 
-Untagged is visible without tags\.
+Untagged is visible without tags.
 
 
 

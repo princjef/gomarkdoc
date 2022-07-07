@@ -6,9 +6,9 @@
 import "github.com/princjef/gomarkdoc/cmd/gomarkdoc"
 ```
 
-Package gomarkdoc provides a command line interface for writing golang documentation in markdown format\.
+Package gomarkdoc provides a command line interface for writing golang documentation in markdown format.
 
-See https://github.com/princjef/gomarkdoc for full documentation of this tool\.
+See https://github.com/princjef/gomarkdoc for full documentation of this tool.
 
 ## Index
 
@@ -17,7 +17,7 @@ See https://github.com/princjef/gomarkdoc for full documentation of this tool\.
 
 ## type [PackageSpec](<https://github.com/princjef/gomarkdoc/blob/master/cmd/gomarkdoc/command.go#L30-L44>)
 
-PackageSpec defines the data available to the \-\-output option's template\. Information is recomputed for each package generated\.
+PackageSpec defines the data available to the \-\-output option's template. Information is recomputed for each package generated.
 
 ```go
 type PackageSpec struct {

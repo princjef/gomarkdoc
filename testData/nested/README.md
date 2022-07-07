@@ -17,7 +17,7 @@ import "github.com/princjef/gomarkdoc/testData/nested"
 func Parent() int
 ```
 
-Parent is in the parent package\.
+Parent is in the parent package.
 
 
 
