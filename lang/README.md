@@ -61,6 +61,7 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func (pkg *Package) Examples() (examples []*Example)](<#func-package-examples>)
   - [func (pkg *Package) Funcs() (funcs []*Func)](<#func-package-funcs>)
   - [func (pkg *Package) Import() string](<#func-package-import>)
+  - [func (pkg *Package) ImportPath() string](<#func-package-importpath>)
   - [func (pkg *Package) Level() int](<#func-package-level>)
   - [func (pkg *Package) Name() string](<#func-package-name>)
   - [func (pkg *Package) Summary() string](<#func-package-summary>)
@@ -487,7 +488,7 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 
 NewPackageFromBuild creates a representation of a package's documentation from the build metadata for that package. It can be configured using the provided options.
 
-### func \(\*Package\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L149>)
+### func \(\*Package\) [Consts](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L156>)
 
 ```go
 func (pkg *Package) Consts() (consts []*Value)
@@ -511,7 +512,7 @@ func (pkg *Package) Dirname() string
 
 Dirname provides the name of the leaf directory in which the package is located.
 
-### func \(\*Package\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L143>)
+### func \(\*Package\) [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L150>)
 
 ```go
 func (pkg *Package) Doc() *Doc
@@ -519,7 +520,7 @@ func (pkg *Package) Doc() *Doc
 
 Doc provides the structured contents of the documentation comment for the package.
 
-### func \(\*Package\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L187>)
+### func \(\*Package\) [Examples](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L194>)
 
 ```go
 func (pkg *Package) Examples() (examples []*Example)
@@ -527,7 +528,7 @@ func (pkg *Package) Examples() (examples []*Example)
 
 Examples provides the package\-level examples that have been defined. This does not include examples that are associated with symbols contained within the package.
 
-### func \(\*Package\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L167>)
+### func \(\*Package\) [Funcs](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L174>)
 
 ```go
 func (pkg *Package) Funcs() (funcs []*Func)
@@ -542,6 +543,14 @@ func (pkg *Package) Import() string
 ```
 
 Import provides the raw text for the import declaration that is used to import code from the package. If your package's documentation is generated from a local path and does not use Go Modules, this will typically print \`import "."\`.
+
+### func \(\*Package\) [ImportPath](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L138>)
+
+```go
+func (pkg *Package) ImportPath() string
+```
+
+ImportPath provides the identifier used for the package when installing or importing the package\. If your package's documentation is generated from a local path and does not use Go Modules\, this will typically print \`\.\`\.
 
 ### func \(\*Package\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L106>)
 
@@ -559,7 +568,7 @@ func (pkg *Package) Name() string
 
 Name provides the name of the package as it would be seen from another package importing it.
 
-### func \(\*Package\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L137>)
+### func \(\*Package\) [Summary](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L144>)
 
 ```go
 func (pkg *Package) Summary() string
@@ -567,7 +576,7 @@ func (pkg *Package) Summary() string
 
 Summary provides the one\-sentence summary of the package's documentation comment.
 
-### func \(\*Package\) [Types](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L176>)
+### func \(\*Package\) [Types](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L183>)
 
 ```go
 func (pkg *Package) Types() (types []*Type)
@@ -575,7 +584,7 @@ func (pkg *Package) Types() (types []*Type)
 
 Types lists the top\-level types provided by the package.
 
-### func \(\*Package\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L158>)
+### func \(\*Package\) [Vars](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L165>)
 
 ```go
 func (pkg *Package) Vars() (vars []*Value)

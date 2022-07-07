@@ -118,6 +118,8 @@ The documentation information that is output is formatted using a series of text
 
 - doc:     generates the freeform documentation block for any of the above
            structures that can contain a documentation section.
+
+- import:  generates the import code used to pull in a package.
 ```
 
 Overriding with the \-t option uses a key\-vaule pair mapping a template name to the file containing the contents of the override template to use. Specified template files must exist:
@@ -234,6 +236,12 @@ func main() {
 	fmt.Println(out.Package(pkg))
 }
 ```
+
+### Examples
+
+This project uses itself to generate the README files in github\.com/princjef/gomarkdoc and its subdirectories\. To see the commands that are run to generate documentation for this repository\, take a look at the Doc\(\) and DocVerify\(\) functions in magefile\.go and the \.gomarkdoc\.yml file in the root of this repository\. To run these commands in your own project\, simply replace \`go run \./cmd/gomarkdoc\` with \`gomarkdoc\`\.
+
+Know of another project that is using gomarkdoc? Open an issue with a description of the project and link to the repository and it might be featured here\!
 
 ## Index
 

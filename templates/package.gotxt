@@ -4,7 +4,7 @@
 	{{- header .Level .Name -}}
 {{- end -}}
 
-{{- codeBlock "go" .Import -}}
+{{- template "import" . -}}
 
 {{- template "doc" .Doc -}}
 

@@ -57,6 +57,7 @@ func TestPackage_dotImport(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(pkg.Import(), `import "github.com/princjef/gomarkdoc/testData/lang/function"`)
+	is.Equal(pkg.ImportPath(), `github.com/princjef/gomarkdoc/testData/lang/function`)
 }
 
 func TestPackage_strings(t *testing.T) {
@@ -74,6 +75,7 @@ func TestPackage_strings(t *testing.T) {
 	is.Equal(pkg.Dirname(), "strings")
 	is.Equal(pkg.Name(), "strings")
 	is.Equal(pkg.Import(), `import "strings"`)
+	is.Equal(pkg.ImportPath(), `strings`)
 	is.Equal(pkg.Summary(), "Package strings implements simple functions to manipulate UTF-8 encoded strings.")
 	is.Equal(len(pkg.Consts()), 0)   // strings should have no constants
 	is.Equal(len(pkg.Vars()), 0)     // strings should have no vars
@@ -97,6 +99,7 @@ func TestPackage_textScanner(t *testing.T) {
 	is.Equal(pkg.Dirname(), "scanner")
 	is.Equal(pkg.Name(), "scanner")
 	is.Equal(pkg.Import(), `import "text/scanner"`)
+	is.Equal(pkg.ImportPath(), `text/scanner`)
 	is.Equal(pkg.Summary(), "Package scanner provides a scanner and tokenizer for UTF-8-encoded text.")
 	is.True(len(pkg.Consts()) > 0)   // text/scanner should have constants
 	is.Equal(len(pkg.Vars()), 0)     // text/scanner should have no vars
@@ -120,6 +123,7 @@ func TestPackage_ioIoutil(t *testing.T) {
 	is.Equal(pkg.Dirname(), "ioutil")
 	is.Equal(pkg.Name(), "ioutil")
 	is.Equal(pkg.Import(), `import "io/ioutil"`)
+	is.Equal(pkg.ImportPath(), `io/ioutil`)
 	is.Equal(pkg.Summary(), "Package ioutil implements some I/O utility functions.")
 	is.Equal(len(pkg.Consts()), 0)   // io/ioutil should have no constants
 	is.True(len(pkg.Vars()) > 0)     // io/ioutil should have vars
@@ -143,6 +147,7 @@ func TestPackage_encoding(t *testing.T) {
 	is.Equal(pkg.Dirname(), "encoding")
 	is.Equal(pkg.Name(), "encoding")
 	is.Equal(pkg.Import(), `import "encoding"`)
+	is.Equal(pkg.ImportPath(), `encoding`)
 	is.Equal(pkg.Summary(), "Package encoding defines interfaces shared by other packages that convert data to and from byte-level and textual representations.")
 	is.Equal(len(pkg.Consts()), 0)   // encoding should have no constants
 	is.Equal(len(pkg.Vars()), 0)     // encoding should have no vars
