@@ -2,6 +2,7 @@ package gomarkdoc
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -150,5 +151,5 @@ func (out *Renderer) writeTemplate(name string, data interface{}) (string, error
 		return "", err
 	}
 
-	return result.String(), nil
+	return regexp.MustCompile(`[\r\n]{2,}`).ReplaceAllString(result.String(), "\n\n"), nil
 }

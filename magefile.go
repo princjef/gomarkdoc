@@ -67,9 +67,12 @@ func RegenerateTestDocs() error {
 			continue
 		}
 
-		os.Chdir(filepath.Join(base, "./testData", dir.Name()))
-		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README.md" ./...`).Run(); err != nil {
-			return err
+		testFolder := filepath.Join(base, "./testData", dir.Name())
+		if _, err := os.Stat(filepath.Join(testFolder, ".gomarkdoc.yml")); err == nil {
+			os.Chdir(testFolder)
+			if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README.md" ./...`).Run(); err != nil {
+				return err
+			}
 		}
 	}
 
