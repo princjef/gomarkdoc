@@ -258,4 +258,17 @@
 //		// Write the documentation out to console.
 //		fmt.Println(out.Package(pkg))
 //	}
+//
+// Examples
+//
+// This project uses itself to generate the README files in
+// github.com/princjef/gomarkdoc and its subdirectories. To see the commands
+// that are run to generate documentation for this repository, take a look at
+// the Doc() and DocVerify() functions in magefile.go and the .gomarkdoc.yml
+// file in the root of this repository. To run these commands in your own
+// project, simply replace `go run ./cmd/gomarkdoc` with `gomarkdoc`.
+//
+// Know of another project that is using gomarkdoc? Open an issue with a
+// description of the project and link to the repository and it might be
+// featured here!
 package gomarkdoc
