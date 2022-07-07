@@ -132,6 +132,13 @@ func (pkg *Package) Import() string {
 	return fmt.Sprintf(`import "%s"`, pkg.doc.ImportPath)
 }
 
+// ImportPath provides the identifier used for the package when installing or
+// importing the package. If your package's documentation is generated from a
+// local path and does not use Go Modules, this will typically print `.`.
+func (pkg *Package) ImportPath() string {
+	return pkg.doc.ImportPath
+}
+
 // Summary provides the one-sentence summary of the package's documentation
 // comment.
 func (pkg *Package) Summary() string {
