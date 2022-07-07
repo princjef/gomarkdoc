@@ -125,6 +125,8 @@
 //	- doc:     generates the freeform documentation block for any of the above
 //	           structures that can contain a documentation section.
 //
+//	- import:  generates the import code used to pull in a package.
+//
 // Overriding with the -t option uses a key-vaule pair mapping a template name
 // to the file containing the contents of the override template to use.
 // Specified template files must exist:
