@@ -550,7 +550,7 @@ Import provides the raw text for the import declaration that is used to import c
 func (pkg *Package) ImportPath() string
 ```
 
-ImportPath provides the identifier used for the package when installing or importing the package\. If your package's documentation is generated from a local path and does not use Go Modules\, this will typically print \`\.\`\.
+ImportPath provides the identifier used for the package when installing or importing the package. If your package's documentation is generated from a local path and does not use Go Modules, this will typically print \`.\`.
 
 ### func \(\*Package\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/package.go#L106>)
 
