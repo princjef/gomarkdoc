@@ -298,7 +298,7 @@ func TestCommand_embed(t *testing.T) {
 	data, err := os.ReadFile("./embed/README-template.md")
 	is.NoErr(err)
 
-	err = os.WriteFile("./embed/README-test.md", data, 0644)
+	err = os.WriteFile("./embed/README-test.md", data, 0664)
 	is.NoErr(err)
 
 	main()

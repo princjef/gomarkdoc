@@ -256,8 +256,7 @@ Know of another project that is using gomarkdoc? Open an issue with a descriptio
   - [func WithFormat(format format.Format) RendererOption](<#func-withformat>)
   - [func WithTemplateOverride(name, tmpl string) RendererOption](<#func-withtemplateoverride>)
 
-
-## type [Renderer](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L15-L19>)
+## type [Renderer](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L16-L20>)
 
 Renderer provides capabilities for rendering various types of documentation with the configured format and templates.
 
@@ -267,7 +266,7 @@ type Renderer struct {
 }
 ```
 
-### func [NewRenderer](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L30>)
+### func [NewRenderer](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L31>)
 
 ```go
 func NewRenderer(opts ...RendererOption) (*Renderer, error)
@@ -275,7 +274,7 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error)
 
 NewRenderer initializes a Renderer configured using the provided options. If nothing special is provided, the created renderer will use the default set of templates and the GitHubFlavoredMarkdown.
 
-### func \(\*Renderer\) [Example](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L140>)
+### func \(\*Renderer\) [Example](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L141>)
 
 ```go
 func (out *Renderer) Example(ex *lang.Example) (string, error)
@@ -283,7 +282,7 @@ func (out *Renderer) Example(ex *lang.Example) (string, error)
 
 Example renders an example's documentation to a string. You can change the rendering of the example by overriding the "example" template or one of the templates it references.
 
-### func \(\*Renderer\) [File](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L112>)
+### func \(\*Renderer\) [File](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L113>)
 
 ```go
 func (out *Renderer) File(file *lang.File) (string, error)
@@ -291,7 +290,7 @@ func (out *Renderer) File(file *lang.File) (string, error)
 
 File renders a file containing one or more packages to document to a string. You can change the rendering of the file by overriding the "file" template or one of the templates it references.
 
-### func \(\*Renderer\) [Func](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L126>)
+### func \(\*Renderer\) [Func](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L127>)
 
 ```go
 func (out *Renderer) Func(fn *lang.Func) (string, error)
@@ -299,7 +298,7 @@ func (out *Renderer) Func(fn *lang.Func) (string, error)
 
 Func renders a function's documentation to a string. You can change the rendering of the package by overriding the "func" template or one of the templates it references.
 
-### func \(\*Renderer\) [Package](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L119>)
+### func \(\*Renderer\) [Package](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L120>)
 
 ```go
 func (out *Renderer) Package(pkg *lang.Package) (string, error)
@@ -307,7 +306,7 @@ func (out *Renderer) Package(pkg *lang.Package) (string, error)
 
 Package renders a package's documentation to a string. You can change the rendering of the package by overriding the "package" template or one of the templates it references.
 
-### func \(\*Renderer\) [Type](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L133>)
+### func \(\*Renderer\) [Type](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L134>)
 
 ```go
 func (out *Renderer) Type(typ *lang.Type) (string, error)
@@ -315,7 +314,7 @@ func (out *Renderer) Type(typ *lang.Type) (string, error)
 
 Type renders a type's documentation to a string. You can change the rendering of the type by overriding the "type" template or one of the templates it references.
 
-## type [RendererOption](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L22>)
+## type [RendererOption](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L23>)
 
 RendererOption configures the renderer's behavior.
 
@@ -323,7 +322,7 @@ RendererOption configures the renderer's behavior.
 type RendererOption func(renderer *Renderer) error
 ```
 
-### func [WithFormat](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L102>)
+### func [WithFormat](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L103>)
 
 ```go
 func WithFormat(format format.Format) RendererOption
@@ -331,14 +330,12 @@ func WithFormat(format format.Format) RendererOption
 
 WithFormat changes the renderer to use the format provided instead of the default format.
 
-### func [WithTemplateOverride](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L88>)
+### func [WithTemplateOverride](<https://github.com/princjef/gomarkdoc/blob/master/renderer.go#L89>)
 
 ```go
 func WithTemplateOverride(name, tmpl string) RendererOption
 ```
 
 WithTemplateOverride adds a template that overrides the template with the provided name using the value provided in the tmpl parameter.
-
-
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)
