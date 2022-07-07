@@ -82,7 +82,7 @@ func writeFile(fileName string, text string) error {
 	folder := filepath.Dir(fileName)
 
 	if folder != "" {
-		if err := os.MkdirAll(folder, 0755); err != nil {
+		if err := os.MkdirAll(folder, 0664); err != nil {
 			return fmt.Errorf("failed to create folder %s: %w", folder, err)
 		}
 	}
