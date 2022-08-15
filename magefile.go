@@ -29,6 +29,10 @@ func Generate() error {
 	return shellcmd.Command(`go generate .`).Run()
 }
 
+func Build() error {
+	return shellcmd.Command(`go build -o ./bin/gomarkdoc ./cmd/gomarkdoc`).Run()
+}
+
 func Doc() error {
 	return shellcmd.RunAll(
 		`go run ./cmd/gomarkdoc .`,
