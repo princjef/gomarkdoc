@@ -71,6 +71,8 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		return nil, err
 	}
 
+	cfg.docParser = docPkg.Parser() // Overwrite docParser with the one with package scope loaded
+
 	files, err := parsePkgFiles(pkg, cfg.FileSet)
 	if err != nil {
 		return nil, err

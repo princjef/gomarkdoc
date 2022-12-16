@@ -55,8 +55,8 @@ func TestFunc_netHttpResponseWriter(t *testing.T) {
     // Handlers can set HTTP trailers.
     //
     // Changing the header map after a call to WriteHeader (or
-    // Write) has no effect unless the modified headers are
-    // trailers.
+    // Write) has no effect unless the HTTP status code was of the
+    // 1xx class or the modified headers are trailers.
     //
     // There are two ways to set Trailers. The preferred way is to
     // predeclare in the headers which trailers you will later
@@ -101,13 +101,18 @@ func TestFunc_netHttpResponseWriter(t *testing.T) {
     // If WriteHeader is not called explicitly, the first call to Write
     // will trigger an implicit WriteHeader(http.StatusOK).
     // Thus explicit calls to WriteHeader are mainly used to
-    // send error codes.
+    // send error codes or 1xx informational responses.
     //
     // The provided code must be a valid HTTP 1xx-5xx status code.
-    // Only one header may be written. Go does not currently
-    // support sending user-defined 1xx informational headers,
-    // with the exception of 100-continue response header that the
-    // Server sends automatically when the Request.Body is read.
+    // Any number of 1xx headers may be written, followed by at most
+    // one 2xx-5xx header. 1xx headers are sent immediately, but 2xx-5xx
+    // headers may be buffered. Use the Flusher interface to send
+    // buffered data. The header map is cleared when 2xx-5xx headers are
+    // sent, but not with 1xx headers.
+    //
+    // The server will automatically send a 100 (Continue) header
+    // on the first read from the request body if the request has
+    // an "Expect: 100-continue" header.
     WriteHeader(statusCode int)
 }`)
 	is.Equal(len(typ.Examples()), 1)

@@ -43,7 +43,7 @@ func CodeBlock(code string) string {
 // provided language (or no language if the empty string is provided), using
 // the triple backtick format from GitHub Flavored Markdown.
 func GFMCodeBlock(language, code string) string {
-	return fmt.Sprintf("```%s\n%s\n```\n\n", language, strings.TrimSpace(code))
+	return fmt.Sprintf("```%s\n%s\n```\n\n", language, strings.Trim(code, "\n"))
 }
 
 // Header converts the provided text into a header of the provided level. The
@@ -124,7 +124,7 @@ func GFMAccordionTerminator() string {
 
 // Paragraph formats a paragraph with the provided text as the contents.
 func Paragraph(text string) string {
-	return fmt.Sprintf("%s\n\n", Escape(text))
+	return fmt.Sprintf("%s\n\n", text)
 }
 
 var (

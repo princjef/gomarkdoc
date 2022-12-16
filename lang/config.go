@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"go/ast"
+	"go/doc/comment"
 	"go/token"
 	"io"
 	"path/filepath"
@@ -18,12 +19,14 @@ type (
 	// Config defines contextual information used to resolve documentation for
 	// a construct.
 	Config struct {
-		FileSet *token.FileSet
-		Level   int
-		Repo    *Repo
-		PkgDir  string
-		WorkDir string
-		Log     logger.Logger
+		FileSet    *token.FileSet
+		Level      int
+		Repo       *Repo
+		PkgDir     string
+		WorkDir    string
+		Log        logger.Logger
+		docParser  *comment.Parser
+		docPrinter *comment.Printer
 	}
 
 	// Repo represents information about a repository relevant to documentation
@@ -60,9 +63,15 @@ type (
 // error is returned if the provided directory is invalid.
 func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigOption) (*Config, error) {
 	cfg := &Config{
-		FileSet: token.NewFileSet(),
-		Level:   1,
-		Log:     log,
+		FileSet:   token.NewFileSet(),
+		Level:     1,
+		Log:       log,
+		docParser: &comment.Parser{},
+		docPrinter: &comment.Printer{
+			HeadingLevel: 1,
+			// Prevent anchors from being added by godoc printer
+			HeadingID: func(h *comment.Heading) string { return "" },
+		},
 	}
 
 	for _, opt := range opts {
@@ -98,6 +107,7 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 			repo.PathFromRoot,
 		)
 		cfg.Repo = repo
+		cfg.docPrinter.DocLinkBaseURL = cfg.Repo.PathFromRoot
 	} else {
 		log.Debugf("skipping repository resolution because all values have manual overrides")
 	}
@@ -108,12 +118,22 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 // Inc copies the Config and increments the level by the provided step.
 func (c *Config) Inc(step int) *Config {
 	return &Config{
-		FileSet: c.FileSet,
-		Level:   c.Level + step,
-		PkgDir:  c.PkgDir,
-		WorkDir: c.WorkDir,
-		Repo:    c.Repo,
-		Log:     c.Log,
+		FileSet:   c.FileSet,
+		Level:     c.Level + step,
+		PkgDir:    c.PkgDir,
+		WorkDir:   c.WorkDir,
+		Repo:      c.Repo,
+		Log:       c.Log,
+		docParser: c.docParser,
+		docPrinter: &comment.Printer{
+			HeadingLevel:   c.docPrinter.HeadingLevel + step,
+			HeadingID:      c.docPrinter.HeadingID,
+			DocLinkURL:     c.docPrinter.DocLinkURL,
+			DocLinkBaseURL: c.docPrinter.DocLinkBaseURL,
+			TextPrefix:     c.docPrinter.TextPrefix,
+			TextCodePrefix: c.docPrinter.TextCodePrefix,
+			TextWidth:      c.docPrinter.TextWidth,
+		},
 	}
 }
 
@@ -137,6 +157,7 @@ func ConfigWithRepoOverrides(overrides *Repo) ConfigOption {
 		}
 
 		c.Repo = overrides
+		c.docPrinter.DocLinkBaseURL = c.Repo.PathFromRoot
 		return nil
 	}
 }
