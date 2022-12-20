@@ -71,7 +71,23 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		return nil, err
 	}
 
-	cfg.docParser = docPkg.Parser() // Overwrite docParser with the one with package scope loaded
+	cfg.docParser = docPkg.Parser() // Overwrite docParser with the one loaded with package knowledge
+
+	if !options.includeUnexported {
+		// If options.includeUnexported is false, AST of docPkg has been trimmed and does not include
+		// imported packages anymore, leading to a parser unable to resolve comment doc links properly.
+		// docPkg.Parser().LookupPackage(string) is not able to resolve to imported named packages.
+		//
+		// In order to stay consistent with godoc which still resolve them properly, we need to use a comment parser
+		// provided by an package for which AST has not been trimmed. As I haven't found how to do it differently yet,
+		// I suggest to pay the cost of loading the package twice just to get the parser with a full
+		// packages and symbols resolution capability
+		untrimmedPkg, err := getDocPkg(pkg, cfg.FileSet, true)
+		if err != nil {
+			return nil, err
+		}
+		cfg.docParser = untrimmedPkg.Parser()
+	}
 
 	files, err := parsePkgFiles(pkg, cfg.FileSet)
 	if err != nil {

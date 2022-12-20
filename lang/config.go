@@ -70,7 +70,8 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 		docPrinter: &comment.Printer{
 			HeadingLevel: 1,
 			// Prevent anchors from being added by godoc printer
-			HeadingID: func(h *comment.Heading) string { return "" },
+			HeadingID:      func(h *comment.Heading) string { return "" },
+			TextCodePrefix: " ",
 		},
 	}
 

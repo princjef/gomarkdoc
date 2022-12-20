@@ -18,7 +18,7 @@ type Doc struct {
 // documentation conventions.
 func NewDoc(cfg *Config, text string) *Doc {
 	d := cfg.docParser.Parse(text)
-	prt := cfg.docPrinter
+	printer := cfg.docPrinter
 
 	var blocks []*Block
 
@@ -26,14 +26,14 @@ loop:
 	for i := 0; i < len(d.Content); {
 		switch d.Content[i].(type) {
 		case *comment.Heading:
-			markdown := string(prt.Markdown(&comment.Doc{
+			markdown := string(printer.Markdown(&comment.Doc{
 				Links:   d.Links,
 				Content: []comment.Block{d.Content[i]},
 			}))
 			hdr := strings.TrimSpace(strings.TrimLeft(markdown, "#")) // Remove leading '#' as they are added later by gomarkdoc
 			blocks = append(blocks, NewBlock(cfg.Inc(0), HeaderBlock, hdr))
 		case *comment.Code:
-			markdown := string(prt.Markdown(&comment.Doc{
+			markdown := string(printer.Markdown(&comment.Doc{
 				Links:   d.Links,
 				Content: []comment.Block{d.Content[i]},
 			}))
@@ -46,13 +46,13 @@ loop:
 			for i < len(d.Content) {
 				switch d.Content[i].(type) {
 				case *comment.Heading, *comment.Code:
-					blocks = append(blocks, NewBlock(cfg.Inc(0), ParagraphBlock, strings.Trim(string(prt.Markdown(paragraph)), "\n")))
+					blocks = append(blocks, NewBlock(cfg.Inc(0), ParagraphBlock, strings.Trim(string(printer.Markdown(paragraph)), "\n")))
 					continue loop
 				}
 				paragraph.Content = append(paragraph.Content, d.Content[i])
 				i++
 			}
-			blocks = append(blocks, NewBlock(cfg.Inc(0), ParagraphBlock, strings.Trim(string(prt.Markdown(paragraph)), "\n")))
+			blocks = append(blocks, NewBlock(cfg.Inc(0), ParagraphBlock, strings.Trim(string(printer.Markdown(paragraph)), "\n")))
 		}
 		i++
 	}
