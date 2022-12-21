@@ -11,6 +11,7 @@ require (
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	golang.org/x/mod v0.7.0
 	mvdan.cc/xurls/v2 v2.2.0
 )
 

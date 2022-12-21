@@ -7,13 +7,19 @@ import (
 	"go/doc/comment"
 	"go/token"
 	"io"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/princjef/gomarkdoc/logger"
+	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
 )
+
+// GOPRIVATE holds the Value of the environment variable
+var GOPRIVATE = os.Getenv("GOPRIVATE")
 
 type (
 	// Config defines contextual information used to resolve documentation for
@@ -27,6 +33,7 @@ type (
 		Log        logger.Logger
 		docParser  *comment.Parser
 		docPrinter *comment.Printer
+		modulePath string
 	}
 
 	// Repo represents information about a repository relevant to documentation
@@ -57,6 +64,44 @@ type (
 	ConfigOption func(c *Config) error
 )
 
+// getModName reads go.mod in current working directory, and return the full module path
+func getModName() (string, error) {
+	gomod, err := os.ReadFile("./go.mod")
+	if err != nil {
+		return "", fmt.Errorf("gomarkdoc: cannot read go.mod from current directory: %w", err)
+	}
+	return modfile.ModulePath(gomod), nil
+}
+
+// DocLinkURL is a function that computes the URL for the given DocLink.
+func (c *Config) DocLinkURL(link *comment.DocLink) string {
+	if link.ImportPath == "" {
+		// It's a local link (same package)
+		return link.DefaultURL("")
+	}
+
+	if c.modulePath != "" && strings.HasPrefix(link.ImportPath, c.modulePath) {
+		// If import path belongs to current module (prefixed by module path),
+		// TODO: or if path starts with repos hostname + repos path (event if modulePath is empty)
+		// then it's a local ref.
+		//
+		// FIXME: Disable this link for now. We need a way to handle the URL formatting
+		// according to the repo provider unless it's a well known repo which may probably be in pkg.go.dev
+		return ""
+	} else if module.MatchPrefixPatterns(GOPRIVATE, link.ImportPath) {
+		// Check for GOPRIVATE variable. If module is private, we can't use pkg.go.dev
+		return ""
+	}
+
+	root, _, hasMore := strings.Cut(link.ImportPath, "/")
+	// If package is from standard library, or if its root match a hostname (sort of)
+	// Use comment.DefaultLookupPackage to check if package is from std library
+	if _, isStd := comment.DefaultLookupPackage(root); isStd || hasMore && strings.ContainsRune(root, '.') {
+		return link.DefaultURL("https://pkg.go.dev")
+	}
+	return ""
+}
+
 // NewConfig generates a Config for the provided package directory. It will
 // resolve the filepath and attempt to determine the repository containing the
 // directory. If no repository is found, the Repo field will be set to nil. An
@@ -75,13 +120,22 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 		},
 	}
 
+	var err error
+
+	cfg.modulePath, err = getModName() // This is not optimal,
+	if err != nil {
+		log.Errorf("module name could not be read: %s", err.Error())
+	} else {
+		log.Infof("detected module name to be %q", cfg.modulePath)
+	}
+
+	cfg.docPrinter.DocLinkURL = cfg.DocLinkURL
+
 	for _, opt := range opts {
 		if err := opt(cfg); err != nil {
 			return nil, err
 		}
 	}
-
-	var err error
 
 	cfg.PkgDir, err = filepath.Abs(pkgDir)
 	if err != nil {
@@ -112,20 +166,20 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 	} else {
 		log.Debugf("skipping repository resolution because all values have manual overrides")
 	}
-
 	return cfg, nil
 }
 
 // Inc copies the Config and increments the level by the provided step.
 func (c *Config) Inc(step int) *Config {
 	return &Config{
-		FileSet:   c.FileSet,
-		Level:     c.Level + step,
-		PkgDir:    c.PkgDir,
-		WorkDir:   c.WorkDir,
-		Repo:      c.Repo,
-		Log:       c.Log,
-		docParser: c.docParser,
+		FileSet:    c.FileSet,
+		Level:      c.Level + step,
+		PkgDir:     c.PkgDir,
+		WorkDir:    c.WorkDir,
+		Repo:       c.Repo,
+		Log:        c.Log,
+		modulePath: c.modulePath,
+		docParser:  c.docParser,
 		docPrinter: &comment.Printer{
 			HeadingLevel:   c.docPrinter.HeadingLevel + step,
 			HeadingID:      c.docPrinter.HeadingID,
