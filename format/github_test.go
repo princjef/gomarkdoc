@@ -97,9 +97,9 @@ func TestGitHubFlavoredMarkdown_RawHeader(t *testing.T) {
 
 func TestGitHubFlavoredMarkdown_LocalHref(t *testing.T) {
 	tests := map[string]string{
-		"Normal Header":       "#normal-header",
-		" Leading whitespace": "#leading-whitespace",
-		"Multiple	 whitespace": "#multiple--whitespace",
+		"Normal Header":          "#normal-header",
+		" Leading whitespace":    "#leading-whitespace",
+		"Multiple	 whitespace":   "#multiple--whitespace",
 		"Special(#)%^Characters": "#specialcharacters",
 		"With:colon":             "#withcolon",
 	}

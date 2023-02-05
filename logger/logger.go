@@ -1,3 +1,5 @@
+// Package logger provides a simple console logger for reporting information
+// about execution to stderr.
 package logger
 
 import (
