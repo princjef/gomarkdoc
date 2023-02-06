@@ -97,9 +97,9 @@ func TestRawHeader(t *testing.T) {
 
 func TestLocalHref(t *testing.T) {
 	tests := map[string]string{
-		"Normal Header":       "#normal-header",
-		" Leading whitespace": "#leading-whitespace",
-		"Multiple	 whitespace": "#multiple--whitespace",
+		"Normal Header":          "#normal-header",
+		" Leading whitespace":    "#leading-whitespace",
+		"Multiple	 whitespace":   "#multiple--whitespace",
 		"Special(#)%^Characters": "#special%28%23%29%25%5Echaracters",
 		"With:colon":             "#with%3Acolon",
 	}
