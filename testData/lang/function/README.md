@@ -6,8 +6,6 @@
 import "github.com/princjef/gomarkdoc/testData/lang/function"
 ```
 
-
-
 ## Index
 
 - [Constants](<#constants>)

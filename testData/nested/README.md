@@ -6,8 +6,6 @@
 import "github.com/princjef/gomarkdoc/testData/nested"
 ```
 
-
-
 ## Index
 
 - [func Parent() int](<#func-parent>)

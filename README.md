@@ -5,8 +5,6 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/princjef/gomarkdoc.svg)](https://pkg.go.dev/github.com/princjef/gomarkdoc)
 [![codecov](https://codecov.io/gh/princjef/gomarkdoc/branch/master/graph/badge.svg?token=171XNH5XLT)](https://codecov.io/gh/princjef/gomarkdoc)
 
-
-
 # gomarkdoc
 
 ```go
