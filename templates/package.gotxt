@@ -3,43 +3,64 @@
 {{- else -}}
 	{{- header .Level .Name -}}
 {{- end -}}
+{{- spacer -}}
 
 {{- template "import" . -}}
+{{- spacer -}}
 
 {{- template "doc" .Doc -}}
+{{- spacer -}}
 
-{{- range .Examples -}}
-	{{- template "example" . -}}
+{{- range (iter .Examples) -}}
+	{{- template "example" .Entry -}}
+	{{- spacer -}}
 {{- end -}}
 
 {{- header (add .Level 1) "Index" -}}
+{{- spacer -}}
 
 {{- template "index" . -}}
 
 {{- if len .Consts -}}
+	{{- spacer -}}
 
 	{{- header (add .Level 1) "Constants" -}}
+	{{- spacer -}}
 
-	{{- range .Consts -}}
-		{{- template "value" . -}}
+	{{- range (iter .Consts) -}}
+		{{- template "value" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
 	{{- end -}}
 
 {{- end -}}
 
 {{- if len .Vars -}}
+	{{- spacer -}}
 
 	{{- header (add .Level 1) "Variables" -}}
+	{{- spacer -}}
 
-	{{- range .Vars -}}
-		{{- template "value" . -}}
+	{{- range (iter .Vars) -}}
+		{{- template "value" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
 	{{- end -}}
 
 {{- end -}}
 
-{{- range .Funcs -}}
-	{{- template "func" . -}}
+{{- if len .Funcs -}}
+	{{- spacer -}}
+
+	{{- range (iter .Funcs) -}}
+		{{- template "func" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 
-{{- range .Types -}}
-	{{- template "type" . -}}
+{{- if len .Types -}}
+	{{- spacer -}}
+
+	{{- range (iter .Types) -}}
+		{{- template "type" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}

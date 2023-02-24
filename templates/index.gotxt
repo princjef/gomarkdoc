@@ -1,12 +1,14 @@
 {{- if len .Consts -}}
 
 	{{- localHref "Constants" | link "Constants" | listEntry 0 -}}
+	{{- inlineSpacer -}}
 	
 {{- end -}}
 
 {{- if len .Vars -}}
 
 	{{- localHref "Variables" | link "Variables" | listEntry 0 -}}
+	{{- inlineSpacer -}}
 
 {{- end -}}
 
@@ -17,12 +19,14 @@
 	{{- else -}}
 		{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 0 -}}
 	{{- end -}}
+	{{- inlineSpacer -}}
 
 {{- end -}}
 
 {{- range .Types -}}
 
 	{{- codeHref .Location | link (escape .Name) | printf "type %s" | localHref | link .Title | listEntry 0 -}}
+	{{- inlineSpacer -}}
 
 	{{- range .Funcs -}}
 		{{- if .Receiver -}}
@@ -30,6 +34,7 @@
 		{{- else -}}
 			{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 1 -}}
 		{{- end -}}
+		{{- inlineSpacer -}}
 	{{- end -}}
 
 	{{- range .Methods -}}
@@ -38,8 +43,7 @@
 		{{- else -}}
 			{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 1 -}}
 		{{- end -}}
+		{{- inlineSpacer -}}
 	{{- end -}}
 
 {{- end -}}
-
-{{- spacer -}}

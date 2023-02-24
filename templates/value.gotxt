@@ -1,4 +1,5 @@
 {{- template "doc" .Doc -}}
+{{- spacer -}}
 
 {{- codeBlock "go" .Decl -}}
 

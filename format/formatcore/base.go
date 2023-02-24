@@ -34,8 +34,6 @@ func CodeBlock(code string) string {
 		builder.WriteString(line)
 	}
 
-	builder.WriteString("\n\n")
-
 	return builder.String()
 }
 
@@ -43,7 +41,7 @@ func CodeBlock(code string) string {
 // provided language (or no language if the empty string is provided), using
 // the triple backtick format from GitHub Flavored Markdown.
 func GFMCodeBlock(language, code string) string {
-	return fmt.Sprintf("```%s\n%s\n```\n\n", language, strings.TrimSpace(code))
+	return fmt.Sprintf("```%s\n%s\n```", language, strings.TrimSpace(code))
 }
 
 // Header converts the provided text into a header of the provided level. The
@@ -55,18 +53,18 @@ func Header(level int, text string) (string, error) {
 
 	switch level {
 	case 1:
-		return fmt.Sprintf("# %s\n\n", text), nil
+		return fmt.Sprintf("# %s", text), nil
 	case 2:
-		return fmt.Sprintf("## %s\n\n", text), nil
+		return fmt.Sprintf("## %s", text), nil
 	case 3:
-		return fmt.Sprintf("### %s\n\n", text), nil
+		return fmt.Sprintf("### %s", text), nil
 	case 4:
-		return fmt.Sprintf("#### %s\n\n", text), nil
+		return fmt.Sprintf("#### %s", text), nil
 	case 5:
-		return fmt.Sprintf("##### %s\n\n", text), nil
+		return fmt.Sprintf("##### %s", text), nil
 	default:
 		// Only go up to 6 levels. Anything higher is also level 6
-		return fmt.Sprintf("###### %s\n\n", text), nil
+		return fmt.Sprintf("###### %s", text), nil
 	}
 }
 
@@ -93,13 +91,13 @@ func ListEntry(depth int, text string) string {
 	}
 
 	prefix := strings.Repeat("  ", depth)
-	return fmt.Sprintf("%s- %s\n", prefix, text)
+	return fmt.Sprintf("%s- %s", prefix, text)
 }
 
 // GFMAccordion generates a collapsible content. The accordion's visible title
 // while collapsed is the provided title and the expanded content is the body.
 func GFMAccordion(title, body string) string {
-	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n%s</p>\n</details>\n\n", title, Escape(body))
+	return fmt.Sprintf("<details><summary>%s</summary>\n<p>%s</p>\n</details>", title, Escape(body))
 }
 
 // GFMAccordionHeader generates the header visible when an accordion is
@@ -112,19 +110,19 @@ func GFMAccordion(title, body string) string {
 //
 //	accordion := GFMAccordionHeader("Accordion Title") + "Accordion Body" + GFMAccordionTerminator()
 func GFMAccordionHeader(title string) string {
-	return fmt.Sprintf("<details><summary>%s</summary>\n<p>\n\n", title)
+	return fmt.Sprintf("<details><summary>%s</summary>\n<p>", title)
 }
 
 // GFMAccordionTerminator generates the code necessary to terminate an
 // accordion after the body. It is expected to be used in conjunction with
 // GFMAccordionHeader(). See GFMAccordionHeader for a full description.
 func GFMAccordionTerminator() string {
-	return "</p>\n</details>\n\n"
+	return "</p>\n</details>"
 }
 
-// Paragraph formats a paragraph with the provided text as the contents.
+// Paragraph formats a paragraph with the provided text as the contents
 func Paragraph(text string) string {
-	return fmt.Sprintf("%s\n\n", Escape(text))
+	return Escape(text)
 }
 
 var (

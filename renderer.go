@@ -2,6 +2,7 @@ package gomarkdoc
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"text/template"
 
@@ -53,6 +54,46 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 				},
 				"spacer": func() string {
 					return "\n\n"
+				},
+				"inlineSpacer": func() string {
+					return "\n"
+				},
+				"hangingIndent": func(s string, n int) string {
+					return strings.ReplaceAll(s, "\n", fmt.Sprintf("\n%s", strings.Repeat(" ", n)))
+				},
+				"include": func(name string, data any) (string, error) {
+					var b strings.Builder
+					err := tmpl.ExecuteTemplate(&b, name, data)
+					if err != nil {
+						return "", err
+					}
+
+					return b.String(), nil
+				},
+				"iter": func(l any) (any, error) {
+					type iter struct {
+						First bool
+						Last  bool
+						Entry any
+					}
+
+					switch reflect.TypeOf(l).Kind() {
+					case reflect.Slice:
+						s := reflect.ValueOf(l)
+						out := make([]iter, s.Len())
+
+						for i := 0; i < s.Len(); i++ {
+							out[i] = iter{
+								First: i == 0,
+								Last:  i == s.Len()-1,
+								Entry: s.Index(i).Interface(),
+							}
+						}
+
+						return out, nil
+					default:
+						return nil, fmt.Errorf("renderer: iter only accepts slices")
+					}
 				},
 
 				"bold":                renderer.format.Bold,

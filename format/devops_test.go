@@ -25,7 +25,7 @@ func TestCodeBlock(t *testing.T) {
 	var f format.AzureDevOpsMarkdown
 	res, err := f.CodeBlock("go", "Line 1\nLine 2")
 	is.NoErr(err)
-	is.Equal(res, "```go\nLine 1\nLine 2\n```\n\n")
+	is.Equal(res, "```go\nLine 1\nLine 2\n```")
 }
 
 func TestCodeBlock_noLanguage(t *testing.T) {
@@ -34,7 +34,7 @@ func TestCodeBlock_noLanguage(t *testing.T) {
 	var f format.AzureDevOpsMarkdown
 	res, err := f.CodeBlock("", "Line 1\nLine 2")
 	is.NoErr(err)
-	is.Equal(res, "```\nLine 1\nLine 2\n```\n\n")
+	is.Equal(res, "```\nLine 1\nLine 2\n```")
 }
 
 func TestHeader(t *testing.T) {
@@ -43,14 +43,14 @@ func TestHeader(t *testing.T) {
 		level  int
 		result string
 	}{
-		{"header text", 1, "# header text\n\n"},
-		{"level 2", 2, "## level 2\n\n"},
-		{"level 3", 3, "### level 3\n\n"},
-		{"level 4", 4, "#### level 4\n\n"},
-		{"level 5", 5, "##### level 5\n\n"},
-		{"level 6", 6, "###### level 6\n\n"},
-		{"other level", 12, "###### other level\n\n"},
-		{"with * escape", 2, "## with \\* escape\n\n"},
+		{"header text", 1, "# header text"},
+		{"level 2", 2, "## level 2"},
+		{"level 3", 3, "### level 3"},
+		{"level 4", 4, "#### level 4"},
+		{"level 5", 5, "##### level 5"},
+		{"level 6", 6, "###### level 6"},
+		{"other level", 12, "###### other level"},
+		{"with * escape", 2, "## with \\* escape"},
 	}
 
 	for _, test := range tests {
@@ -79,8 +79,8 @@ func TestRawHeader(t *testing.T) {
 		level  int
 		result string
 	}{
-		{"header text", 1, "# header text\n\n"},
-		{"with * escape", 2, "## with * escape\n\n"},
+		{"header text", 1, "# header text"},
+		{"with * escape", 2, "## with * escape"},
 	}
 
 	for _, test := range tests {
@@ -173,7 +173,7 @@ func TestListEntry(t *testing.T) {
 	var f format.AzureDevOpsMarkdown
 	res, err := f.ListEntry(0, "list entry text")
 	is.NoErr(err)
-	is.Equal(res, "- list entry text\n")
+	is.Equal(res, "- list entry text")
 }
 
 func TestListEntry_nested(t *testing.T) {
@@ -182,7 +182,7 @@ func TestListEntry_nested(t *testing.T) {
 	var f format.AzureDevOpsMarkdown
 	res, err := f.ListEntry(2, "nested text")
 	is.NoErr(err)
-	is.Equal(res, "    - nested text\n")
+	is.Equal(res, "    - nested text")
 }
 
 func TestListEntry_empty(t *testing.T) {

@@ -28,20 +28,6 @@ func TestValue_Summary(t *testing.T) {
 	is.Equal(val.Summary(), "Variable is a package-level variable.")
 }
 
-func TestValue_Doc(t *testing.T) {
-	is := is.New(t)
-
-	val, err := loadValue("../testData/lang/function", "Variable")
-	is.NoErr(err)
-
-	doc := val.Doc()
-	is.Equal(doc.Level(), 3)
-	is.Equal(len(doc.Blocks()), 1)
-	is.Equal(doc.Blocks()[0].Kind(), lang.ParagraphBlock)
-	is.Equal(doc.Blocks()[0].Level(), 3)
-	is.Equal(doc.Blocks()[0].Text(), "Variable is a package-level variable.")
-}
-
 func TestValue_Decl(t *testing.T) {
 	is := is.New(t)
 
