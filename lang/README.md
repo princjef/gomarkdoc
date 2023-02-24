@@ -11,9 +11,13 @@ Package lang provides constructs for defining golang language constructs and ext
 ## Index
 
 - [type Block](<#type-block>)
-  - [func NewBlock(cfg *Config, kind BlockKind, text string) *Block](<#func-newblock>)
+  - [func NewBlock(cfg *Config, kind BlockKind, text string, inline bool) *Block](<#func-newblock>)
+  - [func NewListBlock(cfg *Config, list *List, inline bool) *Block](<#func-newlistblock>)
+  - [func ParseBlocks(cfg *Config, blocks []comment.Block, inline bool) []*Block](<#func-parseblocks>)
+  - [func (b *Block) Inline() bool](<#func-block-inline>)
   - [func (b *Block) Kind() BlockKind](<#func-block-kind>)
   - [func (b *Block) Level() int](<#func-block-level>)
+  - [func (b *Block) List() *List](<#func-block-list>)
   - [func (b *Block) Text() string](<#func-block-text>)
 - [type BlockKind](<#type-blockkind>)
 - [type Config](<#type-config>)
@@ -49,6 +53,16 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func (fn *Func) Signature() (string, error)](<#func-func-signature>)
   - [func (fn *Func) Summary() string](<#func-func-summary>)
   - [func (fn *Func) Title() string](<#func-func-title>)
+- [type Item](<#type-item>)
+  - [func NewItem(cfg *Config, docItem *comment.ListItem) *Item](<#func-newitem>)
+  - [func (i *Item) Blocks() []*Block](<#func-item-blocks>)
+  - [func (i *Item) Kind() ItemKind](<#func-item-kind>)
+  - [func (i *Item) Number() int](<#func-item-number>)
+- [type ItemKind](<#type-itemkind>)
+- [type List](<#type-list>)
+  - [func NewList(cfg *Config, docList *comment.List) *List](<#func-newlist>)
+  - [func (l *List) BlankBetween() bool](<#func-list-blankbetween>)
+  - [func (l *List) Items() []*Item](<#func-list-items>)
 - [type Location](<#type-location>)
   - [func NewLocation(cfg *Config, node ast.Node) Location](<#func-newlocation>)
 - [type Package](<#type-package>)
@@ -96,7 +110,7 @@ Package lang provides constructs for defining golang language constructs and ext
   - [func (v *Value) Summary() string](<#func-value-summary>)
 
 
-## type [Block](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L6-L10>)
+## type [Block](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L12-L18>)
 
 Block defines a single block element \(e.g. paragraph, code block\) in the documentation for a symbol or package.
 
@@ -106,15 +120,39 @@ type Block struct {
 }
 ```
 
-### func [NewBlock](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L30>)
+### func [NewBlock](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L42>)
 
 ```go
-func NewBlock(cfg *Config, kind BlockKind, text string) *Block
+func NewBlock(cfg *Config, kind BlockKind, text string, inline bool) *Block
 ```
 
-NewBlock creates a new block element of the provided kind and with the given text contents.
+NewBlock creates a new block element of the provided kind and with the given text contents and a flag indicating whether this block is part of an inline element.
 
-### func \(\*Block\) [Kind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L42>)
+### func [NewListBlock](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L49>)
+
+```go
+func NewListBlock(cfg *Config, list *List, inline bool) *Block
+```
+
+NewListBlock creates a new list block element and with the given list definition and a flag indicating whether this block is part of an inline element.
+
+### func [ParseBlocks](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L87>)
+
+```go
+func ParseBlocks(cfg *Config, blocks []comment.Block, inline bool) []*Block
+```
+
+ParseBlocks produces a set of blocks from the corresponding comment blocks. It also takes a flag indicating whether the blocks are part of an inline element such as a list item.
+
+### func \(\*Block\) [Inline](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L80>)
+
+```go
+func (b *Block) Inline() bool
+```
+
+Inline indicates whether the block is part of an inline element, such as a list item.
+
+### func \(\*Block\) [Kind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L61>)
 
 ```go
 func (b *Block) Kind() BlockKind
@@ -122,7 +160,7 @@ func (b *Block) Kind() BlockKind
 
 Kind provides the kind of data that this block's text should be interpreted as.
 
-### func \(\*Block\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L36>)
+### func \(\*Block\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L55>)
 
 ```go
 func (b *Block) Level() int
@@ -130,7 +168,15 @@ func (b *Block) Level() int
 
 Level provides the default level that a block of kind HeaderBlock will render at in the output. The level is not used for other block types.
 
-### func \(\*Block\) [Text](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L49>)
+### func \(\*Block\) [List](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L74>)
+
+```go
+func (b *Block) List() *List
+```
+
+List provides the list contents for a list block. Only relevant for blocks of type ListBlock.
+
+### func \(\*Block\) [Text](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L68>)
 
 ```go
 func (b *Block) Text() string
@@ -138,13 +184,15 @@ func (b *Block) Text() string
 
 Text provides the raw text of the block's contents. The text is pre\-scrubbed and sanitized as determined by the block's Kind\(\), but it is not wrapped in any special constructs for rendering purposes \(such as markdown code blocks\).
 
-## type [BlockKind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L14>)
+## type [BlockKind](<https://github.com/princjef/gomarkdoc/blob/master/lang/block.go#L22>)
 
 BlockKind identifies the type of block element represented by the corresponding Block.
 
 ```go
 type BlockKind string
 ```
+
+
 
 ```go
 const (
@@ -156,6 +204,9 @@ const (
 
     // HeaderBlock defines a block that represents a section header.
     HeaderBlock BlockKind = "header"
+
+    // ListBlock defines a block that represents an ordered or unordered list.
+    ListBlock BlockKind = "list"
 )
 ```
 
@@ -206,7 +257,7 @@ func ConfigWithRepoOverrides(overrides *Repo) ConfigOption
 
 ConfigWithRepoOverrides defines a set of manual overrides for the repository information to be used in place of automatic repository detection.
 
-## type [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L10-L13>)
+## type [Doc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L9-L12>)
 
 Doc provides access to the documentation comment contents for a package or symbol in a structured form.
 
@@ -216,7 +267,7 @@ type Doc struct {
 }
 ```
 
-### func [NewDoc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L27>)
+### func [NewDoc](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L18>)
 
 ```go
 func NewDoc(cfg *Config, text string) *Doc
@@ -224,7 +275,7 @@ func NewDoc(cfg *Config, text string) *Doc
 
 NewDoc initializes a Doc struct from the provided raw documentation text and with headers rendered by default at the heading level provided. Documentation is separated into block level elements using the standard rules from golang's documentation conventions.
 
-### func \(\*Doc\) [Blocks](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L70>)
+### func \(\*Doc\) [Blocks](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L38>)
 
 ```go
 func (d *Doc) Blocks() []*Block
@@ -232,7 +283,7 @@ func (d *Doc) Blocks() []*Block
 
 Blocks holds the list of block elements that makes up the documentation contents.
 
-### func \(\*Doc\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L64>)
+### func \(\*Doc\) [Level](<https://github.com/princjef/gomarkdoc/blob/master/lang/doc.go#L32>)
 
 ```go
 func (d *Doc) Level() int
@@ -439,6 +490,102 @@ func (fn *Func) Title() string
 ```
 
 Title provides the formatted name of the func. It is primarily designed for generating headers.
+
+## type [Item](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L51-L55>)
+
+Item defines a single item in a list in the documentation for a symbol or package.
+
+```go
+type Item struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewItem](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L59>)
+
+```go
+func NewItem(cfg *Config, docItem *comment.ListItem) *Item
+```
+
+NewItem initializes a list item from the equivalent type from the comment package.
+
+### func \(\*Item\) [Blocks](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L79>)
+
+```go
+func (i *Item) Blocks() []*Block
+```
+
+Blocks returns the blocks of documentation in a list item.
+
+### func \(\*Item\) [Kind](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L84>)
+
+```go
+func (i *Item) Kind() ItemKind
+```
+
+Kind returns the kind of the list item.
+
+### func \(\*Item\) [Number](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L90>)
+
+```go
+func (i *Item) Number() int
+```
+
+Number returns the number of the list item. Only populated if the item is of the OrderedItem kind.
+
+## type [ItemKind](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L39>)
+
+ItemKind identifies the kind of item
+
+```go
+type ItemKind string
+```
+
+
+
+```go
+const (
+    // OrderedItem identifies an ordered (i.e. numbered) item.
+    OrderedItem ItemKind = "ordered"
+
+    // UnorderedItem identifies an unordered (i.e. bulletted) item.
+    UnorderedItem ItemKind = "unordered"
+)
+```
+
+## type [List](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L10-L13>)
+
+List defines a list block element in the documentation for a symbol or package.
+
+```go
+type List struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewList](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L16>)
+
+```go
+func NewList(cfg *Config, docList *comment.List) *List
+```
+
+NewList initializes a list from the equivalent type from the comment package.
+
+### func \(\*List\) [BlankBetween](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L29>)
+
+```go
+func (l *List) BlankBetween() bool
+```
+
+BlankBetween returns true if there should be a blank line between list items.
+
+### func \(\*List\) [Items](<https://github.com/princjef/gomarkdoc/blob/master/lang/list.go#L34>)
+
+```go
+func (l *List) Items() []*Item
+```
+
+Items returns the slice of items in the list.
 
 ## type [Location](<https://github.com/princjef/gomarkdoc/blob/master/lang/config.go#L39-L45>)
 
@@ -820,7 +967,5 @@ func (v *Value) Summary() string
 ```
 
 Summary provides the one\-sentence summary of the value's documentation comment.
-
-
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

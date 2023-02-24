@@ -73,37 +73,6 @@ func TestFunc_Receiver_receiver(t *testing.T) {
 	is.Equal(fn.Receiver(), "Receiver")
 }
 
-func TestFunc_Doc(t *testing.T) {
-	is := is.New(t)
-
-	fn, err := loadFunc("../testData/lang/function", "Standalone")
-	is.NoErr(err)
-
-	doc := fn.Doc()
-	blocks := doc.Blocks()
-	is.Equal(len(blocks), 5)
-
-	is.Equal(blocks[0].Kind(), lang.ParagraphBlock)
-	is.Equal(blocks[0].Level(), 3)
-	is.Equal(blocks[0].Text(), "Standalone provides a function that is not part of a type.")
-
-	is.Equal(blocks[1].Kind(), lang.ParagraphBlock)
-	is.Equal(blocks[1].Level(), 3)
-	is.Equal(blocks[1].Text(), "Additional description can be provided in subsequent paragraphs, including code blocks and headers")
-
-	is.Equal(blocks[2].Kind(), lang.HeaderBlock)
-	is.Equal(blocks[2].Level(), 3)
-	is.Equal(blocks[2].Text(), "Header A")
-
-	is.Equal(blocks[3].Kind(), lang.ParagraphBlock)
-	is.Equal(blocks[3].Level(), 3)
-	is.Equal(blocks[3].Text(), "This section contains a code block.")
-
-	is.Equal(blocks[4].Kind(), lang.CodeBlock)
-	is.Equal(blocks[4].Level(), 3)
-	is.Equal(blocks[4].Text(), "Code Block\nMore of Code Block\n")
-}
-
 func TestFunc_Location(t *testing.T) {
 	is := is.New(t)
 
