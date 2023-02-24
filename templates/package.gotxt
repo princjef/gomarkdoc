@@ -8,8 +8,10 @@
 {{- template "import" . -}}
 {{- spacer -}}
 
-{{- template "doc" .Doc -}}
-{{- spacer -}}
+{{- if len .Doc.Blocks -}}
+	{{- template "doc" .Doc -}}
+	{{- spacer -}}
+{{- end -}}
 
 {{- range (iter .Examples) -}}
 	{{- template "example" .Entry -}}
