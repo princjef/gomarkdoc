@@ -103,6 +103,22 @@ func (fn *Func) Examples() (examples []*Example) {
 	return
 }
 
+// Anchor produces anchor text for the func.
+func (fn *Func) Anchor() string {
+	if fn.doc.Recv != "" {
+		return Symbol{
+			Kind:     MethodSymbolKind,
+			Receiver: fn.doc.Recv,
+			Name:     fn.doc.Name,
+		}.Anchor()
+	}
+
+	return Symbol{
+		Kind: FuncSymbolKind,
+		Name: fn.doc.Name,
+	}.Anchor()
+}
+
 func (fn *Func) rawRecv() string {
 	// remove type parameters
 	recv := strings.Split(fn.doc.Recv, "[")[0]

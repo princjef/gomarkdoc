@@ -12,9 +12,21 @@ type Format interface {
 	// provided language (or no language if the empty string is provided).
 	CodeBlock(language, code string) (string, error)
 
+	// Anchor produces an anchor for the provided link.
+	Anchor(anchor string) string
+
+	// AnchorHeader converts the provided text and custom anchor link into a
+	// header of the provided level. The level is expected to be at least 1.
+	AnchorHeader(level int, text, anchor string) (string, error)
+
 	// Header converts the provided text into a header of the provided level.
 	// The level is expected to be at least 1.
 	Header(level int, text string) (string, error)
+
+	// RawAnchorHeader converts the provided text and custom anchor link into a
+	// header of the provided level without escaping the header text. The level
+	// is expected to be at least 1.
+	RawAnchorHeader(level int, text, anchor string) (string, error)
 
 	// RawHeader converts the provided text into a header of the provided level
 	// without escaping the header text. The level is expected to be at least 1.
@@ -23,6 +35,10 @@ type Format interface {
 	// LocalHref generates an href for navigating to a header with the given
 	// headerText located within the same document as the href itself.
 	LocalHref(headerText string) (string, error)
+
+	// RawLocalHref generates an href within the same document but with a direct
+	// link provided instead of text to slugify.
+	RawLocalHref(anchor string) string
 
 	// Link generates a link with the given text and href values.
 	Link(text, href string) (string, error)
@@ -55,9 +71,6 @@ type Format interface {
 	// accordion after the body. It is expected to be used in conjunction with
 	// AccordionHeader(). See AccordionHeader for a full description.
 	AccordionTerminator() (string, error)
-
-	// Paragraph formats a paragraph with the provided text as the contents.
-	Paragraph(text string) (string, error)
 
 	// Escape escapes special markdown characters from the provided text.
 	Escape(text string) string

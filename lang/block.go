@@ -2,7 +2,6 @@ package lang
 
 import (
 	"go/doc/comment"
-	"regexp"
 	"strings"
 )
 
@@ -12,7 +11,7 @@ type (
 	Block struct {
 		cfg    *Config
 		kind   BlockKind
-		text   string
+		spans  []*Span
 		list   *List
 		inline bool
 	}
@@ -37,17 +36,17 @@ const (
 )
 
 // NewBlock creates a new block element of the provided kind and with the given
-// text contents and a flag indicating whether this block is part of an inline
+// text spans and a flag indicating whether this block is part of an inline
 // element.
-func NewBlock(cfg *Config, kind BlockKind, text string, inline bool) *Block {
-	return &Block{cfg, kind, text, nil, inline}
+func NewBlock(cfg *Config, kind BlockKind, spans []*Span, inline bool) *Block {
+	return &Block{cfg, kind, spans, nil, inline}
 }
 
 // NewListBlock creates a new list block element and with the given list
 // definition and a flag indicating whether this block is part of an inline
 // element.
 func NewListBlock(cfg *Config, list *List, inline bool) *Block {
-	return &Block{cfg, ListBlock, "", list, inline}
+	return &Block{cfg, ListBlock, nil, list, inline}
 }
 
 // Level provides the default level that a block of kind HeaderBlock will render
@@ -62,11 +61,12 @@ func (b *Block) Kind() BlockKind {
 	return b.kind
 }
 
-// Text provides the raw text of the block's contents. The text is pre-scrubbed
-// and sanitized as determined by the block's Kind(), but it is not wrapped in
-// any special constructs for rendering purposes (such as markdown code blocks).
-func (b *Block) Text() string {
-	return b.text
+// Spans provides the raw text of the block's contents as a set of text spans.
+// The text is pre-scrubbed and sanitized as determined by the block's Kind(),
+// but it is not wrapped in any special constructs for rendering purposes (such
+// as markdown code blocks).
+func (b *Block) Spans() []*Span {
+	return b.spans
 }
 
 // List provides the list contents for a list block. Only relevant for blocks of
@@ -89,46 +89,23 @@ func ParseBlocks(cfg *Config, blocks []comment.Block, inline bool) []*Block {
 	for i, b := range blocks {
 		switch v := b.(type) {
 		case *comment.Code:
-			res[i] = NewBlock(cfg.Inc(0), CodeBlock, v.Text, inline)
+			res[i] = NewBlock(
+				cfg.Inc(0),
+				CodeBlock,
+				[]*Span{NewSpan(cfg.Inc(0), RawTextSpan, v.Text, "")},
+				inline,
+			)
 		case *comment.Heading:
 			var b strings.Builder
 			printText(&b, v.Text...)
-			res[i] = NewBlock(cfg.Inc(0), HeaderBlock, b.String(), inline)
+			res[i] = NewBlock(cfg.Inc(0), HeaderBlock, ParseSpans(cfg, v.Text), inline)
 		case *comment.List:
 			list := NewList(cfg.Inc(0), v)
 			res[i] = NewListBlock(cfg.Inc(0), list, inline)
 		case *comment.Paragraph:
-			var b strings.Builder
-			printText(&b, v.Text...)
-			text := collapseWhitespace(b.String())
-			res[i] = NewBlock(cfg.Inc(0), ParagraphBlock, text, inline)
+			res[i] = NewBlock(cfg.Inc(0), ParagraphBlock, ParseSpans(cfg, v.Text), inline)
 		}
 	}
 
 	return res
-}
-
-func printText(b *strings.Builder, text ...comment.Text) {
-	for i, t := range text {
-		if i > 0 {
-			b.WriteRune(' ')
-		}
-
-		switch v := t.(type) {
-		case comment.Plain:
-			b.WriteString(string(v))
-		case comment.Italic:
-			b.WriteString(string(v))
-		case *comment.DocLink:
-			printText(b, v.Text...)
-		case *comment.Link:
-			printText(b, v.Text...)
-		}
-	}
-}
-
-var whitespaceRegex = regexp.MustCompile(`\s+`)
-
-func collapseWhitespace(s string) string {
-	return string(whitespaceRegex.ReplaceAll([]byte(s), []byte(" ")))
 }

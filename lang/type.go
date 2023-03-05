@@ -135,3 +135,11 @@ func (typ *Type) Vars() []*Value {
 
 	return vars
 }
+
+// Anchor produces anchor text for the type.
+func (typ *Type) Anchor() string {
+	return Symbol{
+		Kind: TypeSymbolKind,
+		Name: typ.doc.Name,
+	}.Anchor()
+}

@@ -41,8 +41,8 @@ type (
 // raw documentation constructs provided by the standard library. This is only
 // recommended for advanced scenarios. Most consumers will find it easier to use
 // NewPackageFromBuild instead.
-func NewPackage(cfg *Config, doc *doc.Package, examples []*doc.Example) *Package {
-	return &Package{cfg, doc, examples}
+func NewPackage(cfg *Config, examples []*doc.Example) *Package {
+	return &Package{cfg, cfg.Pkg, examples}
 }
 
 // NewPackageFromBuild creates a representation of a package's documentation
@@ -66,19 +66,17 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		return nil, err
 	}
 
-	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported)
+	cfg.Pkg, err = getDocPkg(pkg, cfg.FileSet, options.includeUnexported)
 	if err != nil {
 		return nil, err
 	}
 
-	files, err := parsePkgFiles(pkg, cfg.FileSet)
-	if err != nil {
-		return nil, err
-	}
+	sym := PackageSymbols(cfg.Pkg)
+	cfg.Symbols = sym
 
-	examples := doc.Examples(files...)
+	examples := doc.Examples(cfg.Files...)
 
-	return NewPackage(cfg, docPkg, examples), nil
+	return NewPackage(cfg, examples), nil
 }
 
 // PackageWithUnexportedIncluded can be used along with the NewPackageFromBuild
@@ -329,34 +327,4 @@ func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool) (*
 	}
 
 	return doc.New(astPkg, importPath, doc.AllDecls), nil
-}
-
-func parsePkgFiles(pkg *build.Package, fs *token.FileSet) ([]*ast.File, error) {
-	rawFiles, err := ioutil.ReadDir(pkg.Dir)
-	if err != nil {
-		return nil, fmt.Errorf("gomarkdoc: error reading package dir: %w", err)
-	}
-
-	var files []*ast.File
-	for _, f := range rawFiles {
-		if !strings.HasSuffix(f.Name(), ".go") && !strings.HasSuffix(f.Name(), ".cgo") {
-			continue
-		}
-
-		p := path.Join(pkg.Dir, f.Name())
-
-		fi, err := os.Stat(p)
-		if err != nil || !fi.Mode().IsRegular() {
-			continue
-		}
-
-		parsed, err := parser.ParseFile(fs, p, nil, parser.ParseComments)
-		if err != nil {
-			return nil, fmt.Errorf("gomarkdoc: failed to parse package file %s", f.Name())
-		}
-
-		files = append(files, parsed)
-	}
-
-	return files, nil
 }

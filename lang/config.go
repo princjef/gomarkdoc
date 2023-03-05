@@ -4,8 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"go/ast"
+	"go/doc"
+	"go/parser"
 	"go/token"
 	"io"
+	"io/ioutil"
+	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -19,10 +24,13 @@ type (
 	// a construct.
 	Config struct {
 		FileSet *token.FileSet
+		Files   []*ast.File
 		Level   int
 		Repo    *Repo
 		PkgDir  string
 		WorkDir string
+		Symbols map[string]Symbol
+		Pkg     *doc.Package
 		Log     logger.Logger
 	}
 
@@ -83,6 +91,13 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 		return nil, err
 	}
 
+	files, err := parsePkgFiles(pkgDir, cfg.FileSet)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Files = files
+
 	if cfg.Repo == nil || cfg.Repo.Remote == "" || cfg.Repo.DefaultBranch == "" || cfg.Repo.PathFromRoot == "" {
 		repo, err := getRepoForDir(log, cfg.WorkDir, cfg.PkgDir, cfg.Repo)
 		if err != nil {
@@ -109,10 +124,13 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 func (c *Config) Inc(step int) *Config {
 	return &Config{
 		FileSet: c.FileSet,
+		Files:   c.Files,
 		Level:   c.Level + step,
 		PkgDir:  c.PkgDir,
 		WorkDir: c.WorkDir,
 		Repo:    c.Repo,
+		Symbols: c.Symbols,
+		Pkg:     c.Pkg,
 		Log:     c.Log,
 	}
 }
@@ -351,4 +369,34 @@ func NewLocation(cfg *Config, node ast.Node) Location {
 		WorkDir:  cfg.WorkDir,
 		Repo:     cfg.Repo,
 	}
+}
+
+func parsePkgFiles(pkgDir string, fs *token.FileSet) ([]*ast.File, error) {
+	rawFiles, err := ioutil.ReadDir(pkgDir)
+	if err != nil {
+		return nil, fmt.Errorf("gomarkdoc: error reading package dir: %w", err)
+	}
+
+	var files []*ast.File
+	for _, f := range rawFiles {
+		if !strings.HasSuffix(f.Name(), ".go") && !strings.HasSuffix(f.Name(), ".cgo") {
+			continue
+		}
+
+		p := path.Join(pkgDir, f.Name())
+
+		fi, err := os.Stat(p)
+		if err != nil || !fi.Mode().IsRegular() {
+			continue
+		}
+
+		parsed, err := parser.ParseFile(fs, p, nil, parser.ParseComments)
+		if err != nil {
+			return nil, fmt.Errorf("gomarkdoc: failed to parse package file %s", f.Name())
+		}
+
+		files = append(files, parsed)
+	}
+
+	return files, nil
 }

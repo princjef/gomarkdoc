@@ -22,10 +22,28 @@ func (f *PlainMarkdown) CodeBlock(language, code string) (string, error) {
 	return formatcore.CodeBlock(code), nil
 }
 
+// Anchor produces an anchor for the provided link.
+func (f *PlainMarkdown) Anchor(anchor string) string {
+	return formatcore.Anchor(anchor)
+}
+
+// AnchorHeader converts the provided text and custom anchor link into a header
+// of the provided level. The level is expected to be at least 1.
+func (f *PlainMarkdown) AnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, formatcore.Escape(text), anchor)
+}
+
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *PlainMarkdown) Header(level int, text string) (string, error) {
 	return formatcore.Header(level, formatcore.Escape(text))
+}
+
+// RawAnchorHeader converts the provided text and custom anchor link into a
+// header of the provided level without escaping the header text. The level is
+// expected to be at least 1.
+func (f *PlainMarkdown) RawAnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, text, anchor)
 }
 
 // RawHeader converts the provided text into a header of the provided level
@@ -38,6 +56,12 @@ func (f *PlainMarkdown) RawHeader(level int, text string) (string, error) {
 // in plain markdown.
 func (f *PlainMarkdown) LocalHref(headerText string) (string, error) {
 	return "", nil
+}
+
+// RawLocalHref generates an href within the same document but with a direct
+// link provided instead of text to slugify.
+func (f *PlainMarkdown) RawLocalHref(anchor string) string {
+	return fmt.Sprintf("#%s", anchor)
 }
 
 // CodeHref always returns the empty string, as there is no defined file linking
@@ -66,7 +90,7 @@ func (f *PlainMarkdown) Accordion(title, body string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s%s", h, formatcore.Paragraph(body)), nil
+	return fmt.Sprintf("%s%s", h, body), nil
 }
 
 // AccordionHeader generates the header visible when an accordion is collapsed.
@@ -88,11 +112,6 @@ func (f *PlainMarkdown) AccordionHeader(title string) (string, error) {
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *PlainMarkdown) AccordionTerminator() (string, error) {
 	return "\n\n", nil
-}
-
-// Paragraph formats a paragraph with the provided text as the contents.
-func (f *PlainMarkdown) Paragraph(text string) (string, error) {
-	return formatcore.Paragraph(text), nil
 }
 
 // Escape escapes special markdown characters from the provided text.

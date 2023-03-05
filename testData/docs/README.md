@@ -10,7 +10,7 @@ Package docs exercises the documentation features of golang 1.19 and above at th
 
 ### This is a heading
 
-This heading has a paragraph with a reference to the standard library math/rand as well as a function in the file \[Func\], a type \[Type\], a type's function \[Type.Func\], a non\-standard library package \[golang.org/x/crypto@v0.5.0/bcrypt.Cost\], an external link Outside Link and a \[broken link\].
+This heading has a paragraph with a reference to the standard library [math/rand](<https://pkg.go.dev/math/rand/>) as well as a function in the file [Func](<#Func>), a type [Type](<#Type>), a type's function [Type.Func](<#Type.Func>), a non\-standard library package [golang.org/x/crypto/bcrypt.Cost](<https://pkg.go.dev/golang.org/x/crypto/bcrypt/#Cost>), an external link [Outside Link](<https://golang.org/doc/articles/json_and_go.html>) and a \[broken link\].
 
 It also has a numbered list:
 
@@ -59,14 +59,60 @@ in a random
 		way
 ```
 
+There's also another file with a struct called [AnotherStruct](<#AnotherStruct>) that has additional methods and fields.
+
+We also have constants like [Constant](<#Constant>) and [Const1](<#Const1>) plus variables like [Var](<#Var>) and and [VarB](<#VarA>).
+
 ## Index
 
-- [func Func(param int) int](<#func-func>)
-- [type Type](<#type-type>)
-  - [func (t *Type) Func()](<#func-type-func>)
+- [Constants](<#constants>)
+- [Variables](<#variables>)
+- [func Func(param int) int](<#Func>)
+- [type AnotherStruct](<#AnotherStruct>)
+  - [func NewAnotherStruct() *AnotherStruct](<#NewAnotherStruct>)
+  - [func (s *AnotherStruct) GetField() string](<#AnotherStruct.GetField>)
+- [type Type](<#Type>)
+  - [func (t *Type) Func()](<#Type.Func>)
 
 
-## func [Func](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L58>)
+## Constants
+
+<a name="Const1"></a>This is a constant block
+
+```go
+const (
+    Const1 = 1
+    Const2 = 2
+    Const3 = 3
+)
+```
+
+<a name="Constant"></a>Constant is a constant.
+
+```go
+const Constant = 3
+```
+
+## Variables
+
+<a name="VarA"></a>This is a var block
+
+```go
+var (
+    VarA = 'a'
+    VarB = 'b'
+    VarC = 'c'
+)
+```
+
+<a name="Var"></a>Var is a var.
+
+```go
+var Var = 2
+```
+
+<a name="Func"></a>
+## func [Func](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L64>)
 
 ```go
 func Func(param int) int
@@ -74,7 +120,37 @@ func Func(param int) int
 
 Func is present in this file.
 
-## type [Type](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L63>)
+<a name="AnotherStruct"></a>
+## type [AnotherStruct](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/anotherFile.go#L5-L7>)
+
+AnotherStruct has methods like [\*AnotherStruct.GetField](<#AnotherStruct.GetField>) and also has an initializer called [NewAnotherStruct](<#NewAnotherStruct>).
+
+```go
+type AnotherStruct struct {
+    Field string
+}
+```
+
+<a name="NewAnotherStruct"></a>
+### func [NewAnotherStruct](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/anotherFile.go#L10>)
+
+```go
+func NewAnotherStruct() *AnotherStruct
+```
+
+NewAnotherStruct\(\) makes [\*AnotherStruct](<#AnotherStruct>).
+
+<a name="AnotherStruct.GetField"></a>
+### func \(\*AnotherStruct\) [GetField](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/anotherFile.go#L17>)
+
+```go
+func (s *AnotherStruct) GetField() string
+```
+
+GetField gets \[\*AnotherStruct.Field\].
+
+<a name="Type"></a>
+## type [Type](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L69>)
 
 Type is a type in this file.
 
@@ -82,7 +158,8 @@ Type is a type in this file.
 type Type struct{}
 ```
 
-### func \(\*Type\) [Func](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L66>)
+<a name="Type.Func"></a>
+### func \(\*Type\) [Func](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/docs.go#L72>)
 
 ```go
 func (t *Type) Func()
