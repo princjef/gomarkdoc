@@ -10,12 +10,13 @@ Package unexported contains some simple code to exercise basic scenarios for doc
 
 ## Index
 
-- [type Num](<#type-num>)
-  - [func AddNums(num1, num2 Num) Num](<#func-addnums>)
-  - [func addInternal(num1, num2 Num) Num](<#func-addinternal>)
-  - [func (n Num) Add(num Num) Num](<#func-num-add>)
+- [type Num](<#Num>)
+  - [func AddNums(num1, num2 Num) Num](<#AddNums>)
+  - [func addInternal(num1, num2 Num) Num](<#addInternal>)
+  - [func (n Num) Add(num Num) Num](<#Num.Add>)
 
 
+<a name="Num"></a>
 ## type [Num](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L8>)
 
 Num is a number.
@@ -26,6 +27,7 @@ It is just a test type so that we can make sure this works.
 type Num int
 ```
 
+<a name="AddNums"></a>
 ### func [AddNums](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L16>)
 
 ```go
@@ -34,6 +36,7 @@ func AddNums(num1, num2 Num) Num
 
 AddNums adds two Nums together.
 
+<a name="addInternal"></a>
 ### func [addInternal](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L21>)
 
 ```go
@@ -42,6 +45,7 @@ func addInternal(num1, num2 Num) Num
 
 addInternal is a private version of AddNums.
 
+<a name="Num.Add"></a>
 ### func \(Num\) [Add](<https://github.com/princjef/gomarkdoc/blob/master/testData/unexported/main.go#L11>)
 
 ```go

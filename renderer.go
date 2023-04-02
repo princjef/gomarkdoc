@@ -97,7 +97,10 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 				},
 
 				"bold":                renderer.format.Bold,
+				"anchor":              renderer.format.Anchor,
+				"anchorHeader":        renderer.format.AnchorHeader,
 				"header":              renderer.format.Header,
+				"rawAnchorHeader":     renderer.format.RawAnchorHeader,
 				"rawHeader":           renderer.format.RawHeader,
 				"codeBlock":           renderer.format.CodeBlock,
 				"link":                renderer.format.Link,
@@ -106,8 +109,8 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 				"accordionHeader":     renderer.format.AccordionHeader,
 				"accordionTerminator": renderer.format.AccordionTerminator,
 				"localHref":           renderer.format.LocalHref,
+				"rawLocalHref":        renderer.format.RawLocalHref,
 				"codeHref":            renderer.format.CodeHref,
-				"paragraph":           renderer.format.Paragraph,
 				"escape":              renderer.format.Escape,
 			})
 

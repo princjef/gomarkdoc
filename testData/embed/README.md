@@ -14,9 +14,10 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#func-embeddedfunc>)
+- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
 
 
+<a name="EmbeddedFunc"></a>
 ## func [EmbeddedFunc](<https://github.com/princjef/gomarkdoc/blob/master/testData/embed/embed.go#L6>)
 
 ```go
@@ -46,9 +47,10 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#func-embeddedfunc>)
+- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
 
 
+<a name="EmbeddedFunc"></a>
 ## func [EmbeddedFunc](<https://github.com/princjef/gomarkdoc/blob/master/testData/embed/embed.go#L6>)
 
 ```go
@@ -78,9 +80,10 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#func-embeddedfunc>)
+- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
 
 
+<a name="EmbeddedFunc"></a>
 ## func [EmbeddedFunc](<https://github.com/princjef/gomarkdoc/blob/master/testData/embed/embed.go#L6>)
 
 ```go

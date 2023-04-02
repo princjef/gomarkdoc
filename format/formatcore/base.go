@@ -3,6 +3,7 @@ package formatcore
 import (
 	"errors"
 	"fmt"
+	"html"
 	"regexp"
 	"strings"
 
@@ -42,6 +43,25 @@ func CodeBlock(code string) string {
 // the triple backtick format from GitHub Flavored Markdown.
 func GFMCodeBlock(language, code string) string {
 	return fmt.Sprintf("```%s\n%s\n```", language, strings.TrimSpace(code))
+}
+
+// Anchor produces an anchor for the provided link.
+func Anchor(anchor string) string {
+	return fmt.Sprintf(
+		"<a name=\"%s\"></a>",
+		html.EscapeString(anchor),
+	)
+}
+
+// AnchorHeader converts the provided text and custom anchor link into a header
+// of the provided level. The level is expected to be at least 1.
+func AnchorHeader(level int, text, anchor string) (string, error) {
+	header, err := Header(level, text)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s\n%s", Anchor(anchor), header), nil
 }
 
 // Header converts the provided text into a header of the provided level. The
@@ -118,11 +138,6 @@ func GFMAccordionHeader(title string) string {
 // GFMAccordionHeader(). See GFMAccordionHeader for a full description.
 func GFMAccordionTerminator() string {
 	return "</p>\n</details>"
-}
-
-// Paragraph formats a paragraph with the provided text as the contents
-func Paragraph(text string) string {
-	return Escape(text)
 }
 
 var (

@@ -6,7 +6,7 @@
 // This heading has a paragraph with a reference to the standard library
 // [math/rand] as well as a function in the file [Func], a type [Type], a type's
 // function [Type.Func], a non-standard library package
-// [golang.org/x/crypto@v0.5.0/bcrypt.Cost], an external link [Outside Link] and
+// [golang.org/x/crypto/bcrypt.Cost], an external link [Outside Link] and
 // a [broken link].
 //
 // It also has a numbered list:
@@ -51,6 +51,12 @@
 //	in a random
 //			way
 //
+// There's also another file with a struct called [AnotherStruct] that has
+// additional methods and fields.
+//
+// We also have constants like [Constant] and [Const1] plus variables like
+// [Var] and and [VarB].
+//
 // [Outside Link]: https://golang.org/doc/articles/json_and_go.html
 package docs
 
@@ -64,3 +70,23 @@ type Type struct{}
 
 // TypeFunc is a func within a type in this file.
 func (t *Type) Func() {}
+
+// Constant is a constant.
+const Constant = 3
+
+// Var is a var.
+var Var = 2
+
+// This is a constant block
+const (
+	Const1 = 1
+	Const2 = 2
+	Const3 = 3
+)
+
+// This is a var block
+var (
+	VarA = 'a'
+	VarB = 'b'
+	VarC = 'c'
+)

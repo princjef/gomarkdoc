@@ -8,9 +8,10 @@ import "github.com/princjef/gomarkdoc/testData/nested"
 
 ## Index
 
-- [func Parent() int](<#func-parent>)
+- [func Parent() int](<#Parent>)
 
 
+<a name="Parent"></a>
 ## func [Parent](<https://github.com/princjef/gomarkdoc/blob/master/testData/nested/parent.go#L4>)
 
 ```go

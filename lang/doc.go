@@ -1,9 +1,5 @@
 package lang
 
-import (
-	"go/doc/comment"
-)
-
 // Doc provides access to the documentation comment contents for a package or
 // symbol in a structured form.
 type Doc struct {
@@ -19,8 +15,7 @@ func NewDoc(cfg *Config, text string) *Doc {
 	// Replace CRLF with LF
 	rawText := normalizeDoc(text)
 
-	var p comment.Parser
-	parsed := p.Parse(rawText)
+	parsed := cfg.Pkg.Parser().Parse(rawText)
 
 	blocks := ParseBlocks(cfg, parsed.Content, false)
 

@@ -1,3 +1,4 @@
+{{- anchor .Anchor -}}
 {{- template "doc" .Doc -}}
 {{- spacer -}}
 

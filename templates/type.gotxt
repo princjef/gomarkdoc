@@ -1,4 +1,4 @@
-{{- codeHref .Location | link (escape .Name) | printf "type %s" | rawHeader .Level -}}
+{{- rawAnchorHeader .Level (codeHref .Location | link (escape .Name) | printf "type %s") .Anchor -}}
 {{- spacer -}}
 
 {{- template "doc" .Doc -}}
