@@ -4,7 +4,7 @@
 // levels, exporting both exported and unexported symbols, and custom formatters
 // for different backends.
 //
-// Command Line Usage
+// # Command Line Usage
 //
 // If you want to use this package as a command-line tool, you can install the
 // command by running the following on go 1.16+:
@@ -21,29 +21,29 @@
 //	$ gomarkdoc --help
 //	generate markdown documentation for golang code
 //
-// 	Usage:
-// 	  gomarkdoc [flags] [package ...]
+//	Usage:
+//	  gomarkdoc [flags] [package ...]
 //
-// 	Flags:
-// 	  -c, --check                              Check the output to see if it matches the generated documentation. --output must be specified to use this.
-// 	      --config string                      File from which to load configuration (default: .gomarkdoc.yml)
-// 	  -e, --embed                              Embed documentation into existing markdown files if available, otherwise append to file.
-// 	      --footer string                      Additional content to inject at the end of each output file.
-// 	      --footer-file string                 File containing additional content to inject at the end of each output file.
-// 	  -f, --format string                      Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
-// 	      --header string                      Additional content to inject at the beginning of each output file.
-// 	      --header-file string                 File containing additional content to inject at the beginning of each output file.
-// 	  -h, --help                               help for gomarkdoc
-// 	  -u, --include-unexported                 Output documentation for unexported symbols, methods and fields in addition to exported ones.
-// 	  -o, --output string                      File or pattern specifying where to write documentation output. Defaults to printing to stdout.
-// 	      --repository.default-branch string   Manual override for the git repository URL used in place of automatic detection.
-// 	      --repository.path string             Manual override for the path from the root of the git repository used in place of automatic detection.
-// 	      --repository.url string              Manual override for the git repository URL used in place of automatic detection.
+//	Flags:
+//	  -c, --check                              Check the output to see if it matches the generated documentation. --output must be specified to use this.
+//	      --config string                      File from which to load configuration (default: .gomarkdoc.yml)
+//	  -e, --embed                              Embed documentation into existing markdown files if available, otherwise append to file.
+//	      --footer string                      Additional content to inject at the end of each output file.
+//	      --footer-file string                 File containing additional content to inject at the end of each output file.
+//	  -f, --format string                      Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
+//	      --header string                      Additional content to inject at the beginning of each output file.
+//	      --header-file string                 File containing additional content to inject at the beginning of each output file.
+//	  -h, --help                               help for gomarkdoc
+//	  -u, --include-unexported                 Output documentation for unexported symbols, methods and fields in addition to exported ones.
+//	  -o, --output string                      File or pattern specifying where to write documentation output. Defaults to printing to stdout.
+//	      --repository.default-branch string   Manual override for the git repository URL used in place of automatic detection.
+//	      --repository.path string             Manual override for the path from the root of the git repository used in place of automatic detection.
+//	      --repository.url string              Manual override for the git repository URL used in place of automatic detection.
 //	      --tags strings                       Set of build tags to apply when choosing which files to include for documentation generation.
-// 	  -t, --template stringToString            Custom template string to use for the provided template name instead of the default template. (default [])
-// 	      --template-file stringToString       Custom template file to use for the provided template name instead of the default template. (default [])
-// 	  -v, --verbose count                      Log additional output from the execution of the command. Can be chained for additional verbosity.
-// 	      --version                            Print the version.
+//	  -t, --template stringToString            Custom template string to use for the provided template name instead of the default template. (default [])
+//	      --template-file stringToString       Custom template file to use for the provided template name instead of the default template. (default [])
+//	  -v, --verbose count                      Log additional output from the execution of the command. Can be chained for additional verbosity.
+//	      --version                            Print the version.
 //
 // The gomarkdoc command processes each of the provided packages, generating
 // documentation for the package in markdown format and writing it to console.
@@ -52,7 +52,7 @@
 //
 //	gomarkdoc --output doc.md .
 //
-// Package Specifiers
+// # Package Specifiers
 //
 // The gomarkdoc tool supports generating documentation for both local packages
 // and remote ones. To specify a local package, start the name of the package
@@ -61,7 +61,7 @@
 // local and remote packages in the same command invocation as separate
 // arguments.
 //
-// Output Redirection
+// # Output Redirection
 //
 // By default, the documentation generated by the gomarkdoc command is sent to
 // standard output, where it can be redirected to a file. This can be useful if
@@ -87,7 +87,7 @@
 // PackageSpec struct in the github.com/princjef/gomarkdoc/cmd/gomarkdoc
 // package.
 //
-// Template Overrides
+// # Template Overrides
 //
 // The documentation information that is output is formatted using a series of
 // text templates for the various components of the overall documentation which
@@ -95,43 +95,45 @@
 // any template may be replaced with an override template using the
 // --template/-t option. The full list of templates that may be overridden are:
 //
-//	- file:    generates documentation for a file containing one or more
-//	           packages, depending on how the tool is configured. This is the
-//	           root template for documentation generation.
+//   - file:    generates documentation for a file containing one or more
+//     packages, depending on how the tool is configured. This is the
+//     root template for documentation generation.
 //
-//	- package: generates documentation for an entire package.
+//   - package: generates documentation for an entire package.
 //
-//	- type:    generates documentation for a single type declaration, as well
-//	           as any related functions/methods.
+//   - type:    generates documentation for a single type declaration, as well
+//     as any related functions/methods.
 //
-//	- func:    generates documentation for a single function or method. It may
-//	           be referenced from within a type, or directly in the package,
-//	           depending on nesting.
+//   - func:    generates documentation for a single function or method. It may
+//     be referenced from within a type, or directly in the package,
+//     depending on nesting.
 //
-//	- value:   generates documentation for a single variable or constant
-//	           declaration block within a package.
+//   - value:   generates documentation for a single variable or constant
+//     declaration block within a package.
 //
-//	- index:   generates an index of symbols within a package, similar to what
-//	           is seen for godoc.org. The index links to types, funcs,
-//	           variables, and constants generated by other templates, so it may
-//	           need to be overridden as well if any of those templates are
-//	           changed in a material way.
+//   - index:   generates an index of symbols within a package, similar to what
+//     is seen for godoc.org. The index links to types, funcs,
+//     variables, and constants generated by other templates, so it may
+//     need to be overridden as well if any of those templates are
+//     changed in a material way.
 //
-//	- example: generates documentation for a single example for a package or
-//	           one of its symbols. The example is generated alongside whichever
-//	           symbol it represents, based on the standard naming conventions
-//	           outlined in https://blog.golang.org/examples#TOC_4.
+//   - example: generates documentation for a single example for a package or
+//     one of its symbols. The example is generated alongside whichever
+//     symbol it represents, based on the standard naming conventions
+//     outlined in https://blog.golang.org/examples#TOC_4.
 //
-//	- doc:     generates the freeform documentation block for any of the above
-//	           structures that can contain a documentation section.
+//   - doc:     generates the freeform documentation block for any of the above
+//     structures that can contain a documentation section.
 //
-// Overriding with the -t option uses a key-vaule pair mapping a template name
-// to the file containing the contents of the override template to use.
-// Specified template files must exist:
+//   - import:  generates the import code used to pull in a package.
 //
-//	gomarkdoc -t package=custom-package.gotxt -t doc=custom-doc.gotxt .
+// Overriding with the --template-file option uses a key-value pair mapping a
+// template name to the file containing the contents of the override template to
+// use. Specified template files must exist:
 //
-// Additional Options
+//	gomarkdoc --template-file package=custom-package.gotxt --template-file doc=custom-doc.gotxt .
+//
+// # Additional Options
 //
 // As with the godoc tool itself, only exported symbols will be shown in
 // documentation. This can be expanded to include all symbols in a package by
@@ -146,21 +148,21 @@
 // written and embeds the documentation if present. Otherwise, the documentation
 // is appended to the end of the file.
 //
-// 	gomarkdoc -o README.md -e .
+//	gomarkdoc -o README.md -e .
 //
 // When running with embed mode enabled, gomarkdoc will look for either this
 // single comment:
 //
-// 	<!-- gomarkdoc:embed -->
+//	<!-- gomarkdoc:embed -->
 //
 // Or the following pair of comments (in which case all content in between is
 // replaced):
 //
-// 	<!-- gomarkdoc:embed:start -->
+//	<!-- gomarkdoc:embed:start -->
 //
-// 	This content is replaced with the embedded documentation
+//	This content is replaced with the embedded documentation
 //
-// 	<!-- gomarkdoc:embed:end -->
+//	<!-- gomarkdoc:embed:end -->
 //
 // If you would like to include files that are part of a build tag, you can
 // specify build tags with the --tags flag. Tags are also supported through
@@ -193,7 +195,7 @@
 //
 //	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.default-branch master --repository.path / -o README.md .
 //
-// Configuring via File
+// # Configuring via File
 //
 // If you want to reuse configuration options across multiple invocations, you
 // can specify a file in the folder where you invoke gomarkdoc containing
@@ -208,7 +210,7 @@
 // separated by =. Options provided on the command line override those provided
 // in the configuration file if an option is present in both.
 //
-// Programmatic Usage
+// # Programmatic Usage
 //
 // While most users will find the command line utility sufficient for their
 // needs, this package may also be used programmatically by installing it
@@ -258,4 +260,17 @@
 //		// Write the documentation out to console.
 //		fmt.Println(out.Package(pkg))
 //	}
+//
+// # Examples
+//
+// This project uses itself to generate the README files in
+// github.com/princjef/gomarkdoc and its subdirectories. To see the commands
+// that are run to generate documentation for this repository, take a look at
+// the Doc() and DocVerify() functions in magefile.go and the .gomarkdoc.yml
+// file in the root of this repository. To run these commands in your own
+// project, simply replace `go run ./cmd/gomarkdoc` with `gomarkdoc`.
+//
+// Know of another project that is using gomarkdoc? Open an issue with a
+// description of the project and link to the repository and it might be
+// featured here!
 package gomarkdoc

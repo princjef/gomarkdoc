@@ -1,26 +1,53 @@
-{{- codeHref .Location | link (escape .Name) | printf "type %s" | rawHeader .Level -}}
+{{- rawAnchorHeader .Level (codeHref .Location | link (escape .Name) | printf "type %s") .Anchor -}}
+{{- spacer -}}
 
 {{- template "doc" .Doc -}}
+{{- spacer -}}
 
 {{- codeBlock "go" .Decl -}}
 
-{{- range .Consts -}}
-	{{- template "value" . -}}
+{{- if len .Consts -}}
+	{{- spacer -}}
+
+	{{- range (iter .Consts) -}}
+		{{- template "value" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 
-{{- range .Vars -}}
-	{{- template "value" . -}}
+{{- if len .Vars -}}
+	{{- spacer -}}
+	
+	{{- range (iter .Vars) -}}
+		{{- template "value" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 
-{{- range .Examples -}}
-	{{- template "example" . -}}
+{{- if len .Examples -}}
+	{{- spacer -}}
+	
+	{{- range (iter .Examples) -}}
+		{{- template "example" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 
-{{- range .Funcs -}}
-	{{- template "func" . -}}
+{{- if len .Funcs -}}
+	{{- spacer -}}
+	
+	{{- range (iter .Funcs) -}}
+		{{- template "func" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 
-{{- range .Methods -}}
-	{{- template "func" . -}}
+{{- if len .Methods -}}
+	{{- spacer -}}
+	
+	{{- range (iter .Methods) -}}
+		{{- template "func" .Entry -}}
+		{{- if (not .Last) -}}{{- spacer -}}{{- end -}}
+	{{- end -}}
 {{- end -}}
 

@@ -28,10 +28,28 @@ func (f *AzureDevOpsMarkdown) CodeBlock(language, code string) (string, error) {
 	return formatcore.GFMCodeBlock(language, code), nil
 }
 
+// Anchor produces an anchor for the provided link.
+func (f *AzureDevOpsMarkdown) Anchor(anchor string) string {
+	return formatcore.Anchor(anchor)
+}
+
+// AnchorHeader converts the provided text and custom anchor link into a header
+// of the provided level. The level is expected to be at least 1.
+func (f *AzureDevOpsMarkdown) AnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, formatcore.Escape(text), anchor)
+}
+
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *AzureDevOpsMarkdown) Header(level int, text string) (string, error) {
 	return formatcore.Header(level, formatcore.Escape(text))
+}
+
+// RawAnchorHeader converts the provided text and custom anchor link into a
+// header of the provided level without escaping the header text. The level is
+// expected to be at least 1.
+func (f *AzureDevOpsMarkdown) RawAnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, text, anchor)
 }
 
 // RawHeader converts the provided text into a header of the provided level
@@ -55,6 +73,12 @@ func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error) {
 	result = strings.ReplaceAll(result, ":", "%3A")
 
 	return fmt.Sprintf("#%s", result), nil
+}
+
+// RawLocalHref generates an href within the same document but with a direct
+// link provided instead of text to slugify.
+func (f *AzureDevOpsMarkdown) RawLocalHref(anchor string) string {
+	return fmt.Sprintf("#%s", anchor)
 }
 
 // CodeHref generates an href to the provided code entry.
@@ -129,11 +153,6 @@ func (f *AzureDevOpsMarkdown) AccordionHeader(title string) (string, error) {
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *AzureDevOpsMarkdown) AccordionTerminator() (string, error) {
 	return formatcore.GFMAccordionTerminator(), nil
-}
-
-// Paragraph formats a paragraph with the provided text as the contents.
-func (f *AzureDevOpsMarkdown) Paragraph(text string) (string, error) {
-	return formatcore.Paragraph(text), nil
 }
 
 // Escape escapes special markdown characters from the provided text.

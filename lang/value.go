@@ -45,3 +45,18 @@ func (v *Value) Doc() *Doc {
 func (v *Value) Decl() (string, error) {
 	return printNode(v.doc.Decl, v.cfg.FileSet)
 }
+
+// Anchor produces anchor text for the value.
+func (v *Value) Anchor() string {
+	var kind SymbolKind
+	if v.doc.Decl.Tok.String() == "const" {
+		kind = ConstSymbolKind
+	} else {
+		kind = VarSymbolKind
+	}
+
+	return Symbol{
+		Kind: kind,
+		Name: v.doc.Names[0],
+	}.Anchor()
+}

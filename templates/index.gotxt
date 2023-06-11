@@ -1,45 +1,37 @@
 {{- if len .Consts -}}
 
 	{{- localHref "Constants" | link "Constants" | listEntry 0 -}}
+	{{- inlineSpacer -}}
 	
 {{- end -}}
 
 {{- if len .Vars -}}
 
 	{{- localHref "Variables" | link "Variables" | listEntry 0 -}}
+	{{- inlineSpacer -}}
 
 {{- end -}}
 
 {{- range .Funcs -}}
 
-	{{- if .Receiver -}}
-		{{- codeHref .Location | link (escape .Name) | printf "func \\(%s\\) %s" (escape .Receiver) | localHref | link .Signature | listEntry 0 -}}
-	{{- else -}}
-		{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 0 -}}
-	{{- end -}}
+	{{- (link .Signature (rawLocalHref .Anchor)) | listEntry 0 -}}
+	{{- inlineSpacer -}}
 
 {{- end -}}
 
 {{- range .Types -}}
 
-	{{- codeHref .Location | link (escape .Name) | printf "type %s" | localHref | link .Title | listEntry 0 -}}
+	{{- (link .Title (rawLocalHref .Anchor)) | listEntry 0 -}}
+	{{- inlineSpacer -}}
 
 	{{- range .Funcs -}}
-		{{- if .Receiver -}}
-			{{- codeHref .Location | link (escape .Name) | printf "func \\(%s\\) %s" (escape .Receiver) | localHref | link .Signature | listEntry 1 -}}
-		{{- else -}}
-			{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 1 -}}
-		{{- end -}}
+		{{- (link .Signature (rawLocalHref .Anchor)) | listEntry 1 -}}
+		{{- inlineSpacer -}}
 	{{- end -}}
 
 	{{- range .Methods -}}
-		{{- if .Receiver -}}
-			{{- codeHref .Location | link (escape .Name) | printf "func \\(%s\\) %s" (escape .Receiver) | localHref | link .Signature | listEntry 1 -}}
-		{{- else -}}
-			{{- codeHref .Location | link (escape .Name) | printf "func %s" | localHref | link .Signature | listEntry 1 -}}
-		{{- end -}}
+		{{- (link .Signature (rawLocalHref .Anchor)) | listEntry 1 -}}
+		{{- inlineSpacer -}}
 	{{- end -}}
 
 {{- end -}}
-
-{{- spacer -}}

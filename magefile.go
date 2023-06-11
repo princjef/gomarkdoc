@@ -13,7 +13,7 @@ import (
 
 var linter = bintool.Must(bintool.New(
 	"golangci-lint{{.BinExt}}",
-	"1.45.2",
+	"1.51.1",
 	"https://github.com/golangci/golangci-lint/releases/download/v{{.Version}}/golangci-lint-{{.Version}}-{{.GOOS}}-{{.GOARCH}}{{.ArchiveExt}}",
 ))
 
@@ -27,6 +27,10 @@ func Lint() error {
 
 func Generate() error {
 	return shellcmd.Command(`go generate .`).Run()
+}
+
+func Build() error {
+	return shellcmd.Command(`go build -o ./bin/gomarkdoc ./cmd/gomarkdoc`).Run()
 }
 
 func Doc() error {
@@ -73,7 +77,7 @@ func RegenerateTestDocs() error {
 }
 
 func Test() error {
-	return shellcmd.Command(`go test -count 1 -coverprofile=coverage.txt ./...`).Run()
+	return shellcmd.Command(`go test -count 1 -coverprofile=coverage.txt . ./cmd/... ./format/... ./lang/... ./logger/...`).Run()
 }
 
 func Coverage() error {

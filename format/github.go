@@ -27,10 +27,28 @@ func (f *GitHubFlavoredMarkdown) CodeBlock(language, code string) (string, error
 	return formatcore.GFMCodeBlock(language, code), nil
 }
 
+// Anchor produces an anchor for the provided link.
+func (f *GitHubFlavoredMarkdown) Anchor(anchor string) string {
+	return formatcore.Anchor(anchor)
+}
+
+// AnchorHeader converts the provided text and custom anchor link into a header
+// of the provided level. The level is expected to be at least 1.
+func (f *GitHubFlavoredMarkdown) AnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, formatcore.Escape(text), anchor)
+}
+
 // Header converts the provided text into a header of the provided level. The
 // level is expected to be at least 1.
 func (f *GitHubFlavoredMarkdown) Header(level int, text string) (string, error) {
 	return formatcore.Header(level, formatcore.Escape(text))
+}
+
+// RawAnchorHeader converts the provided text and custom anchor link into a
+// header of the provided level without escaping the header text. The level is
+// expected to be at least 1.
+func (f *GitHubFlavoredMarkdown) RawAnchorHeader(level int, text, anchor string) (string, error) {
+	return formatcore.AnchorHeader(level, text, anchor)
 }
 
 // RawHeader converts the provided text into a header of the provided level
@@ -54,6 +72,12 @@ func (f *GitHubFlavoredMarkdown) LocalHref(headerText string) (string, error) {
 	result = gfmRemoveRegex.ReplaceAllString(result, "")
 
 	return fmt.Sprintf("#%s", result), nil
+}
+
+// RawLocalHref generates an href within the same document but with a direct
+// link provided instead of text to slugify.
+func (f *GitHubFlavoredMarkdown) RawLocalHref(anchor string) string {
+	return fmt.Sprintf("#%s", anchor)
 }
 
 // Link generates a link with the given text and href values.
@@ -132,11 +156,6 @@ func (f *GitHubFlavoredMarkdown) AccordionHeader(title string) (string, error) {
 // AccordionHeader(). See AccordionHeader for a full description.
 func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error) {
 	return formatcore.GFMAccordionTerminator(), nil
-}
-
-// Paragraph formats a paragraph with the provided text as the contents.
-func (f *GitHubFlavoredMarkdown) Paragraph(text string) (string, error) {
-	return formatcore.Paragraph(text), nil
 }
 
 // Escape escapes special markdown characters from the provided text.
