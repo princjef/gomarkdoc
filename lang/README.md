@@ -375,7 +375,7 @@ func (ex *Example) Doc() *Doc
 Doc provides the structured contents of the documentation comment for the example.
 
 <a name="Example.HasOutput"></a>
-### func \(\*Example\) [HasOutput](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L87>)
+### func \(\*Example\) [HasOutput](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L99>)
 
 ```go
 func (ex *Example) HasOutput() bool
@@ -411,7 +411,7 @@ func (ex *Example) Name() string
 Name provides a pretty\-printed name for the specific example, if one was provided.
 
 <a name="Example.Output"></a>
-### func \(\*Example\) [Output](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L82>)
+### func \(\*Example\) [Output](<https://github.com/princjef/gomarkdoc/blob/master/lang/example.go#L94>)
 
 ```go
 func (ex *Example) Output() string

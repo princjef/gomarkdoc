@@ -7,6 +7,7 @@ import (
 )
 
 func ExampleStandalone() {
+	// Comment
 	res, _ := function.Standalone(2, "abc")
 	fmt.Println(res)
 	// Output: 2
@@ -19,7 +20,9 @@ func ExampleStandalone_zero() {
 }
 
 func ExampleReceiver() {
+	// Add some comments
 	r := &function.Receiver{}
+	// And some more
 	fmt.Println(r)
 }
 

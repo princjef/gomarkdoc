@@ -73,6 +73,7 @@ import (
 )
 
 func main() {
+	// Comment
 	res, _ := function.Standalone(2, "abc")
 	fmt.Println(res)
 }
@@ -179,7 +180,9 @@ import (
 )
 
 func main() {
+	// Add some comments
 	r := &function.Receiver{}
+	// And some more
 	fmt.Println(r)
 }
 ```

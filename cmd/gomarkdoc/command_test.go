@@ -15,23 +15,34 @@ import (
 var wd, _ = os.Getwd()
 
 func TestCommand(t *testing.T) {
-	is := is.New(t)
-
-	err := os.Chdir(filepath.Join(wd, "../../testData"))
-	is.NoErr(err)
-
-	os.Args = []string{
-		"gomarkdoc", "./simple",
-		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
-		"--repository.default-branch", "master",
-		"--repository.path", "/testData/",
+	tests := []string{
+		"./simple",
+		"./lang/function",
+		"./docs",
+		"./untagged",
 	}
-	cleanup("simple")
 
-	main()
+	for _, test := range tests {
+		t.Run(test, func(t *testing.T) {
+			is := is.New(t)
 
-	verify(t, "simple")
+			err := os.Chdir(filepath.Join(wd, "../../testData"))
+			is.NoErr(err)
+
+			os.Args = []string{
+				"gomarkdoc", test,
+				"-o", "{{.Dir}}/README-test.md",
+				"--repository.url", "https://github.com/princjef/gomarkdoc",
+				"--repository.default-branch", "master",
+				"--repository.path", "/testData/",
+			}
+			cleanup(test)
+
+			main()
+
+			verify(t, test)
+		})
+	}
 }
 
 func TestCommand_check(t *testing.T) {
@@ -304,26 +315,6 @@ func TestCommand_embed(t *testing.T) {
 	main()
 
 	verify(t, "./embed")
-}
-
-func TestCommand_untagged(t *testing.T) {
-	is := is.New(t)
-
-	err := os.Chdir(filepath.Join(wd, "../../testData"))
-	is.NoErr(err)
-
-	os.Args = []string{
-		"gomarkdoc", "./untagged",
-		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
-		"--repository.default-branch", "master",
-		"--repository.path", "/testData/",
-	}
-	cleanup("untagged")
-
-	main()
-
-	verify(t, "./untagged")
 }
 
 func TestCompare(t *testing.T) {

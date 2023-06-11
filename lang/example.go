@@ -71,7 +71,8 @@ func (ex *Example) Code() (string, error) {
 	}
 
 	var code strings.Builder
-	err := (&printer.Config{Mode: printer.TabIndent | printer.UseSpaces, Tabwidth: 8}).Fprint(&code, ex.cfg.FileSet, codeNode)
+	p := &printer.Config{Mode: printer.TabIndent | printer.UseSpaces, Tabwidth: 8}
+	err := p.Fprint(&code, ex.cfg.FileSet, codeNode)
 	if err != nil {
 		return "", err
 	}
