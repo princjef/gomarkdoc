@@ -8,10 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"time"
 
 	"github.com/princjef/gomarkdoc"
 	"github.com/princjef/gomarkdoc/lang"
 	"github.com/princjef/gomarkdoc/logger"
+	"github.com/princjef/termdiff"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func writeOutput(specs []*PackageSpec, opts commandOptions) error {
@@ -47,6 +50,7 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 		filePkgs[spec.outputFile] = append(filePkgs[spec.outputFile], spec.pkg)
 	}
 
+	var checkErr error
 	for fileName, pkgs := range filePkgs {
 		file := lang.NewFile(header, footer, pkgs)
 
@@ -55,27 +59,39 @@ func writeOutput(specs []*PackageSpec, opts commandOptions) error {
 			return err
 		}
 
-		if opts.embed && fileName != "" {
-			text = embedContents(log, fileName, text)
-		}
-
-		switch {
-		case fileName == "":
-			fmt.Fprint(os.Stdout, text)
-		case opts.check:
-			var b bytes.Buffer
-			fmt.Fprint(&b, text)
-			if err := checkFile(&b, fileName); err != nil {
-				return err
-			}
-		default:
-			if err := writeFile(fileName, text); err != nil {
-				return fmt.Errorf("failed to write output file %s: %w", fileName, err)
-			}
+		checkErr, err = handleFile(log, fileName, text, opts)
+		if err != nil {
+			return err
 		}
 	}
 
+	if checkErr != nil {
+		return checkErr
+	}
+
 	return nil
+}
+
+func handleFile(log logger.Logger, fileName string, text string, opts commandOptions) (error, error) {
+	if opts.embed && fileName != "" {
+		text = embedContents(log, fileName, text)
+	}
+
+	switch {
+	case fileName == "":
+		fmt.Fprint(os.Stdout, text)
+	case opts.check:
+		var b bytes.Buffer
+		fmt.Fprint(&b, text)
+		if err := checkFile(&b, fileName); err != nil {
+			return err, nil
+		}
+	default:
+		if err := writeFile(fileName, text); err != nil {
+			return nil, fmt.Errorf("failed to write output file %s: %w", fileName, err)
+		}
+	}
+	return nil, nil
 }
 
 func writeFile(fileName string, text string) error {
@@ -97,23 +113,36 @@ func writeFile(fileName string, text string) error {
 func checkFile(b *bytes.Buffer, path string) error {
 	checkErr := errors.New("output does not match current files. Did you forget to run gomarkdoc?")
 
-	f, err := os.Open(path)
-	if err != nil {
-		if err == os.ErrNotExist {
-			return checkErr
-		}
-
+	fileContents, err := os.ReadFile(path)
+	if err == os.ErrNotExist {
+		fileContents = []byte{}
+	} else if err != nil {
 		return fmt.Errorf("failed to open file %s for checking: %w", path, err)
 	}
 
-	defer f.Close()
+	differ := diffmatchpatch.New()
+	diff := differ.DiffBisect(b.String(), string(fileContents), time.Now().Add(time.Second))
 
-	match, err := compare(b, f)
-	if err != nil {
-		return fmt.Errorf("failure while attempting to check contents of %s: %w", path, err)
+	// Remove equal diffs
+	var filtered = make([]diffmatchpatch.Diff, 0, len(diff))
+	for _, d := range diff {
+		if d.Type == diffmatchpatch.DiffEqual {
+			continue
+		}
+
+		filtered = append(filtered, d)
 	}
 
-	if !match {
+	if len(filtered) != 0 {
+		diffs := termdiff.DiffsFromDiffMatchPatch(diff)
+		fmt.Fprintln(os.Stderr)
+		termdiff.Fprint(
+			os.Stderr,
+			path,
+			diffs,
+			termdiff.WithBeforeText("(expected)"),
+			termdiff.WithAfterText("(actual)"),
+		)
 		return checkErr
 	}
 
