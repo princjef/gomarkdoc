@@ -6,7 +6,9 @@ require (
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/matryer/is v1.4.0
 	github.com/princjef/mageutil v1.0.0
+	github.com/princjef/termdiff v0.1.0
 	github.com/russross/blackfriday/v2 v2.1.0
+	github.com/sergi/go-diff v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
@@ -29,6 +31,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.1.0 // indirect
+	github.com/logrusorgru/aurora/v4 v4.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
@@ -40,7 +43,6 @@ require (
 	github.com/onsi/gomega v1.10.3 // indirect
 	github.com/pelletier/go-toml v1.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
