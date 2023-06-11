@@ -106,10 +106,10 @@ The documentation information that is output is formatted using a series of text
 
 - import: generates the import code used to pull in a package.
 
-Overriding with the \-t option uses a key\-vaule pair mapping a template name to the file containing the contents of the override template to use. Specified template files must exist:
+Overriding with the \-\-template\-file option uses a key\-value pair mapping a template name to the file containing the contents of the override template to use. Specified template files must exist:
 
 ```
-gomarkdoc -t package=custom-package.gotxt -t doc=custom-doc.gotxt .
+gomarkdoc --template-file package=custom-package.gotxt --template-file doc=custom-doc.gotxt .
 ```
 
 ### Additional Options
