@@ -11,9 +11,9 @@ Package unexported contains some simple code to exercise basic scenarios for doc
 ## Index
 
 - [type Num](<#Num>)
-  - [func AddNums(num1, num2 Num) Num](<#AddNums>)
-  - [func addInternal(num1, num2 Num) Num](<#addInternal>)
-  - [func (n Num) Add(num Num) Num](<#Num.Add>)
+  - [func AddNums\(num1, num2 Num\) Num](<#AddNums>)
+  - [func addInternal\(num1, num2 Num\) Num](<#addInternal>)
+  - [func \(n Num\) Add\(num Num\) Num](<#Num.Add>)
 
 
 <a name="Num"></a>

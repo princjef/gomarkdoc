@@ -8,7 +8,7 @@ import "github.com/princjef/gomarkdoc/testData/nested"
 
 ## Index
 
-- [func Parent() int](<#Parent>)
+- [func Parent\(\) int](<#Parent>)
 
 
 <a name="Parent"></a>

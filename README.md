@@ -230,15 +230,15 @@ Know of another project that is using gomarkdoc? Open an issue with a descriptio
 ## Index
 
 - [type Renderer](<#Renderer>)
-  - [func NewRenderer(opts ...RendererOption) (*Renderer, error)](<#NewRenderer>)
-  - [func (out *Renderer) Example(ex *lang.Example) (string, error)](<#Renderer.Example>)
-  - [func (out *Renderer) File(file *lang.File) (string, error)](<#Renderer.File>)
-  - [func (out *Renderer) Func(fn *lang.Func) (string, error)](<#Renderer.Func>)
-  - [func (out *Renderer) Package(pkg *lang.Package) (string, error)](<#Renderer.Package>)
-  - [func (out *Renderer) Type(typ *lang.Type) (string, error)](<#Renderer.Type>)
+  - [func NewRenderer\(opts ...RendererOption\) \(\*Renderer, error\)](<#NewRenderer>)
+  - [func \(out \*Renderer\) Example\(ex \*lang.Example\) \(string, error\)](<#Renderer.Example>)
+  - [func \(out \*Renderer\) File\(file \*lang.File\) \(string, error\)](<#Renderer.File>)
+  - [func \(out \*Renderer\) Func\(fn \*lang.Func\) \(string, error\)](<#Renderer.Func>)
+  - [func \(out \*Renderer\) Package\(pkg \*lang.Package\) \(string, error\)](<#Renderer.Package>)
+  - [func \(out \*Renderer\) Type\(typ \*lang.Type\) \(string, error\)](<#Renderer.Type>)
 - [type RendererOption](<#RendererOption>)
-  - [func WithFormat(format format.Format) RendererOption](<#WithFormat>)
-  - [func WithTemplateOverride(name, tmpl string) RendererOption](<#WithTemplateOverride>)
+  - [func WithFormat\(format format.Format\) RendererOption](<#WithFormat>)
+  - [func WithTemplateOverride\(name, tmpl string\) RendererOption](<#WithTemplateOverride>)
 
 
 <a name="Renderer"></a>

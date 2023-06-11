@@ -10,7 +10,7 @@ Package untagged contains code to demonstrate usage of build tags.
 
 ## Index
 
-- [func Untagged() int](<#Untagged>)
+- [func Untagged\(\) int](<#Untagged>)
 
 
 <a name="Untagged"></a>

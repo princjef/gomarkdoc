@@ -10,8 +10,8 @@ Package tags contains code to demonstrate usage of build tags.
 
 ## Index
 
-- [func Tagged() int](<#Tagged>)
-- [func Untagged() int](<#Untagged>)
+- [func Tagged\(\) int](<#Tagged>)
+- [func Untagged\(\) int](<#Untagged>)
 
 
 <a name="Tagged"></a>

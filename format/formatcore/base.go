@@ -98,7 +98,7 @@ func Link(text, href string) string {
 		return text
 	}
 
-	return fmt.Sprintf("[%s](<%s>)", text, href)
+	return fmt.Sprintf("[%s](<%s>)", Escape(text), href)
 }
 
 // ListEntry generates an unordered list entry with the provided text at the

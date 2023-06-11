@@ -11,8 +11,8 @@ Package simple contains, some simple code to exercise basic scenarios for docume
 ## Index
 
 - [type Num](<#Num>)
-  - [func AddNums(num1, num2 Num) Num](<#AddNums>)
-  - [func (n Num) Add(num Num) Num](<#Num.Add>)
+  - [func AddNums\(num1, num2 Num\) Num](<#AddNums>)
+  - [func \(n Num\) Add\(num Num\) Num](<#Num.Add>)
 
 
 <a name="Num"></a>

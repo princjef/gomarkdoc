@@ -10,19 +10,19 @@ Package formatcore provides utilities for creating formatters like those found i
 
 ## Index
 
-- [func Anchor(anchor string) string](<#Anchor>)
-- [func AnchorHeader(level int, text, anchor string) (string, error)](<#AnchorHeader>)
-- [func Bold(text string) string](<#Bold>)
-- [func CodeBlock(code string) string](<#CodeBlock>)
-- [func Escape(text string) string](<#Escape>)
-- [func GFMAccordion(title, body string) string](<#GFMAccordion>)
-- [func GFMAccordionHeader(title string) string](<#GFMAccordionHeader>)
-- [func GFMAccordionTerminator() string](<#GFMAccordionTerminator>)
-- [func GFMCodeBlock(language, code string) string](<#GFMCodeBlock>)
-- [func Header(level int, text string) (string, error)](<#Header>)
-- [func Link(text, href string) string](<#Link>)
-- [func ListEntry(depth int, text string) string](<#ListEntry>)
-- [func PlainText(text string) string](<#PlainText>)
+- [func Anchor\(anchor string\) string](<#Anchor>)
+- [func AnchorHeader\(level int, text, anchor string\) \(string, error\)](<#AnchorHeader>)
+- [func Bold\(text string\) string](<#Bold>)
+- [func CodeBlock\(code string\) string](<#CodeBlock>)
+- [func Escape\(text string\) string](<#Escape>)
+- [func GFMAccordion\(title, body string\) string](<#GFMAccordion>)
+- [func GFMAccordionHeader\(title string\) string](<#GFMAccordionHeader>)
+- [func GFMAccordionTerminator\(\) string](<#GFMAccordionTerminator>)
+- [func GFMCodeBlock\(language, code string\) string](<#GFMCodeBlock>)
+- [func Header\(level int, text string\) \(string, error\)](<#Header>)
+- [func Link\(text, href string\) string](<#Link>)
+- [func ListEntry\(depth int, text string\) string](<#ListEntry>)
+- [func PlainText\(text string\) string](<#PlainText>)
 
 
 <a name="Anchor"></a>
