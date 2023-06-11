@@ -77,7 +77,7 @@ func RegenerateTestDocs() error {
 }
 
 func Test() error {
-	return shellcmd.Command(`go test -count 1 -coverprofile=coverage.txt . ./cmd/... ./format/... ./lang/... ./logger/...`).Run()
+	return shellcmd.Command(`go test -count 1 -coverpkg=.,./cmd/...,./format/...,./lang/...,./logger/... -cover -coverprofile=coverage.txt ./...`).Run()
 }
 
 func Coverage() error {
