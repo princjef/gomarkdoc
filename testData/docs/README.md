@@ -67,12 +67,12 @@ We also have constants like [Constant](<#Constant>) and [Const1](<#Const1>) plus
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func Func(param int) int](<#Func>)
+- [func Func\(param int\) int](<#Func>)
 - [type AnotherStruct](<#AnotherStruct>)
-  - [func NewAnotherStruct() *AnotherStruct](<#NewAnotherStruct>)
-  - [func (s *AnotherStruct) GetField() string](<#AnotherStruct.GetField>)
+  - [func NewAnotherStruct\(\) \*AnotherStruct](<#NewAnotherStruct>)
+  - [func \(s \*AnotherStruct\) GetField\(\) string](<#AnotherStruct.GetField>)
 - [type Type](<#Type>)
-  - [func (t *Type) Func()](<#Type.Func>)
+  - [func \(t \*Type\) Func\(\)](<#Type.Func>)
 
 
 ## Constants
@@ -123,7 +123,7 @@ Func is present in this file.
 <a name="AnotherStruct"></a>
 ## type [AnotherStruct](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/anotherFile.go#L5-L7>)
 
-AnotherStruct has methods like [\*AnotherStruct.GetField](<#AnotherStruct.GetField>) and also has an initializer called [NewAnotherStruct](<#NewAnotherStruct>).
+AnotherStruct has methods like [\\\*AnotherStruct.GetField](<#AnotherStruct.GetField>) and also has an initializer called [NewAnotherStruct](<#NewAnotherStruct>).
 
 ```go
 type AnotherStruct struct {
@@ -138,7 +138,7 @@ type AnotherStruct struct {
 func NewAnotherStruct() *AnotherStruct
 ```
 
-NewAnotherStruct\(\) makes [\*AnotherStruct](<#AnotherStruct>).
+NewAnotherStruct\(\) makes [\\\*AnotherStruct](<#AnotherStruct>).
 
 <a name="AnotherStruct.GetField"></a>
 ### func \(\*AnotherStruct\) [GetField](<https://github.com/princjef/gomarkdoc/blob/master/testData/docs/anotherFile.go#L17>)

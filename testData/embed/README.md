@@ -14,7 +14,7 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
+- [func EmbeddedFunc\(param int\) int](<#EmbeddedFunc>)
 
 
 <a name="EmbeddedFunc"></a>
@@ -47,7 +47,7 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
+- [func EmbeddedFunc\(param int\) int](<#EmbeddedFunc>)
 
 
 <a name="EmbeddedFunc"></a>
@@ -80,7 +80,7 @@ Package embed tests out embedding of documentation in an existing readme.
 
 ## Index
 
-- [func EmbeddedFunc(param int) int](<#EmbeddedFunc>)
+- [func EmbeddedFunc\(param int\) int](<#EmbeddedFunc>)
 
 
 <a name="EmbeddedFunc"></a>

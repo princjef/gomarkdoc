@@ -10,13 +10,13 @@ import "github.com/princjef/gomarkdoc/testData/lang/function"
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func Standalone(p1 int, p2 string) (int, error)](<#Standalone>)
+- [func Standalone\(p1 int, p2 string\) \(int, error\)](<#Standalone>)
 - [type Generic](<#Generic>)
-  - [func (r Generic[T]) WithGenericReceiver()](<#Generic[T].WithGenericReceiver>)
+  - [func \(r Generic\[T\]\) WithGenericReceiver\(\)](<#Generic[T].WithGenericReceiver>)
 - [type Receiver](<#Receiver>)
-  - [func New() Receiver](<#New>)
-  - [func (r *Receiver) WithPtrReceiver()](<#Receiver.WithPtrReceiver>)
-  - [func (r Receiver) WithReceiver()](<#Receiver.WithReceiver>)
+  - [func New\(\) Receiver](<#New>)
+  - [func \(r \*Receiver\) WithPtrReceiver\(\)](<#Receiver.WithPtrReceiver>)
+  - [func \(r Receiver\) WithReceiver\(\)](<#Receiver.WithReceiver>)
 
 
 ## Constants
