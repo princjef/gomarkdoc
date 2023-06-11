@@ -17,6 +17,7 @@ type (
 		templateOverrides map[string]string
 		tmpl              *template.Template
 		format            format.Format
+		templateFuncs     map[string]any
 	}
 
 	// RendererOption configures the renderer's behavior.
@@ -32,6 +33,7 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 	renderer := &Renderer{
 		templateOverrides: make(map[string]string),
 		format:            &format.GitHubFlavoredMarkdown{},
+		templateFuncs:     map[string]any{},
 	}
 
 	for _, opt := range opts {
@@ -47,72 +49,7 @@ func NewRenderer(opts ...RendererOption) (*Renderer, error) {
 		}
 
 		if renderer.tmpl == nil {
-			tmpl := template.New(name)
-			tmpl.Funcs(map[string]interface{}{
-				"add": func(n1, n2 int) int {
-					return n1 + n2
-				},
-				"spacer": func() string {
-					return "\n\n"
-				},
-				"inlineSpacer": func() string {
-					return "\n"
-				},
-				"hangingIndent": func(s string, n int) string {
-					return strings.ReplaceAll(s, "\n", fmt.Sprintf("\n%s", strings.Repeat(" ", n)))
-				},
-				"include": func(name string, data any) (string, error) {
-					var b strings.Builder
-					err := tmpl.ExecuteTemplate(&b, name, data)
-					if err != nil {
-						return "", err
-					}
-
-					return b.String(), nil
-				},
-				"iter": func(l any) (any, error) {
-					type iter struct {
-						First bool
-						Last  bool
-						Entry any
-					}
-
-					switch reflect.TypeOf(l).Kind() {
-					case reflect.Slice:
-						s := reflect.ValueOf(l)
-						out := make([]iter, s.Len())
-
-						for i := 0; i < s.Len(); i++ {
-							out[i] = iter{
-								First: i == 0,
-								Last:  i == s.Len()-1,
-								Entry: s.Index(i).Interface(),
-							}
-						}
-
-						return out, nil
-					default:
-						return nil, fmt.Errorf("renderer: iter only accepts slices")
-					}
-				},
-
-				"bold":                renderer.format.Bold,
-				"anchor":              renderer.format.Anchor,
-				"anchorHeader":        renderer.format.AnchorHeader,
-				"header":              renderer.format.Header,
-				"rawAnchorHeader":     renderer.format.RawAnchorHeader,
-				"rawHeader":           renderer.format.RawHeader,
-				"codeBlock":           renderer.format.CodeBlock,
-				"link":                renderer.format.Link,
-				"listEntry":           renderer.format.ListEntry,
-				"accordion":           renderer.format.Accordion,
-				"accordionHeader":     renderer.format.AccordionHeader,
-				"accordionTerminator": renderer.format.AccordionTerminator,
-				"localHref":           renderer.format.LocalHref,
-				"rawLocalHref":        renderer.format.RawLocalHref,
-				"codeHref":            renderer.format.CodeHref,
-				"escape":              renderer.format.Escape,
-			})
+			tmpl := renderer.getTemplate(name)
 
 			if _, err := tmpl.Parse(tmplStr); err != nil {
 				return nil, err
@@ -146,6 +83,20 @@ func WithTemplateOverride(name, tmpl string) RendererOption {
 func WithFormat(format format.Format) RendererOption {
 	return func(renderer *Renderer) error {
 		renderer.format = format
+		return nil
+	}
+}
+
+// WithTemplateFunc adds the provided function with the given name to the list
+// of functions that can be used by the rendering templates.
+//
+// Any name collisions between built-in functions and functions provided here
+// are resolved in favor of the function provided here, so be careful about the
+// naming of your functions to avoid overriding existing behavior unless
+// desired.
+func WithTemplateFunc(name string, fn any) RendererOption {
+	return func(renderer *Renderer) error {
+		renderer.templateFuncs[name] = fn
 		return nil
 	}
 }
@@ -195,4 +146,83 @@ func (out *Renderer) writeTemplate(name string, data interface{}) (string, error
 	}
 
 	return result.String(), nil
+}
+
+func (out *Renderer) getTemplate(name string) *template.Template {
+	tmpl := template.New(name)
+
+	// Capture the base template funcs later because we need them with the right
+	// format that we got from the options.
+	baseTemplateFuncs := map[string]any{
+		"add": func(n1, n2 int) int {
+			return n1 + n2
+		},
+		"spacer": func() string {
+			return "\n\n"
+		},
+		"inlineSpacer": func() string {
+			return "\n"
+		},
+		"hangingIndent": func(s string, n int) string {
+			return strings.ReplaceAll(s, "\n", fmt.Sprintf("\n%s", strings.Repeat(" ", n)))
+		},
+		"include": func(name string, data any) (string, error) {
+			var b strings.Builder
+			err := tmpl.ExecuteTemplate(&b, name, data)
+			if err != nil {
+				return "", err
+			}
+
+			return b.String(), nil
+		},
+		"iter": func(l any) (any, error) {
+			type iter struct {
+				First bool
+				Last  bool
+				Entry any
+			}
+
+			switch reflect.TypeOf(l).Kind() {
+			case reflect.Slice:
+				s := reflect.ValueOf(l)
+				out := make([]iter, s.Len())
+
+				for i := 0; i < s.Len(); i++ {
+					out[i] = iter{
+						First: i == 0,
+						Last:  i == s.Len()-1,
+						Entry: s.Index(i).Interface(),
+					}
+				}
+
+				return out, nil
+			default:
+				return nil, fmt.Errorf("renderer: iter only accepts slices")
+			}
+		},
+
+		"bold":                out.format.Bold,
+		"anchor":              out.format.Anchor,
+		"anchorHeader":        out.format.AnchorHeader,
+		"header":              out.format.Header,
+		"rawAnchorHeader":     out.format.RawAnchorHeader,
+		"rawHeader":           out.format.RawHeader,
+		"codeBlock":           out.format.CodeBlock,
+		"link":                out.format.Link,
+		"listEntry":           out.format.ListEntry,
+		"accordion":           out.format.Accordion,
+		"accordionHeader":     out.format.AccordionHeader,
+		"accordionTerminator": out.format.AccordionTerminator,
+		"localHref":           out.format.LocalHref,
+		"rawLocalHref":        out.format.RawLocalHref,
+		"codeHref":            out.format.CodeHref,
+		"escape":              out.format.Escape,
+	}
+
+	for n, f := range out.templateFuncs {
+		baseTemplateFuncs[n] = f
+	}
+
+	tmpl.Funcs(baseTemplateFuncs)
+	return tmpl
 }
