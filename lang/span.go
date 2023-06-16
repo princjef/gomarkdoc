@@ -91,6 +91,7 @@ func ParseSpans(cfg *Config, texts []comment.Text) []*Span {
 
 			if v.Auto {
 				s = append(s, NewSpan(cfg.Inc(0), AutolinkSpan, str, str))
+				break
 			}
 
 			s = append(s, NewSpan(cfg.Inc(0), LinkSpan, str, v.URL))

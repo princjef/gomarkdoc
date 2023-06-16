@@ -69,7 +69,7 @@ Each of the formats in this package contains the same set of formatting function
 <a name="AzureDevOpsMarkdown"></a>
 ## type [AzureDevOpsMarkdown](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L18>)
 
-AzureDevOpsMarkdown provides a Format which is compatible with Azure DevOps's syntax and semantics. See the Azure DevOps documentation for more details about their markdown format: https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops[https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops](<https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops>)
+AzureDevOpsMarkdown provides a Format which is compatible with Azure DevOps's syntax and semantics. See the Azure DevOps documentation for more details about their markdown format: https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops
 
 ```go
 type AzureDevOpsMarkdown struct{}
@@ -196,7 +196,7 @@ ListEntry generates an unordered list entry with the provided text at the provid
 func (f *AzureDevOpsMarkdown) LocalHref(headerText string) (string, error)
 ```
 
-LocalHref generates an href for navigating to a header with the given headerText located within the same document as the href itself. Link generation follows the guidelines here: https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops#anchor-links[https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops#anchor-links](<https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops#anchor-links>)
+LocalHref generates an href for navigating to a header with the given headerText located within the same document as the href itself. Link generation follows the guidelines here: https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops#anchor-links
 
 <a name="AzureDevOpsMarkdown.RawAnchorHeader"></a>
 ### func \(\*AzureDevOpsMarkdown\) [RawAnchorHeader](<https://github.com/princjef/gomarkdoc/blob/master/format/devops.go#L51>)
@@ -307,7 +307,7 @@ type Format interface {
 <a name="GitHubFlavoredMarkdown"></a>
 ## type [GitHubFlavoredMarkdown](<https://github.com/princjef/gomarkdoc/blob/master/format/github.go#L17>)
 
-GitHubFlavoredMarkdown provides a Format which is compatible with GitHub Flavored Markdown's syntax and semantics. See GitHub's documentation for more details about their markdown format: https://guides.github.com/features/mastering-markdown/[https://guides.github.com/features/mastering-markdown/](<https://guides.github.com/features/mastering-markdown/>)
+GitHubFlavoredMarkdown provides a Format which is compatible with GitHub Flavored Markdown's syntax and semantics. See GitHub's documentation for more details about their markdown format: https://guides.github.com/features/mastering-markdown/
 
 ```go
 type GitHubFlavoredMarkdown struct{}
