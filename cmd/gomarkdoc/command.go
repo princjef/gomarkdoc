@@ -52,6 +52,7 @@ type commandOptions struct {
 	footerFile            string
 	format                string
 	tags                  []string
+	excludeDirs           []string
 	templateOverrides     map[string]string
 	templateFileOverrides map[string]string
 	verbosity             int
@@ -96,6 +97,7 @@ func buildCommand() *cobra.Command {
 			opts.footer = viper.GetString("footer")
 			opts.footerFile = viper.GetString("footerFile")
 			opts.tags = viper.GetStringSlice("tags")
+			opts.excludeDirs = viper.GetStringSlice("excludeDirs")
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
@@ -197,6 +199,12 @@ func buildCommand() *cobra.Command {
 		defaultTags(),
 		"Set of build tags to apply when choosing which files to include for documentation generation.",
 	)
+	command.Flags().StringSliceVar(
+		&opts.excludeDirs,
+		"exclude-dirs",
+		nil,
+		"List of package directories to ignore when producing documentation.",
+	)
 	command.Flags().CountVarP(
 		&opts.verbosity,
 		"verbose",
@@ -241,6 +249,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("footer", command.Flags().Lookup("footer"))
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 	_ = viper.BindPFlag("tags", command.Flags().Lookup("tags"))
+	_ = viper.BindPFlag("excludeDirs", command.Flags().Lookup("exclude-dirs"))
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
 	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
@@ -293,6 +302,13 @@ func runCommand(paths []string, opts commandOptions) error {
 	}
 
 	specs := getSpecs(paths...)
+
+	excluded := getSpecs(opts.excludeDirs...)
+	if err := validateExcludes(excluded); err != nil {
+		return err
+	}
+
+	specs = removeExcludes(specs, excluded)
 
 	if err := resolveOutput(specs, outputTmpl); err != nil {
 		return err
@@ -565,13 +581,49 @@ func isIgnoredDir(dirname string) bool {
 	return false
 }
 
+// validateExcludes checks that the exclude dirs are all directories, not
+// packages.
+func validateExcludes(specs []*PackageSpec) error {
+	for _, s := range specs {
+		if !s.isLocal {
+			return fmt.Errorf("gomarkdoc: invalid directory specified as an exclude directory: %s", s.ImportPath)
+		}
+	}
+
+	return nil
+}
+
+// removeExcludes removes any package specs that were specified as excluded.
+func removeExcludes(specs []*PackageSpec, excludes []*PackageSpec) []*PackageSpec {
+	out := make([]*PackageSpec, 0, len(specs))
+	for _, s := range specs {
+		var exclude bool
+		for _, e := range excludes {
+			if !s.isLocal || !e.isLocal {
+				continue
+			}
+
+			if r, err := filepath.Rel(s.Dir, e.Dir); err == nil && r == "." {
+				exclude = true
+				break
+			}
+		}
+
+		if !exclude {
+			out = append(out, s)
+		}
+	}
+
+	return out
+}
+
 const (
 	cwdPathPrefix    = "." + string(os.PathSeparator)
 	parentPathPrefix = ".." + string(os.PathSeparator)
 )
 
 func isLocalPath(path string) bool {
-	return strings.HasPrefix(path, cwdPathPrefix) || strings.HasPrefix(path, parentPathPrefix) || filepath.IsAbs(path)
+	return strings.HasPrefix(path, ".") || strings.HasPrefix(path, parentPathPrefix) || filepath.IsAbs(path)
 }
 
 func compare(r1, r2 io.Reader) (bool, error) {

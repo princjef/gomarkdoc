@@ -22,7 +22,7 @@ func Lint() error {
 		return err
 	}
 
-	return linter.Command(`run`).Run()
+	return linter.Command(`run --timeout 5m`).Run()
 }
 
 func Generate() error {
@@ -36,18 +36,14 @@ func Build() error {
 func Doc() error {
 	return shellcmd.RunAll(
 		`go run ./cmd/gomarkdoc .`,
-		`go run ./cmd/gomarkdoc --header "" ./lang/...`,
-		`go run ./cmd/gomarkdoc --header "" ./format/...`,
-		`go run ./cmd/gomarkdoc --header "" ./cmd/...`,
+		`go run ./cmd/gomarkdoc --header "" --exclude-dirs . --exclude-dirs ./testData/... ./...`,
 	)
 }
 
 func DocVerify() error {
 	return shellcmd.RunAll(
 		`go run ./cmd/gomarkdoc -c .`,
-		`go run ./cmd/gomarkdoc -c --header "" ./lang/...`,
-		`go run ./cmd/gomarkdoc -c --header "" ./format/...`,
-		`go run ./cmd/gomarkdoc -c --header "" ./cmd/...`,
+		`go run ./cmd/gomarkdoc -c --header "" --exclude-dirs . --exclude-dirs ./testData/... ./...`,
 	)
 }
 
