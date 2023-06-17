@@ -40,6 +40,7 @@ Flags:
   -c, --check                              Check the output to see if it matches the generated documentation. --output must be specified to use this.
       --config string                      File from which to load configuration (default: .gomarkdoc.yml)
   -e, --embed                              Embed documentation into existing markdown files if available, otherwise append to file.
+      --exclude-dirs strings               List of package directories to ignore when producing documentation.
       --footer string                      Additional content to inject at the end of each output file.
       --footer-file string                 File containing additional content to inject at the end of each output file.
   -f, --format string                      Format to use for writing output data. Valid options: github (default), azure-devops, plain (default "github")
@@ -67,6 +68,14 @@ gomarkdoc --output doc.md .
 ### Package Specifiers
 
 The gomarkdoc tool supports generating documentation for both local packages and remote ones. To specify a local package, start the name of the package with a period \(.\) or specify an absolute path on the filesystem. All other package signifiers are assumed to be remote packages. You may specify both local and remote packages in the same command invocation as separate arguments.
+
+If you have a project with many packages but you want to skip documentation generation for some, you can use the \-\-exclude\-dirs option. This will remove any matching directories from the list of directories to process. Excluded directories are specified using the same pathing syntax as the packages to process. Multiple expressions may be comma\-separated or specified by using the \-\-exclude\-dirs flag multiple times.
+
+For example, in this repository we generate documentation for the entire project while excluding our test packages by running:
+
+```
+gomarkdoc --exclude-dirs ./testData/... ./...
+```
 
 ### Output Redirection
 
