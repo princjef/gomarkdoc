@@ -7,7 +7,8 @@
 // [math/rand] as well as a function in the file [Func], a type [Type], a type's
 // function [Type.Func], a non-standard library package
 // [golang.org/x/crypto/bcrypt.Cost], an external link [Outside Link] and
-// a [broken link].
+// a [broken link]. We can also place links directly like https://github.com
+// which get turned into links.
 //
 // It also has a numbered list:
 //  1. First
