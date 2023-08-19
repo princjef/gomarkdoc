@@ -1,7 +1,7 @@
 /coverage.txt
 /gomarkdoc
 /bin/
-README-test.md
+README-*-test.md
 
 # editor and IDE paraphernalia
 .vscode/*

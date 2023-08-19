@@ -64,7 +64,15 @@ func RegenerateTestDocs() error {
 		}
 
 		os.Chdir(filepath.Join(base, "./testData", dir.Name()))
-		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README.md" ./...`).Run(); err != nil {
+		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README-github.md" --format github ./...`).Run(); err != nil {
+			return err
+		}
+
+		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README-plain.md" --format plain ./...`).Run(); err != nil {
+			return err
+		}
+
+		if err := shellcmd.Command(`go run ../../cmd/gomarkdoc -o "{{.Dir}}/README-azure-devops.md" --format azure-devops ./...`).Run(); err != nil {
 			return err
 		}
 	}
