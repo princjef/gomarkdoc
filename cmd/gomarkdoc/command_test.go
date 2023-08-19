@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -290,6 +291,49 @@ func TestCommand_embed(t *testing.T) {
 	main()
 
 	verify(t, "./embed", "github")
+}
+
+func TestCommand_embed_check(t *testing.T) {
+	is := is.New(t)
+
+	err := os.Chdir(filepath.Join(wd, "../../testData"))
+	is.NoErr(err)
+
+	os.Args = []string{
+		"gomarkdoc", "./embed",
+		"--embed",
+		"--check",
+		"-o", "{{.Dir}}/README-github-invalid.md",
+		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.default-branch", "master",
+		"--repository.path", "/testData/",
+	}
+	cleanup(t, "embed")
+
+	log.SetFlags(0)
+
+	cmd := buildCommand()
+
+	err = cmd.Execute()
+	is.True(err != nil) // Should fail
+
+	os.Args = []string{
+		"gomarkdoc", "./embed",
+		"--embed",
+		"--check",
+		"-o", "{{.Dir}}/README-github.md",
+		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.default-branch", "master",
+		"--repository.path", "/testData/",
+	}
+	cleanup(t, "embed")
+
+	log.SetFlags(0)
+
+	cmd = buildCommand()
+
+	err = cmd.Execute()
+	is.NoErr(err) // Should pass
 }
 
 func TestCompare(t *testing.T) {
