@@ -29,18 +29,12 @@ func TestCommand(t *testing.T) {
 			err := os.Chdir(filepath.Join(wd, "../../testData"))
 			is.NoErr(err)
 
-			os.Args = []string{
+			harness(t, test, []string{
 				"gomarkdoc", test,
-				"-o", "{{.Dir}}/README-test.md",
 				"--repository.url", "https://github.com/princjef/gomarkdoc",
 				"--repository.default-branch", "master",
 				"--repository.path", "/testData/",
-			}
-			cleanup(test)
-
-			main()
-
-			verify(t, test)
+			})
 		})
 	}
 }
@@ -54,12 +48,12 @@ func TestCommand_check(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./simple",
 		"-c",
-		"-o", "{{.Dir}}/README.md",
+		"-o", "{{.Dir}}/README-github.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("simple")
+	cleanup(t, "simple")
 
 	main()
 }
@@ -72,18 +66,18 @@ func TestCommand_nested(t *testing.T) {
 
 	os.Args = []string{
 		"gomarkdoc", "./nested/...",
-		"-o", "{{.Dir}}/README-test.md",
+		"-o", "{{.Dir}}/README-github-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("nested")
-	cleanup("nested/inner")
+	cleanup(t, "nested")
+	cleanup(t, "nested/inner")
 
 	main()
 
-	verify(t, "nested")
-	verify(t, "nested/inner")
+	verify(t, "nested", "github")
+	verify(t, "nested/inner", "github")
 }
 
 func TestCommand_unexported(t *testing.T) {
@@ -92,19 +86,14 @@ func TestCommand_unexported(t *testing.T) {
 	err := os.Chdir(filepath.Join(wd, "../../testData"))
 	is.NoErr(err)
 
-	os.Args = []string{
+	harness(t, "unexported", []string{
 		"gomarkdoc", "./unexported",
 		"-u",
 		"-o", "{{.Dir}}/README-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
-	}
-	cleanup("unexported")
-
-	main()
-
-	verify(t, "unexported")
+	})
 }
 
 func TestCommand_version(t *testing.T) {
@@ -142,7 +131,7 @@ func TestCommand_invalidCheck(t *testing.T) {
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("simple")
+	cleanup(t, "simple")
 
 	cmd := buildCommand()
 	err = cmd.Execute()
@@ -157,18 +146,12 @@ func TestCommand_defaultDirectory(t *testing.T) {
 	err := os.Chdir(filepath.Join(wd, "../../testData/simple"))
 	is.NoErr(err)
 
-	os.Args = []string{
+	harness(t, ".", []string{
 		"gomarkdoc",
-		"-o", "{{.Dir}}/README-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/simple/",
-	}
-	cleanup(".")
-
-	main()
-
-	verify(t, ".")
+	})
 }
 
 func TestCommand_nonexistant(t *testing.T) {
@@ -197,21 +180,13 @@ func TestCommand_tags(t *testing.T) {
 	err := os.Chdir(filepath.Join(wd, "../../testData"))
 	is.NoErr(err)
 
-	os.Args = []string{
+	harness(t, "tags", []string{
 		"gomarkdoc", "./tags",
 		"--tags", "tagged",
-		"-o", "{{.Dir}}/README-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
-	}
-	cleanup("tags")
-
-	cmd := buildCommand()
-	err = cmd.Execute()
-	is.NoErr(err)
-
-	verify(t, "./tags")
+	})
 }
 
 func TestCommand_tagsWithGOFLAGS(t *testing.T) {
@@ -224,18 +199,18 @@ func TestCommand_tagsWithGOFLAGS(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
-		"-o", "{{.Dir}}/README-test.md",
+		"-o", "{{.Dir}}/README-github-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("tags")
+	cleanup(t, "tags")
 
 	cmd := buildCommand()
 	err = cmd.Execute()
 	is.NoErr(err)
 
-	verify(t, "./tags")
+	verify(t, "./tags", "github")
 }
 
 func TestCommand_tagsWithGOFLAGSNoTags(t *testing.T) {
@@ -250,18 +225,18 @@ func TestCommand_tagsWithGOFLAGSNoTags(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
-		"-o", "{{.Dir}}/README-test.md",
+		"-o", "{{.Dir}}/README-github-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("tags")
+	cleanup(t, "tags")
 
 	cmd := buildCommand()
 	err = cmd.Execute()
 	is.NoErr(err)
 
-	verifyNotEqual(t, "./tags")
+	verifyNotEqual(t, "./tags", "github")
 }
 
 func TestCommand_tagsWithGOFLAGSNoParse(t *testing.T) {
@@ -276,18 +251,18 @@ func TestCommand_tagsWithGOFLAGSNoParse(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
-		"-o", "{{.Dir}}/README-test.md",
+		"-o", "{{.Dir}}/README-github-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("tags")
+	cleanup(t, "tags")
 
 	cmd := buildCommand()
 	err = cmd.Execute()
 	is.NoErr(err)
 
-	verifyNotEqual(t, "./tags")
+	verifyNotEqual(t, "./tags", "github")
 }
 
 func TestCommand_embed(t *testing.T) {
@@ -299,22 +274,22 @@ func TestCommand_embed(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./embed",
 		"--embed",
-		"-o", "{{.Dir}}/README-test.md",
+		"-o", "{{.Dir}}/README-github-test.md",
 		"--repository.url", "https://github.com/princjef/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
-	cleanup("embed")
+	cleanup(t, "embed")
 
 	data, err := os.ReadFile("./embed/README-template.md")
 	is.NoErr(err)
 
-	err = os.WriteFile("./embed/README-test.md", data, 0664)
+	err = os.WriteFile("./embed/README-github-test.md", data, 0664)
 	is.NoErr(err)
 
 	main()
 
-	verify(t, "./embed")
+	verify(t, "./embed", "github")
 }
 
 func TestCompare(t *testing.T) {
@@ -346,30 +321,62 @@ func TestCompare(t *testing.T) {
 	}
 }
 
-func verify(t *testing.T, dir string) {
+func verify(t *testing.T, dir, format string) {
 	is := is.New(t)
 
-	data, err := os.ReadFile(filepath.Join(dir, "README.md"))
+	data, err := os.ReadFile(filepath.Join(dir, fmt.Sprintf("README-%s.md", format)))
 	is.NoErr(err)
 
-	data2, err := os.ReadFile(filepath.Join(dir, "README-test.md"))
+	data2, err := os.ReadFile(filepath.Join(dir, fmt.Sprintf("README-%s-test.md", format)))
 	is.NoErr(err)
 
 	is.Equal(string(data), string(data2))
 }
 
-func verifyNotEqual(t *testing.T, dir string) {
+func verifyNotEqual(t *testing.T, dir, format string) {
 	is := is.New(t)
 
-	data, err := os.ReadFile(filepath.Join(dir, "README.md"))
+	data, err := os.ReadFile(filepath.Join(dir, fmt.Sprintf("README-%s.md", format)))
 	is.NoErr(err)
 
-	data2, err := os.ReadFile(filepath.Join(dir, "README-test.md"))
+	data2, err := os.ReadFile(filepath.Join(dir, fmt.Sprintf("README-%s-test.md", format)))
 	is.NoErr(err)
 
 	is.True(string(data) != string(data2))
 }
 
-func cleanup(dir string) {
-	os.Remove(filepath.Join(dir, "README-test.md"))
+func cleanup(t *testing.T, dir string) {
+	f, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, n := range f {
+		if n.IsDir() {
+			continue
+		}
+
+		if !strings.HasPrefix(n.Name(), "README") || !strings.HasSuffix(n.Name(), "-test.md") {
+			continue
+		}
+
+		os.Remove(filepath.Join(dir, n.Name()))
+
+	}
+}
+
+// harness runs the test for all formats. Omit the --output and --format args to
+// the command when running this as it will fill them in for you
+func harness(t *testing.T, dir string, args []string) {
+	for _, format := range []string{"plain", "github", "azure-devops"} {
+		os.Args = args
+		os.Args = append(os.Args, "-o", fmt.Sprintf("{{.Dir}}/README-%s-test.md", format))
+		os.Args = append(os.Args, "--format", format)
+
+		cleanup(t, dir)
+
+		main()
+
+		verify(t, dir, format)
+	}
 }
