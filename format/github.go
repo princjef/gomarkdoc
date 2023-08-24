@@ -14,7 +14,14 @@ import (
 // Flavored Markdown's syntax and semantics. See GitHub's documentation for
 // more details about their markdown format:
 // https://guides.github.com/features/mastering-markdown/
-type GitHubFlavoredMarkdown struct{}
+type GitHubFlavoredMarkdown struct {
+	excludeHrefAngularBrackets bool
+}
+
+// NewGitHubFlavoredMarkdown creates a new GitHubFlavoredMarkdown Format.
+func NewGitHubFlavoredMarkdown(excludeLinkAngularBrackets bool) *GitHubFlavoredMarkdown {
+	return &GitHubFlavoredMarkdown{excludeHrefAngularBrackets: excludeLinkAngularBrackets}
+}
 
 // Bold converts the provided text to bold
 func (f *GitHubFlavoredMarkdown) Bold(text string) (string, error) {
@@ -82,6 +89,9 @@ func (f *GitHubFlavoredMarkdown) RawLocalHref(anchor string) string {
 
 // Link generates a link with the given text and href values.
 func (f *GitHubFlavoredMarkdown) Link(text, href string) (string, error) {
+	if f.excludeHrefAngularBrackets {
+		return f.link(text, href), nil
+	}
 	return formatcore.Link(text, href), nil
 }
 
@@ -161,4 +171,16 @@ func (f *GitHubFlavoredMarkdown) AccordionTerminator() (string, error) {
 // Escape escapes special markdown characters from the provided text.
 func (f *GitHubFlavoredMarkdown) Escape(text string) string {
 	return formatcore.Escape(text)
+}
+
+func (f *GitHubFlavoredMarkdown) link(text string, href string) string {
+	if text == "" {
+		return ""
+	}
+
+	if href == "" {
+		return text
+	}
+
+	return fmt.Sprintf("[%s](%s)", formatcore.Escape(text), href)
 }

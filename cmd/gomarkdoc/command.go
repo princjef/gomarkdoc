@@ -44,22 +44,23 @@ type PackageSpec struct {
 }
 
 type commandOptions struct {
-	repository            lang.Repo
-	output                string
-	header                string
-	headerFile            string
-	footer                string
-	footerFile            string
-	format                string
-	tags                  []string
-	excludeDirs           []string
-	templateOverrides     map[string]string
-	templateFileOverrides map[string]string
-	verbosity             int
-	includeUnexported     bool
-	check                 bool
-	embed                 bool
-	version               bool
+	repository                 lang.Repo
+	output                     string
+	header                     string
+	headerFile                 string
+	footer                     string
+	footerFile                 string
+	format                     string
+	tags                       []string
+	excludeDirs                []string
+	excludeLinkAngularBrackets bool
+	templateOverrides          map[string]string
+	templateFileOverrides      map[string]string
+	verbosity                  int
+	includeUnexported          bool
+	check                      bool
+	embed                      bool
+	version                    bool
 }
 
 // Flags populated by goreleaser
@@ -98,6 +99,7 @@ func buildCommand() *cobra.Command {
 			opts.footerFile = viper.GetString("footerFile")
 			opts.tags = viper.GetStringSlice("tags")
 			opts.excludeDirs = viper.GetStringSlice("excludeDirs")
+			opts.excludeLinkAngularBrackets = viper.GetBool("excludeLinkAngularBrackets")
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
@@ -205,6 +207,13 @@ func buildCommand() *cobra.Command {
 		nil,
 		"List of package directories to ignore when producing documentation.",
 	)
+	command.Flags().BoolVarP(
+		&opts.excludeLinkAngularBrackets,
+		"exclude-link-angular-brackets",
+		"",
+		false,
+		"Exclude the angular brackets [](<>) from links in the output. Works with the github format only.",
+	)
 	command.Flags().CountVarP(
 		&opts.verbosity,
 		"verbose",
@@ -250,6 +259,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 	_ = viper.BindPFlag("tags", command.Flags().Lookup("tags"))
 	_ = viper.BindPFlag("excludeDirs", command.Flags().Lookup("exclude-dirs"))
+	_ = viper.BindPFlag("excludeLinkAngularBrackets", command.Flags().Lookup("exclude-link-angular-brackets"))
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
 	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
@@ -367,7 +377,7 @@ func resolveOverrides(opts commandOptions) ([]gomarkdoc.RendererOption, error) {
 	var f format.Format
 	switch opts.format {
 	case "github":
-		f = &format.GitHubFlavoredMarkdown{}
+		f = format.NewGitHubFlavoredMarkdown(opts.excludeLinkAngularBrackets)
 	case "azure-devops":
 		f = &format.AzureDevOpsMarkdown{}
 	case "plain":
