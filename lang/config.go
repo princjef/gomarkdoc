@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/doc"
 	"go/parser"
 	"go/token"
@@ -66,7 +67,7 @@ type (
 // resolve the filepath and attempt to determine the repository containing the
 // directory. If no repository is found, the Repo field will be set to nil. An
 // error is returned if the provided directory is invalid.
-func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigOption) (*Config, error) {
+func NewConfig(log logger.Logger, workDir string, pkg *build.Package, opts ...ConfigOption) (*Config, error) {
 	cfg := &Config{
 		FileSet: token.NewFileSet(),
 		Level:   1,
@@ -81,7 +82,7 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 
 	var err error
 
-	cfg.PkgDir, err = filepath.Abs(pkgDir)
+	cfg.PkgDir, err = filepath.Abs(pkg.Dir)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +92,7 @@ func NewConfig(log logger.Logger, workDir string, pkgDir string, opts ...ConfigO
 		return nil, err
 	}
 
-	files, err := parsePkgFiles(pkgDir, cfg.FileSet)
+	files, err := parsePkgFiles(pkg, cfg.FileSet)
 	if err != nil {
 		return nil, err
 	}
@@ -371,11 +372,14 @@ func NewLocation(cfg *Config, node ast.Node) Location {
 	}
 }
 
-func parsePkgFiles(pkgDir string, fs *token.FileSet) ([]*ast.File, error) {
-	rawFiles, err := ioutil.ReadDir(pkgDir)
+func parsePkgFiles(pkg *build.Package, fs *token.FileSet) ([]*ast.File, error) {
+	rawFiles, err := ioutil.ReadDir(pkg.Dir)
 	if err != nil {
 		return nil, fmt.Errorf("gomarkdoc: error reading package dir: %w", err)
 	}
+
+	ctx := build.Default
+	ctx.BuildTags = pkg.AllTags
 
 	var files []*ast.File
 	for _, f := range rawFiles {
@@ -383,10 +387,14 @@ func parsePkgFiles(pkgDir string, fs *token.FileSet) ([]*ast.File, error) {
 			continue
 		}
 
-		p := path.Join(pkgDir, f.Name())
+		p := path.Join(pkg.Dir, f.Name())
 
 		fi, err := os.Stat(p)
 		if err != nil || !fi.Mode().IsRegular() {
+			continue
+		}
+
+		if ok, err := ctx.MatchFile(pkg.Dir, f.Name()); err != nil || !ok {
 			continue
 		}
 
