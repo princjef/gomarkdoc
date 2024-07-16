@@ -10,7 +10,6 @@ import (
 	"hash/fnv"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -18,9 +17,11 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/thediveo/enumflag/v2"
 
 	"github.com/princjef/gomarkdoc"
 	"github.com/princjef/gomarkdoc/format"
+	"github.com/princjef/gomarkdoc/format/repo_format"
 	"github.com/princjef/gomarkdoc/lang"
 	"github.com/princjef/gomarkdoc/logger"
 )
@@ -62,6 +63,11 @@ type commandOptions struct {
 	version               bool
 }
 
+var RepoTypeIds = map[lang.RepoType][]string{
+	lang.GitHubRepoType:    {"github"},
+	lang.BitBucketRepoType: {"bitbucket"},
+}
+
 // Flags populated by goreleaser
 var version = ""
 
@@ -98,6 +104,7 @@ func buildCommand() *cobra.Command {
 			opts.footerFile = viper.GetString("footerFile")
 			opts.tags = viper.GetStringSlice("tags")
 			opts.excludeDirs = viper.GetStringSlice("excludeDirs")
+			opts.repository.Type = lang.RepoType(viper.GetInt("repository.type"))
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
@@ -217,6 +224,17 @@ func buildCommand() *cobra.Command {
 		"",
 		"Manual override for the git repository URL used in place of automatic detection.",
 	)
+
+	repoTypeIds := make([]string, len(RepoTypeIds))
+	for i, repoTypeId := range RepoTypeIds {
+		// works because of iota in lang.RepoType consts
+		repoTypeIds[i] = repoTypeId[0]
+	}
+	command.Flags().Var(
+		enumflag.New(&opts.repository.Type, "mode", RepoTypeIds, enumflag.EnumCaseInsensitive),
+		"repository.type",
+		fmt.Sprintf("Specifies the repository management system type: could be one of %v", repoTypeIds))
+
 	command.Flags().StringVar(
 		&opts.repository.DefaultBranch,
 		"repository.default-branch",
@@ -250,6 +268,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
 	_ = viper.BindPFlag("tags", command.Flags().Lookup("tags"))
 	_ = viper.BindPFlag("excludeDirs", command.Flags().Lookup("exclude-dirs"))
+	_ = viper.BindPFlag("repository.type", command.Flags().Lookup("repository.type"))
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
 	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
@@ -356,7 +375,7 @@ func resolveOverrides(opts commandOptions) ([]gomarkdoc.RendererOption, error) {
 			continue
 		}
 
-		b, err := ioutil.ReadFile(f)
+		b, err := os.ReadFile(f)
 		if err != nil {
 			return nil, fmt.Errorf("gomarkdoc: couldn't resolve template for %s: %w", name, err)
 		}
@@ -372,6 +391,13 @@ func resolveOverrides(opts commandOptions) ([]gomarkdoc.RendererOption, error) {
 		f = &format.AzureDevOpsMarkdown{}
 	case "plain":
 		f = &format.PlainMarkdown{}
+	case "mkdocs":
+		f = &format.MkDocsMarkdown{
+			RepoFormats: []repo_format.RepoFormat{
+				repo_format.GitHubRepoFormat{},
+				repo_format.BitBucketRepoFormat{},
+			},
+		}
 	default:
 		return nil, fmt.Errorf("gomarkdoc: invalid format: %s", opts.format)
 	}
@@ -387,7 +413,7 @@ func resolveHeader(opts commandOptions) (string, error) {
 	}
 
 	if opts.headerFile != "" {
-		b, err := ioutil.ReadFile(opts.headerFile)
+		b, err := os.ReadFile(opts.headerFile)
 		if err != nil {
 			return "", fmt.Errorf("gomarkdoc: couldn't resolve header file: %w", err)
 		}
@@ -404,7 +430,7 @@ func resolveFooter(opts commandOptions) (string, error) {
 	}
 
 	if opts.footerFile != "" {
-		b, err := ioutil.ReadFile(opts.footerFile)
+		b, err := os.ReadFile(opts.footerFile)
 		if err != nil {
 			return "", fmt.Errorf("gomarkdoc: couldn't resolve footer file: %w", err)
 		}
@@ -531,7 +557,7 @@ func getSpecs(paths ...string) []*PackageSpec {
 
 			p := e.Value.(string)
 
-			files, err := ioutil.ReadDir(p)
+			files, err := os.ReadDir(p)
 			if err != nil {
 				// If we couldn't read the folder, there are no directories that
 				// we're going to find beneath it
