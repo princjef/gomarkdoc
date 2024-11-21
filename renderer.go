@@ -18,6 +18,7 @@ type (
 		tmpl              *template.Template
 		format            format.Format
 		templateFuncs     map[string]any
+		name              string
 	}
 
 	// RendererOption configures the renderer's behavior.
