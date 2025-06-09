@@ -48,7 +48,7 @@ func GFMCodeBlock(language, code string) string {
 // Anchor produces an anchor for the provided link.
 func Anchor(anchor string) string {
 	return fmt.Sprintf(
-		"<a name=\"%s\"></a>",
+		"<a id=\"%s\"></a>",
 		html.EscapeString(anchor),
 	)
 }

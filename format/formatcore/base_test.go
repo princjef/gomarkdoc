@@ -99,3 +99,25 @@ func TestEscape(t *testing.T) {
 		})
 	}
 }
+
+func TestAnchor(t *testing.T) {
+	tests := []struct {
+		in, out string
+	}{
+		{
+			in:  "SimpleAnchor",
+			out: `<a id="SimpleAnchor"></a>`,
+		},
+		{
+			in:  "Anchor With Spaces",
+			out: `<a id="Anchor With Spaces"></a>`,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			is := is.New(t)
+			is.Equal(Anchor(test.in), test.out) // Wrong output for Anchor()
+		})
+	}
+}
