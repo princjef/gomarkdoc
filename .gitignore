@@ -2,6 +2,7 @@
 /gomarkdoc
 /bin/
 README-*-test.md
+/vendor
 
 # editor and IDE paraphernalia
 .vscode/*
