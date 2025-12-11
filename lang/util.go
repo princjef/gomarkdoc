@@ -27,19 +27,13 @@ func runeIsUpper(r rune) bool {
 	return r >= 'A' && r <= 'Z'
 }
 
-const lowerToUpper = 'a' - 'A'
-
-func runeToUpper(r rune) rune {
-	return r - lowerToUpper
-}
-
 func splitCamel(text string) string {
 	var builder strings.Builder
 	var previousRune rune
 	var wordLength int
 	for i, r := range text {
 		if i == 0 {
-			previousRune = runeToUpper(r)
+			previousRune = unicode.ToUpper(r)
 			continue
 		}
 
